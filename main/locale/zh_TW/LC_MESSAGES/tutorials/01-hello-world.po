@@ -1,0 +1,339 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2025-2026, NVIDIA Corporation
+# This file is distributed under the same license as the cuTile Rust package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: cuTile Rust main\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-21 16:36+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: zh_TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../tutorials/01-hello-world.md:1
+msgid "1. Hello World"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:3
+msgid ""
+"Launching a tile kernel starts `N` concurrent copies of the same function. "
+"Each copy is a *tile program* (also called a *tile block*): a single logical "
+"thread operating on a multi-dimensional tile of data."
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:7
+msgid ""
+"**Note**: Tile programs run concurrently, but the CUDA runtime may not run "
+"all of them at the same time. Communication between tile programs requires "
+"detailed knowledge of the CUDA runtime."
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:11
+msgid ""
+"![Thread-centric vs Tile-centric GPU programming models](../_static/images/"
+"mental-model-shift.svg)"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:11
+msgid "Thread-centric vs Tile-centric GPU programming models"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:15
+msgid "Here is a kernel that prints \"hello\" from the GPU:"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:17
+msgid ""
+"use cutile::error::Error;\n"
+"use cutile::prelude::*;\n"
+"\n"
+"#[cutile::module]\n"
+"mod hello_world_module {\n"
+"    use cutile::core::*;\n"
+"\n"
+"    #[cutile::entry()]\n"
+"    fn hello_world_kernel() {\n"
+"        let pid0 = program_id(0);\n"
+"        let pid1 = program_id(1);\n"
+"        let pid2 = program_id(2);\n"
+"        let n0 = num_programs(0);\n"
+"        let n1 = num_programs(1);\n"
+"        let n2 = num_programs(2);\n"
+"        cuda_tile_print!(\n"
+"            \"Hello from program <{}, {}, {}> in a grid of <{}, {}, {}> "
+"programs!\\n\",\n"
+"            pid0, pid1, pid2,\n"
+"            n0, n1, n2\n"
+"        );\n"
+"    }\n"
+"}\n"
+"\n"
+"use hello_world_module::hello_world_kernel;\n"
+"\n"
+"fn main() -> Result<(), Error> {\n"
+"    let device = Device::new(0)?;\n"
+"    let stream = device.new_stream()?;\n"
+"    let launcher = hello_world_kernel();\n"
+"    launcher.grid((2, 2, 1)).sync_on(&stream)?;\n"
+"    Ok(())\n"
+"}\n"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:52
+msgid "**Output:**"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:54
+msgid ""
+"Hello from program <0, 0, 0> in a grid of <2, 2, 1> programs!\n"
+"Hello from program <1, 0, 0> in a grid of <2, 2, 1> programs!\n"
+"Hello from program <0, 1, 0> in a grid of <2, 2, 1> programs!\n"
+"Hello from program <1, 1, 0> in a grid of <2, 2, 1> programs!\n"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:61
+msgid ""
+"Four tile programs were executed by the CUDA runtime, each printing its own "
+"coordinates."
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:66
+msgid "GPU vs. CPU Code"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:68
+msgid ""
+"`cutile-rs` programs have two parts: code that runs on the GPU, or the "
+"*device-side*, and code that runs on the CPU, or the *host-side*. The "
+"following snippet will JIT-compile to the GPU when executed from the host-"
+"side:"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:71
+msgid ""
+"#[cutile::module]\n"
+"mod hello_world_module {\n"
+"    use cutile::core::*;\n"
+"\n"
+"    #[cutile::entry()]\n"
+"    fn hello_world_kernel() {\n"
+"        // This code runs on the GPU!\n"
+"    }\n"
+"}\n"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:83
+msgid "`#[cutile::module]` marks a module as containing GPU code."
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:84
+msgid "`#[cutile::entry()]` marks a function as a kernel entry point."
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:86
+msgid ""
+"Each coordinate in the launch grid gets one instance of the kernel function."
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:89
+msgid "The following host-side code will launch the device-side code:"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:91
+msgid ""
+"fn main() -> Result<(), Error> {\n"
+"    let device = Device::new(0)?;             // Connect to GPU\n"
+"    let stream = device.new_stream()?;             // Create a work queue\n"
+"    let launcher = hello_world_kernel();   // Get the kernel launcher\n"
+"    launcher.grid((2, 2, 1)).sync_on(&stream)?; // Launch 2×2×1 = 4 "
+"programs\n"
+"    Ok(())\n"
+"}\n"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:101
+msgid ""
+"Host-side code sets up the GPU, specifies the kernel launch grid, and "
+"launches the kernel."
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:105
+msgid "Program IDs"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:107
+msgid ""
+"Each tile program is assigned an ID along each axis of the 3-dimensional "
+"launch grid, following Triton's `tl.program_id(axis)` / `tl."
+"num_programs(axis)`:"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:109
+msgid ""
+"let pid0 = program_id(0);   // This program's index along grid axis 0\n"
+"let n0 = num_programs(0);   // The grid extent along axis 0\n"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:114
+msgid ""
+"For each axis `k`, `0 <= program_id(k) < num_programs(k)`. The tuple forms "
+"`get_tile_block_id()` and `get_num_tile_blocks()` return all three "
+"coordinates at once."
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:116
+msgid ""
+"![A grid of tile programs showing (x,y) coordinates](../_static/images/hello-"
+"world-grid.svg)"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:116
+msgid "A grid of tile programs showing (x,y) coordinates"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:118
+msgid "Programs use their coordinates to select which data to process."
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:122
+msgid "Under the hood"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:124
+msgid ""
+"**At compile time:** `#[cutile::module]` captures your Rust code as an AST."
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:125
+msgid ""
+"**At first kernel launch:** The AST is compiled to Tile IR bytecode → cubin "
+"(GPU binary)."
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:126
+msgid ""
+"**Cached:** The compiled kernel is cached in memory for the rest of the "
+"process, so later launches of the same variant skip compilation. Caching "
+"across processes (an on-disk cubin cache) is opt-in; see [Compilation](../"
+"guide/jit-compilation.md)."
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:127
+msgid "**Launch:** 4 tile programs are dispatched to the GPU."
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:128
+msgid ""
+"**Execution:** All 4 tile programs run concurrently, each printing its "
+"coordinates."
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:130
+msgid ""
+"![The cuTile Rust compilation pipeline from Rust source to GPU execution](../"
+"_static/images/compilation-pipeline.svg)"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:130
+msgid "The cuTile Rust compilation pipeline from Rust source to GPU execution"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:134
+msgid "Key Takeaways"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:0
+msgid "Concept"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:0
+msgid "What It Means"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:0
+msgid "**Tile programs run concurrently**"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:0
+msgid "You launch N tile programs, they all execute concurrently"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:0
+msgid "**Tile programs are assigned IDs**"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:0
+msgid "Each program uses its per-axis IDs to work on different data"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:0
+msgid "**Host orchestrates**"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:0
+msgid "CPU code decides grid shape and launches work"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:0
+msgid "**Same code, different data**"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:0
+msgid "The kernel is written once and executed by many tile programs"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:145
+msgid "Exercise 1: Change the Grid Size"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:147
+msgid "Modify the grid to `(3, 3, 1)`. How many messages do you see?"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:149
+msgid "launcher.grid((3, 3, 1)).sync_on(&stream)?;\n"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:0
+msgid "Answer"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:154
+msgid "You should see 9 messages (3 × 3 × 1 = 9 tile programs)."
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:157
+msgid "Exercise 2: Use the Z Dimension"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:159
+msgid "Try `(2, 2, 2)` for a 3D grid. What changes?"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:162
+msgid "You'll see 8 messages. The `z` coordinate will now vary from 0 to 1."
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:165
+msgid "Exercise 3: Calculate Total Programs"
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:167
+msgid "Modify the kernel to also print the total number of tile programs."
+msgstr ""
+
+#: ../../../tutorials/01-hello-world.md:170
+msgid ""
+"let total = n0 * n1 * n2;\n"
+"cuda_tile_print!(\n"
+"    \"Program <{}, {}, {}> of {} total programs\\n\",\n"
+"    pid0, pid1, pid2, total\n"
+");\n"
+msgstr ""

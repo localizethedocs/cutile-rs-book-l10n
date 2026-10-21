@@ -1,0 +1,762 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2025-2026, NVIDIA Corporation
+# This file is distributed under the same license as the cuTile Rust package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: cuTile Rust main\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-21 16:36+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../tutorials/10-cuda-graphs.md:1
+msgid "10. CUDA Graphs"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:3
+msgid ""
+"CUDA graphs let you capture an entire GPU workload once and replay it many "
+"times, eliminating per-launch overhead. This tutorial builds a multi-layer "
+"forward pass using DeviceOp combinators, captures it as a CUDA graph, and "
+"replays it in a token loop."
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:10
+msgid "Motivation"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:12
+msgid ""
+"Every kernel launch involves CPU-side work: selecting a stream, setting up "
+"arguments, invoking the driver. For workloads that repeat the same graph of "
+"operations (e.g., the forward pass of a transformer), this per-launch "
+"overhead can dominate — especially at small batch sizes where kernels are "
+"fast relative to their launch cost."
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:18
+msgid ""
+"A CUDA graph records the entire sequence of operations once, then replays it "
+"with a single driver call. The GPU sees the full graph up front and can "
+"schedule internal work more aggressively."
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:22
+msgid ""
+"Without graphs:                     With graphs:\n"
+"\n"
+"  CPU: launch → wait → launch →      CPU: launch_graph → wait\n"
+"       wait → launch → wait               (single call)\n"
+"  GPU: ████   ████   ████            GPU: ████████████████\n"
+"       gaps between kernels                no gaps\n"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:33
+msgid "The Model"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:35
+msgid ""
+"We'll build a minimal transformer-style layer stack: each layer performs "
+"RMSNorm → Q projection (matvec) → O projection (matvec) → residual add. The "
+"hidden state flows through all layers sequentially."
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:39
+msgid ""
+"input\n"
+"  │\n"
+"  ├─ Layer 0: RMSNorm → Q MatVec → O MatVec → Add(residual, hidden)\n"
+"  │\n"
+"  ├─ Layer 1: RMSNorm → Q MatVec → O MatVec → Add(residual, hidden)\n"
+"  │\n"
+"  └─ … (n_layers)\n"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:49
+msgid "Kernels"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:51
+msgid ""
+"Three cutile kernels handle the compute. Each follows the output-first "
+"convention (`&mut Tensor` as the first parameter):"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:54
+msgid ""
+"#[cutile::module]\n"
+"mod kernels {\n"
+"    use cutile::core::*;\n"
+"\n"
+"    /// RMS normalization: out = rms_norm(x) * w\n"
+"    #[cutile::entry()]\n"
+"    pub fn rms_norm<const D: i32, const BS: i32>(\n"
+"        out: &mut Tensor<f32, { [1, D] }>,\n"
+"        x: &Tensor<f32, { [-1, D] }>,\n"
+"        w: &Tensor<f32, { [D] }>,\n"
+"        eps: f32,\n"
+"    ) { /* tile-level implementation */ }\n"
+"\n"
+"    /// Matrix-vector multiply: out = x @ w^T\n"
+"    #[cutile::entry()]\n"
+"    pub fn matvec<const BN: i32, const BK: i32, const K: i32>(\n"
+"        out: &mut Tensor<f32, { [BN] }>,\n"
+"        x: &Tensor<f32, { [-1, K] }>,\n"
+"        w: &Tensor<f32, { [-1, K] }>,\n"
+"    ) { /* tile-level implementation */ }\n"
+"\n"
+"    /// Element-wise add: out = a + b\n"
+"    #[cutile::entry()]\n"
+"    pub fn add<const B: i32>(\n"
+"        out: &mut Tensor<f32, { [B] }>,\n"
+"        a: &Tensor<f32, { [-1] }>,\n"
+"        b: &Tensor<f32, { [-1] }>,\n"
+"    ) { /* tile-level implementation */ }\n"
+"}\n"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:86
+msgid "Model State"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:88
+msgid ""
+"Weights are shared across all forward calls. Buffers are pre-allocated once "
+"and reused every token — the graph replays into the same memory:"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:91
+msgid ""
+"struct LayerWeights {\n"
+"    norm_w: Arc<Tensor<f32>>,\n"
+"    wq: Arc<Tensor<f32>>,\n"
+"    wo: Arc<Tensor<f32>>,\n"
+"}\n"
+"\n"
+"struct LayerBuffers {\n"
+"    norm: Arc<Tensor<f32>>,\n"
+"    q: Arc<Tensor<f32>>,\n"
+"    o: Arc<Tensor<f32>>,\n"
+"    residual: Arc<Tensor<f32>>,\n"
+"}\n"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:108
+msgid "Building the Lazy Graph"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:110
+msgid "Build the forward pass as a lazy `DeviceOp` for graph capture:"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:112
+msgid ""
+"fn build_forward(\n"
+"    cfg: &Config,\n"
+"    weights: &[LayerWeights],\n"
+"    input: Arc<Tensor<f32>>,\n"
+"    buffers: Vec<LayerBuffers>,\n"
+") -> (impl DeviceOp<Output = ()>, SharedDeviceOp<Tensor<f32>>) {\n"
+"    let mut ops: Vec<BoxedDeviceOp<()>> = Vec::with_capacity(buffers."
+"len());\n"
+"    let mut hidden: SharedDeviceOp<Tensor<f32>> =\n"
+"        cuda_async::device_operation::shared(input);\n"
+"\n"
+"    for (w, bufs) in weights.iter().zip(buffers) {\n"
+"        // RMSNorm: hidden(1,d) × norm_w → norm(1,d)\n"
+"        let norm = rms_norm(\n"
+"            bufs.norm.try_partition([1, cfg.d]).expect(\"sole buffer "
+"owner\"),\n"
+"            hidden.clone().reshape(&[1, cfg.d]),\n"
+"            w.norm_w.clone(),\n"
+"            cfg.eps,\n"
+"        )\n"
+"        .generics(cfg.rms_generics())\n"
+"        .first()\n"
+"        .unpartition()\n"
+"        .shared();\n"
+"\n"
+"        // Q projection: norm @ wq^T → q\n"
+"        let q = matvec(\n"
+"            bufs.q.try_partition([cfg.bn]).expect(\"sole buffer owner\"),\n"
+"            norm.clone(),\n"
+"            w.wq.clone(),\n"
+"        )\n"
+"        .generics(cfg.mv_generics())\n"
+"        .first()\n"
+"        .unpartition()\n"
+"        .shared();\n"
+"\n"
+"        // O projection: q @ wo^T → o\n"
+"        let o = matvec(\n"
+"            bufs.o.try_partition([cfg.bn]).expect(\"sole buffer owner\"),\n"
+"            q.clone().reshape(&[1, cfg.d]),\n"
+"            w.wo.clone(),\n"
+"        )\n"
+"        .generics(cfg.mv_generics())\n"
+"        .first()\n"
+"        .unpartition()\n"
+"        .shared();\n"
+"\n"
+"        // Residual add: hidden + o → residual\n"
+"        let residual = add(\n"
+"            bufs.residual.try_partition([cfg.block]).expect(\"sole buffer "
+"owner\"),\n"
+"            hidden.clone().reshape(&[cfg.d]),\n"
+"            o.clone(),\n"
+"        )\n"
+"        .first()\n"
+"        .unpartition()\n"
+"        .shared();\n"
+"\n"
+"        hidden = residual.clone();\n"
+"\n"
+"        // Keep the layer's work in the graph; the fixed buffers hold the "
+"data.\n"
+"        ops.push(\n"
+"            zip!(norm, q, o, residual)\n"
+"                .map(|_| ())\n"
+"                .boxed(),\n"
+"        );\n"
+"    }\n"
+"\n"
+"    // DeviceOpVec produces Vec<()>; discard it so the capture yields "
+"CudaGraph<()>.\n"
+"    (DeviceOpVec::new(ops).map(|_| ()), hidden)\n"
+"}\n"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:183
+msgid "The combinators in `build_forward` have these roles:"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:185
+msgid ""
+"**`.shared()`** — Each intermediate result is shared so it can feed into "
+"both the next kernel and the final buffer collection. The underlying "
+"computation runs once; downstream consumers get `Arc::clone()`."
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:188
+msgid ""
+"**`.first()`** — Kernel launches return a tuple of all arguments. `.first()` "
+"extracts just the output (the `&mut Tensor` parameter)."
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:190
+msgid ""
+"**`try_partition`** — Converts `Arc<Tensor<T>>` into a `Partition` by "
+"proving sole ownership (Arc refcount == 1). It returns `Err` when the Arc "
+"has other owners; the `.expect(...)` above turns that into a panic. "
+"(`shared(...)` is `cuda_async::device_operation::shared`; it is not in the "
+"prelude.)"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:195
+msgid ""
+"**`DeviceOpVec`** — Collects boxed ops for each layer's graph work. Its "
+"output is `Vec<()>`, so the trailing `.map(|_| ())` is what makes the "
+"captured graph a `CudaGraph<()>`."
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:201
+msgid "Capturing the Graph"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:203
+msgid ""
+"`.graph_on(stream)` executes the operation once in CUDA's stream capture "
+"mode, recording all GPU work into a replayable graph:"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:206
+msgid ""
+"let input: Tensor<f32> = api::rand([cfg.d], None).sync_on(&stream)?;\n"
+"let input_arc: Arc<Tensor<f32>> = unsafe { input.into_shared_alias() };\n"
+"let buffers: Vec<_> = (0..cfg.n_layers)\n"
+"    .map(|_| LayerBuffers::allocate(cfg.d, &stream))\n"
+"    .collect::<Result<_, _>>()?;\n"
+"unsafe { stream.synchronize() }?;\n"
+"\n"
+"// Build lazy graph (no GPU work).\n"
+"let (forward_op, output_shared) = build_forward(&cfg, &weights, input_arc, "
+"buffers);\n"
+"\n"
+"// Capture: executes once, records everything, returns CudaGraph.\n"
+"let mut graph = forward_op.graph_on(stream.clone())?;\n"
+"\n"
+"// Retrieve the output from the capture execution.\n"
+"let output = output_shared.sync_on(&stream)?;\n"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:224
+msgid "After capture:"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:225
+msgid "`graph` holds the recorded CUDA graph, ready for replay."
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:226
+msgid ""
+"`input` is the fixed input buffer whose pointer is baked into the graph."
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:227
+msgid ""
+"`output` points to the final layer's residual buffer, which the graph "
+"rewrites on replay."
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:231
+msgid "The Module Pattern"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:233
+msgid "Implement `Module` to call the graph through `forward`:"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:235
+msgid ""
+"trait Module {\n"
+"    type Input: Send + ?Sized;\n"
+"    type Output: Send;\n"
+"    fn forward(&mut self, input: &Self::Input) -> Result<Self::Output, "
+"DeviceError>;\n"
+"}\n"
+"\n"
+"struct GraphModel {\n"
+"    graph: CudaGraph<()>,\n"
+"    input: Tensor<f32>,\n"
+"    output: Arc<Tensor<f32>>,\n"
+"}\n"
+"\n"
+"impl Module for GraphModel {\n"
+"    type Input = Tensor<f32>;\n"
+"    type Output = Arc<Tensor<f32>>;\n"
+"\n"
+"    fn forward(&mut self, input: &Self::Input) -> Result<Self::Output, "
+"DeviceError> {\n"
+"        // Copy new embedding into the baked-in input buffer.\n"
+"        self.graph.update(api::memcpy(&mut self.input, input))?;\n"
+"        // Replay the entire forward pass with a single driver call.\n"
+"        self.graph.launch().sync_on(self.graph.stream())?;\n"
+"        Ok(self.output.clone())\n"
+"    }\n"
+"}\n"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:262
+msgid "Each `forward` call:"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:264
+msgid ""
+"**`graph.update(memcpy(…))`** — Copies new input data into the pre-allocated "
+"input buffer. This runs on the graph's stream, so it completes before the "
+"graph launches."
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:267
+msgid ""
+"**`graph.launch().sync_on(…)`** — Replays all captured kernels. The GPU sees "
+"the full operation sequence and can schedule aggressively."
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:269
+msgid ""
+"**Returns `output.clone()`** — The output `Arc` points to the same device "
+"memory the graph wrote into. No copy needed."
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:274
+msgid "<a id=\"putting-it-together\"></a>"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:274
+msgid "<a id=\"putting-it-together\">"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:274
+msgid "</a>"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:275
+msgid "Inference loop"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:277
+msgid ""
+"fn main() -> Result<(), Error> {\n"
+"    let device = Device::new(0)?;\n"
+"    let stream = device.new_stream()?;\n"
+"\n"
+"    let cfg = Config { d: 2048, n_layers: 22, block: 128, bn: 16, bk: 16, "
+"eps: 1e-5 };\n"
+"\n"
+"    // Allocate weights (random for this example).\n"
+"    let weights: Vec<LayerWeights> = (0..cfg.n_layers)\n"
+"        .map(|_| Ok(LayerWeights {\n"
+"            norm_w: api::rand([cfg.d], None).sync_on(&stream)?.into(),\n"
+"            wq: api::rand([cfg.d, cfg.d], None).sync_on(&stream)?.into(),\n"
+"            wo: api::rand([cfg.d, cfg.d], None).sync_on(&stream)?.into(),\n"
+"        }))\n"
+"        .collect::<Result<_, Error>>()?;\n"
+"\n"
+"    // Build and capture.\n"
+"    let mut model = GraphModel::new(&cfg, &weights, &stream)?;\n"
+"\n"
+"    // Inference loop — each call is a single graph launch.\n"
+"    let n_tokens = 512;\n"
+"    for _ in 0..n_tokens {\n"
+"        let embedding: Tensor<f32> = api::rand([cfg.d], None)."
+"sync_on(&stream)?;\n"
+"        let _output = model.forward(&embedding)?;\n"
+"    }\n"
+"\n"
+"    Ok(())\n"
+"}\n"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:309
+msgid "Alternative: `CudaGraph::scope`"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:311
+msgid ""
+"The combinator approach above requires `Arc<Tensor<T>>` + `try_partition` "
+"for pre-allocated buffers. `CudaGraph::scope` provides an imperative "
+"alternative using `&mut` borrows:"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:315
+msgid ""
+"let mut input: Tensor<f32> = api::ones::<f32>(&[cfg.d]).sync_on(&stream)?;\n"
+"let mut buffers: Vec<LayerBuffers> = /* pre-allocate */;\n"
+"\n"
+"let graph = CudaGraph::scope(&stream, |s| {\n"
+"    for (w, bufs) in weights.iter().zip(buffers.iter_mut()) {\n"
+"        let hidden_2d = input.view(&[1, cfg.d])?;\n"
+"\n"
+"        s.record(rms_norm(\n"
+"            (&mut bufs.norm).partition([1, cfg.d]),\n"
+"            &hidden_2d,\n"
+"            &w.norm_w,\n"
+"            cfg.eps,\n"
+"        ).generics(cfg.rms_generics()))?;\n"
+"\n"
+"        s.record(matvec(\n"
+"            (&mut bufs.q).partition([cfg.bn]),\n"
+"            &bufs.norm,\n"
+"            &w.wq,\n"
+"        ).generics(cfg.mv_generics()))?;\n"
+"\n"
+"        let q_2d = bufs.q.view(&[1, cfg.d])?;\n"
+"        s.record(matvec(\n"
+"            (&mut bufs.o).partition([cfg.bn]),\n"
+"            &q_2d,\n"
+"            &w.wo,\n"
+"        ).generics(cfg.mv_generics()))?;\n"
+"\n"
+"        s.record(add(\n"
+"            (&mut bufs.residual).partition([cfg.block]),\n"
+"            &input,\n"
+"            &bufs.o,\n"
+"        ))?;\n"
+"\n"
+"        s.record(api::memcpy(&mut input, &bufs.residual))?;\n"
+"    }\n"
+"    Ok(())\n"
+"})?;\n"
+"\n"
+"graph.launch().sync_on(&stream)?;\n"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "Combinator (`.graph()`)"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "Scope (`CudaGraph::scope`)"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "Buffer ownership"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "`Arc<Tensor<T>>` + `try_partition`"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "`&mut Tensor<T>` borrows"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "Write-then-read"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "Via `.shared()` + cloning"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "Via `record()` releasing borrows"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "Failure mode"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "Runtime `Err` from `try_partition` (refcount != 1)"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "Compile error (borrow conflict)"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "Composability"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "Chains with `.then()`, `.map()`"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "Imperative sequential code"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:364
+msgid ""
+"`s.record(op)` only accepts operations that implement `GraphNode` — kernel "
+"launches and `memcpy`. Allocation ops (`api::zeros`, `dup`, etc.) are "
+"rejected at compile time because their addresses may change on graph replay."
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:370
+msgid "Use cases"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "Scenario"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "Use CUDA graphs?"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "Why"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "Repeat the same operation graph many times"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "**Yes**"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "Amortizes capture cost; eliminates per-launch overhead"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "Dynamic shapes per iteration"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "No"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "Captured graphs bake in tensor dimensions"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "Dynamic control flow per iteration"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "Captured graphs bake in the branch structure"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "Small number of iterations"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "Maybe"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "Capture cost (~1 execution) must be amortized"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "Profiling individual kernels"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "Graph replay shows as a single event"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:382
+msgid "Key Takeaways"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "Concept"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "What it means"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "**`DeviceOp` graph**"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "Lazy composition of GPU work — no execution until driven"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "**`.graph_on(stream)`**"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "Capture the entire operation into a replayable `CudaGraph`"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "**`CudaGraph::scope`**"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "Imperative graph capture with `&mut` borrows"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "**`graph.launch()`**"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid ""
+"Returns a `DeviceOp` that replays all captured work — execute with `."
+"sync_on()`, `.sync()`, or `.await`"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "**`graph.update(op)`**"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid ""
+"Run a DeviceOp on the graph's stream before replay (e.g., memcpy new input)"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "**Pre-allocated buffers**"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "Graph writes into fixed memory; vary inputs via `memcpy`"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "**`.shared()` in graphs**"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:0
+msgid "Each intermediate executes once during capture; clones share the result"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:395
+msgid ""
+"Weight tensors in `build_forward` are passed as `Arc<Tensor<T>>` because "
+"they're shared across layers via `.clone()`. In a sync context where weights "
+"are only read (not shared across spawned tasks), you could pass `&Tensor<T>` "
+"instead — the borrow checker ensures the weights outlive the graph capture. "
+"See [Tutorial 7](07-intro-to-async.md#borrowed-inputs-and-spawn-safety) for "
+"details on borrowed inputs."
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:405
+msgid "Exercise 1: Add a Second Graph"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:407
+msgid ""
+"Capture a second graph that computes the backward pass (or a simplified "
+"version). How would you sequence the forward and backward graphs?"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:410
+msgid "Exercise 2: Measure the Speedup"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:412
+msgid ""
+"Add timing around `graph.launch()` vs a non-graph path that rebuilds and "
+"executes the `DeviceOp` each iteration. How does the speedup scale with "
+"`n_layers`?"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:416
+msgid "Exercise 3: Dynamic Input Shapes"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:418
+msgid ""
+"The current approach bakes in the tensor dimensions at capture time. What "
+"would need to change to support variable sequence lengths? (Hint: consider "
+"capturing multiple graphs for common sizes.)"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:424
+msgid "Full Reference Examples"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:426
+msgid "The scope-based reference example with benchmarks:"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:428
+msgid "cargo run -p cutile-examples --example cuda_graphs\n"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:432
+msgid "The DeviceOp-combinator variant:"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:434
+msgid "cargo run -p cutile-examples --example cuda_graphs_deviceop\n"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:440
+msgid "See also"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:442
+msgid ""
+"[Device Operations](../guide/device-operations.md) — where CUDA graphs fit "
+"alongside sync and async execution"
+msgstr ""
+
+#: ../../../tutorials/10-cuda-graphs.md:443
+msgid ""
+"[Host API: CUDA Graph Integration](../reference/host-api.md#cuda-graph-"
+"integration) — `.graph_on(stream)` and `CudaGraph::scope` signatures"
+msgstr ""

@@ -13,22 +13,22 @@
     },
     "zh_CN" : 
     {
-      "branch" : "",
+      "branch" : "main",
       "commit" : 
       {
-        "date" : "",
-        "hash" : "",
-        "title" : ""
+        "date" : "2026-10-20 10:23:18 -0400",
+        "hash" : "e027ac324f663e8408c13c116d7dddd58d5e8daf",
+        "title" : "ci: Pin third-party action to SHAs (#1554)"
       }
     },
     "zh_TW" : 
     {
-      "branch" : "",
+      "branch" : "main",
       "commit" : 
       {
-        "date" : "",
-        "hash" : "",
-        "title" : ""
+        "date" : "2026-10-20 10:23:18 -0400",
+        "hash" : "e027ac324f663e8408c13c116d7dddd58d5e8daf",
+        "title" : "ci: Pin third-party action to SHAs (#1554)"
       }
     }
   },

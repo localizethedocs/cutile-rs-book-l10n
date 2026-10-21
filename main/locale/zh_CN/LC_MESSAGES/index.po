@@ -1,0 +1,135 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2025-2026, NVIDIA Corporation
+# This file is distributed under the same license as the cuTile Rust package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: cuTile Rust main\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-21 16:36+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../index.md:73
+msgid "Tutorials"
+msgstr ""
+
+#: ../../../index.md:92
+msgid "User Guide"
+msgstr ""
+
+#: ../../../index.md:110
+msgid "Reference"
+msgstr ""
+
+#: ../../../index.md:1
+msgid "cuTile Rust"
+msgstr ""
+
+#: ../../../index.md:3
+msgid "**cuTile Rust** compiles Rust tile programs into CUDA kernels."
+msgstr ""
+
+#: ../../../index.md:7
+msgid "Project Status"
+msgstr ""
+
+#: ../../../index.md:9
+msgid ""
+"This is an early-stage research project under active development. Expect "
+"bugs, incomplete features, and breaking API changes. Feedback from using it "
+"in your own projects helps us decide what to work on next."
+msgstr ""
+
+#: ../../../index.md:15
+msgid "Get Started"
+msgstr ""
+
+#: ../../../index.md:17
+msgid ""
+"use cutile::prelude::*;\n"
+"\n"
+"#[cutile::module]\n"
+"mod kernel {\n"
+"    use cutile::core::*;\n"
+"\n"
+"    #[cutile::entry()]\n"
+"    fn add<const B: i32>(\n"
+"        z: &mut Tensor<f32, { [B] }>,\n"
+"        x: &Tensor<f32, { [-1] }>,\n"
+"        y: &Tensor<f32, { [-1] }>,\n"
+"    ) {\n"
+"        let tx = x.load_like(z);\n"
+"        let ty = y.load_like(z);\n"
+"        z.store(tx + ty);\n"
+"    }\n"
+"}\n"
+"\n"
+"fn main() -> Result<(), Error> {\n"
+"    let x = api::ones::<f32>(&[1024]);\n"
+"    let y = api::ones::<f32>(&[1024]);\n"
+"    let z = api::zeros::<f32>(&[1024]).partition([128]);\n"
+"\n"
+"    let (_z, _x, _y) = kernel::add(z, x, y).sync()?;\n"
+"    Ok(())\n"
+"}\n"
+msgstr ""
+
+#: ../../../index.md:46
+msgid ""
+"The example separates host-side tensor setup from the device-side tile "
+"program. The host constructs tensors, partitions the mutable output into 128-"
+"element chunks, and launches the generated operation with `.sync()`."
+msgstr ""
+
+#: ../../../index.md:48
+msgid ""
+"In the kernel signature, `z` is the exclusive mutable output; `x` and `y` "
+"are shared read-only inputs. The kernel adds input tiles matching the output "
+"partition and stores the result in `z`."
+msgstr ""
+
+#: ../../../index.md:54
+msgid "What it gives you"
+msgstr ""
+
+#: ../../../index.md:60
+msgid "Ownership at the launch boundary"
+msgstr ""
+
+#: ../../../index.md:61
+msgid ""
+"Mutable tensors are partitioned into disjoint pieces before launch; "
+"immutable tensors are shared by `Arc`. The borrow checker covers GPU kernel "
+"arguments, not just host-side code."
+msgstr ""
+
+#: ../../../index.md:64
+msgid "Tile programs"
+msgstr ""
+
+#: ../../../index.md:65
+msgid ""
+"Tile kernels are written as single-threaded programs over tiles of data. The "
+"compiler maps tiles onto warps, blocks, and Tensor Cores; you don't manage "
+"shared memory or thread indices directly."
+msgstr ""
+
+#: ../../../index.md:68
+msgid "CUDA Tile IR compilation"
+msgstr ""
+
+#: ../../../index.md:69
+msgid ""
+"Tile kernels lower through CUDA Tile IR, NVIDIA's tile-level compiler IR, to "
+"GPU cubins. On B200, the safe API reaches 2.07 PFlop/s on persistent GEMM "
+"(96.4% of cuBLAS); the safe mapped kernel matches the raw-pointer Rust "
+"baseline within measurement noise."
+msgstr ""
