@@ -1,0 +1,522 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2025-2026, NVIDIA Corporation
+# This file is distributed under the same license as the cuTile Rust package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: cuTile Rust main\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-21 16:36+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../tutorials/12-dgx-spark-inference.md:1
+msgid "12. LLM Inference on DGX Spark"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:3
+msgid ""
+"DGX Spark's unified memory can hold Qwen3-32B in 16-bit precision. We'll run "
+"it with [Grout](https://github.com/huggingface/grout), an inference engine "
+"built on cuTile Rust, starting with the smaller Qwen3-4B model."
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:7
+msgid ""
+"The measurements below are from a DGX Spark (GB10, `sm_121`, 20 CPU cores, "
+"128 GB of unified LPDDR5X memory) running DGX OS with the 580 driver and "
+"CUDA 13.4. They use cuTile Rust 0.4.0 (tag `cutile-rs/v0.4.0` in the [cuda-"
+"rust repository](https://github.com/NVIDIA/cuda-rust)) and Grout at commit "
+"[`deb7427`](https://github.com/elibol/grout/commit/"
+"deb74274c731d4ca9e7f9b356a91892398498309)."
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:15
+msgid "Prerequisites"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:17
+msgid ""
+"The DGX OS image used here ships CUDA 13.0, which is too old for cuTile and "
+"lacks the Tile IR assembler. Install a current toolkit alongside 13.0:"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:20
+msgid ""
+"sudo apt-get install -y cuda-toolkit-13-4 cuda-tileiras-13-4\n"
+"sudo apt-get install -y clang libclang-dev cmake build-essential pkg-config\n"
+"curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --"
+"default-toolchain nightly\n"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:26
+msgid "Then point the toolchain at the new toolkit (add these to `~/.bashrc`):"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:28
+msgid ""
+"export CUDA_HOME=/usr/local/cuda-13.4\n"
+"export CUDA_TOOLKIT_PATH=$CUDA_HOME\n"
+"export PATH=$CUDA_HOME/bin:$HOME/.cargo/bin:$PATH\n"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:34
+msgid ""
+"`CUDA_TOOLKIT_PATH` takes precedence over `CUDA_HOME`. Setting it also "
+"overrides the `/usr/local/cuda-13` default in Grout's `.cargo/config.toml`."
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:37
+msgid "Check that both CUDA tools report release 13.4 and Cargo uses nightly:"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:39
+msgid ""
+"nvcc --version\n"
+"tileiras --version\n"
+"cargo --version\n"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:45
+msgid ""
+"The 580 driver is a CUDA 13.0 driver. CUDA's minor-version compatibility "
+"lets 13.x toolkits run on it, and the Tile IR assembler emits native "
+"`sm_121` code rather than PTX, so nothing in this tutorial needs a newer "
+"driver."
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:51
+msgid "Layout"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:53
+msgid ""
+"These commands keep the model directories and cuTile Rust checkout next to "
+"Grout:"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:55
+msgid ""
+"~/dev/\n"
+"  cuda-rust/     # CUDA Rust checkout at tag cutile-rs/v0.4.0\n"
+"  cutile-rs/     # symlink to cuda-rust/cutile-rs (Grout builds against it)\n"
+"  grout/         # the inference engine\n"
+"  hf_models/\n"
+"    qwen3_4b/\n"
+"    qwen3_32b/\n"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:65
+msgid ""
+"mkdir -p ~/dev && cd ~/dev\n"
+"git clone --branch cutile-rs/v0.4.0 https://github.com/NVIDIA/cuda-rust.git\n"
+"ln -s cuda-rust/cutile-rs cutile-rs\n"
+"git clone https://github.com/elibol/grout.git\n"
+"git -C grout checkout deb74274c731d4ca9e7f9b356a91892398498309\n"
+"pip install -U \"huggingface_hub[cli]\"\n"
+"hf download Qwen/Qwen3-4B  --local-dir hf_models/qwen3_4b    # about 8 GB\n"
+"hf download Qwen/Qwen3-32B --local-dir hf_models/qwen3_32b   # about 66 GB\n"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:76
+msgid ""
+"Grout's pinned commit depends on cuTile Rust 0.4.0. Its `[patch.crates-io]` "
+"uses the sibling `cutile-rs` path, which the symlink above resolves into the "
+"CUDA Rust checkout."
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:80
+msgid ""
+"Build Grout in release mode. On the Spark this takes well under a minute "
+"after the dependencies are compiled once:"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:83
+msgid "cd ~/dev/grout && cargo build --release\n"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:87
+msgid ""
+"This builds the inference binary. The autotuner requires the `benchmarks` "
+"feature; see [Autotuning](#autotuning) below."
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:92
+msgid "First run: Qwen3-4B"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:94
+msgid ""
+"cargo run --release -- \\\n"
+"  --model ../hf_models/qwen3_4b \\\n"
+"  --prompt \"Explain unified memory on DGX Spark in three sentences.\" \\\n"
+"  --max-new-tokens 200 --profile\n"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:101
+msgid ""
+"These runs use Grout's built-in tuning defaults. The pinned revision ships "
+"records for `sm_100` and `sm_120`; with no `benchmarks/tuning/sm_121/` "
+"directory, Grout uses the defaults without printing a warning."
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:105
+msgid ""
+"On the first run, cuTile compiles Grout's kernels from Rust through Tile IR "
+"to `sm_121` machine code and caches them on disk. Later runs load the "
+"compiled kernels from the cache."
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid "Qwen3-4B, 16-bit weights"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid "First run"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid "Warm run"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid "Model load"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid "9.9 s"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid "10.0 s"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid "Kernel compilation"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid "11.7 s (37 kernels)"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid "0 s (cache hits)"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid "Decode"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid "29.7 tokens/s"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid "29.5 tokens/s"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid "Peak memory in use"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid "15 GB"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:116
+msgid "Reading the weights from disk accounts for most of the model load time."
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:118
+msgid ""
+"`--profile` prints prefill and decode step averages. `GROUT_PROFILE_OPS=1` "
+"adds a per-operation table; `GROUT_PROFILE_SYNC_OPS=1` synchronizes after "
+"each operation to include GPU execution time. The table covers prefill and "
+"warm-up. Decode replays a CUDA graph, so its operations are not timed "
+"individually."
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:123
+msgid ""
+"GROUT_PROFILE_OPS=1 GROUT_PROFILE_SYNC_OPS=1 cargo run --release -- \\\n"
+"  --model ../hf_models/qwen3_4b \\\n"
+"  --prompt \"Explain unified memory on DGX Spark in three sentences.\" \\\n"
+"  --max-new-tokens 200 --profile\n"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:130
+msgid ""
+"Use these settings to inspect individual operations, then unset them when "
+"measuring throughput: synchronization changes execution timing."
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:136
+msgid "Qwen3-32B"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:138
+msgid ""
+"Qwen3-32B has 32.8 billion parameters, about 66 GB in 16-bit precision, plus "
+"a KV cache that grows with context length (roughly 9 GB at 32K tokens). Both "
+"fit in the Spark's 128 GB of unified memory."
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:142
+msgid ""
+"cargo run --release -- \\\n"
+"  --model ../hf_models/qwen3_32b \\\n"
+"  --prompt \"What is 2 + 2? Then explain why in one paragraph.\" \\\n"
+"  --max-new-tokens 64 --max-seq-len 4096 --profile\n"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid "Qwen3-32B, 16-bit weights"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid "Measured"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid "3.7 tokens/s"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid "Weights in memory"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid "66 GB"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:154
+msgid ""
+"Both models use the same 37 compiled kernels. Qwen3-32B reads more weight "
+"data for each generated token."
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:159
+msgid "Where the time goes"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:161
+msgid ""
+"Decoding one token requires reading every weight once. At 66 GB per token, "
+"3.7 tokens per second is about 245 GB/s of sustained memory traffic; the "
+"Spark's LPDDR5X peaks near 273 GB/s. For the 4B model, 8 GB per token at "
+"29.5 tokens per second is about 236 GB/s. In both cases decode runs at "
+"roughly 90% of the memory roofline."
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:166
+msgid ""
+"`GROUT_ATTN_BN_DECODE` sets Grout's decode attention tile size (default 32). "
+"The following runs varied it manually:"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid "`GROUT_ATTN_BN_DECODE`"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid "Qwen3-4B decode"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid "16"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid "29.1 tokens/s"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid "32"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid "64"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid "28.9 tokens/s"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:175
+msgid ""
+"Changing the tile size has little effect on decode: each token still "
+"requires the same weight data. **Prefill** is compute-bound and responds to "
+"tile shapes. Use a long prompt (thousands of tokens) and the per-kernel "
+"profiler to measure the effect of tuning."
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:180
+msgid ""
+"**Lower-precision weights** halve or quarter the bytes per token with 8-bit "
+"or 4-bit formats. The [NVFP4 tutorial](./11-nvfp4-inference.md) covers the "
+"kernels for 4-bit inference."
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:184
+msgid ""
+"Different tile sizes change the order of floating-point accumulation, which "
+"can change the token selected by greedy decoding when logits are nearly "
+"tied. The 16 and 64 runs produced the same text as each other, but diverged "
+"from the default after the second sentence."
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:189
+msgid "Autotuning"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:191
+msgid "Build the autotuner from the Grout checkout:"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:193
+msgid ""
+"cargo build --release --features benchmarks --bin grout_autotune\n"
+"target/release/grout_autotune --help\n"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:198
+msgid ""
+"For a prefill attention sweep, use `--site prefill_attention` and a `--"
+"prompt-dir` containing `pp_512.txt`, `pp_2048.txt`, and `pp_8192.txt`. "
+"Grout's `benchmarks/make_prompts.py` generates these files using the model's "
+"tokenizer; it requires the Python `transformers` package."
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:203
+msgid ""
+"The tuner writes records and trial logs under `benchmarks/tuning/sm_121/` by "
+"default. `--budget-min` limits search time per prompt-length bucket. "
+"Rerunning the same command resumes from the trial logs. If allocation "
+"recovery exits with code 3, rerun it in a fresh process."
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:208
+msgid ""
+"The measurements above use built-in defaults. Generate records on the Spark "
+"and compare timings with the defaults before adopting them. Keep the "
+"`sm_120` records in their own directory; those were tuned on an RTX 5090."
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:215
+msgid "Unified memory"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:217
+msgid ""
+"The Spark's CPU and GPU share physical memory through a coherent address "
+"space (ATS mode)."
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:220
+msgid ""
+"**Host memory is device memory.** A pageable host buffer's address is valid "
+"on the GPU: wrapping a `Vec` with `Tensor::from_foreign` and launching a "
+"kernel on it works. The driver's pointer-attribute query does not classify "
+"such pointers, so code that validates device pointers that way needs another "
+"check on this platform."
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:224
+msgid ""
+"**Readback into fresh pageable memory is slow.** Copying a 256 MB tensor to "
+"a newly allocated host `Vec` ran at 0.13 GB/s, against 18.6 GB/s for the "
+"host-to-device direction and 24 GB/s for a host `memcpy`. The page faults on "
+"the destination dominate. Reuse or pre-touch destination buffers, or use "
+"pinned host memory, when readback is on a hot path."
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:232
+msgid "Key takeaways"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid "Concept"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid "What it means on DGX Spark"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid "**First launch**"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid ""
+"Kernel compilation takes about 12 s on first use; later runs load from the "
+"disk cache"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid "**Memory capacity**"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid "128 GB of unified memory holds a 32B model in 16-bit precision"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid "**Decode roofline**"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid ""
+"Memory bandwidth limits tokens per second; both models run near 90% of that "
+"limit"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid "**Where tuning helps**"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid ""
+"Prefill and other compute-bound phases; decode tile sizes have little effect "
+"in 16-bit"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid "**Unified memory**"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:0
+msgid ""
+"Host pointers work on the device; fresh pageable readback is the slow path"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:244
+msgid "See also"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:246
+msgid ""
+"[NVFP4 inference](./11-nvfp4-inference.md) — kernels for lower-precision "
+"inference"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:247
+msgid "[Performance](../guide/performance.md) — kernel tuning"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:248
+msgid ""
+"[JIT Compilation](../guide/jit-compilation.md) — compilation and kernel "
+"caching"
+msgstr ""
+
+#: ../../../tutorials/12-dgx-spark-inference.md:249
+msgid ""
+"[Interoperability](../guide/interoperability.md) — `Tensor::from_foreign` "
+"and externally owned memory"
+msgstr ""

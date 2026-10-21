@@ -1,0 +1,78 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2025-2026, NVIDIA Corporation
+# This file is distributed under the same license as the cuTile Rust package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: cuTile Rust main\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-21 16:36+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../README.md:5
+msgid "The cuTile Rust Book"
+msgstr ""
+
+#: ../../../README.md:7
+msgid "Source for the cuTile Rust Book. To build and serve it locally:"
+msgstr ""
+
+#: ../../../README.md:9
+msgid ""
+"make setup\n"
+"source .venv/bin/activate\n"
+"make livehtml\n"
+msgstr ""
+
+#: ../../../README.md:15
+msgid "The local server runs at `http://127.0.0.1:8000/` by default."
+msgstr ""
+
+#: ../../../README.md:17
+msgid "For local development, use the single-version book build:"
+msgstr ""
+
+#: ../../../README.md:19
+msgid "make livehtml\n"
+msgstr ""
+
+#: ../../../README.md:23
+msgid "or, from the repository root:"
+msgstr ""
+
+#: ../../../README.md:25
+msgid "scripts/run_book.sh serve\n"
+msgstr ""
+
+#: ../../../README.md:29
+msgid ""
+"GitHub Pages uses the versioned site build instead. To run the same build "
+"entry point locally, run from the repository root:"
+msgstr ""
+
+#: ../../../README.md:32
+msgid "scripts/build_versioned_book.sh\n"
+msgstr ""
+
+#: ../../../README.md:36
+msgid "The generated GitHub Pages site is written to `_site/`."
+msgstr ""
+
+#: ../../../README.md:38
+msgid "Related Documentation"
+msgstr ""
+
+#: ../../../README.md:40
+msgid "**API Docs**: Run `cargo doc --open` from the project root"
+msgstr ""
+
+#: ../../../README.md:41
+msgid "**Examples**: See the `cutile-examples/` directory"
+msgstr ""

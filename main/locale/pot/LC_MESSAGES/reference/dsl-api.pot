@@ -1,0 +1,2991 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2025-2026, NVIDIA Corporation
+# This file is distributed under the same license as the cuTile Rust package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: cuTile Rust main\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-21 16:36+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../reference/dsl-api.md:1
+msgid "DSL API"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:3
+msgid "**Status**: This API is under active development. Expect changes."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:5
+msgid ""
+"The cuTile Rust DSL lets you write GPU kernel code in Rust syntax that "
+"compiles to [CUDA Tile IR](https://docs.nvidia.com/cuda/tile-ir/latest/). "
+"Inside a `#[cutile::module]` block, you write Rust-like code using the types "
+"and operations documented here. The compiler translates this code into Tile "
+"IR bytecode, then invokes `tileiras` to produce GPU code for NVIDIA GPUs."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:7
+msgid ""
+"All DSL types and functions are available via `use cutile::core::*;` inside "
+"a module block."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:11
+msgid "Functions"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:13
+msgid "Modules and Entry Points"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:15
+msgid ""
+"GPU kernels are defined inside `#[cutile::module]` blocks. Each function "
+"marked with `#[cutile::entry()]` becomes a launchable kernel."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:17
+msgid ""
+"#[cutile::module]\n"
+"mod my_kernels {\n"
+"    use cutile::core::*;\n"
+"\n"
+"    #[cutile::entry()]\n"
+"    fn add<const S: [i32; 1]>(\n"
+"        output: &mut Tensor<f32, S>,       // mutable: partitioned output\n"
+"        a: &Tensor<f32, { [-1] }>,         // immutable: read-only input\n"
+"        b: &Tensor<f32, { [-1] }>,         // immutable: read-only input\n"
+"    ) {\n"
+"        let pid = program_id(0);\n"
+"        let tile_a: Tile<f32, S> = a.load_tile(shape!(S), [pid]);\n"
+"        let tile_b: Tile<f32, S> = b.load_tile(shape!(S), [pid]);\n"
+"        output.store(tile_a + tile_b);\n"
+"    }\n"
+"}\n"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:36
+msgid "**Entry point parameters:**"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Parameter type"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Description"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Host-side type"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`&mut Tensor<E, S>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Mutable output (must be first)"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`Partition<Tensor<E>>` or `Partition<&mut Tensor<E>>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`&Tensor<E, S>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Immutable input"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`&Tensor<E>`, `Arc<Tensor<E>>`, `Tensor<E>`, or `&TensorView<E>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`f32`, `i32`, etc."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Scalar value"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Same type, passed by value"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`*mut T`, `*const T`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Raw device pointer"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`DevicePointer<T>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:45
+msgid ""
+"**Convention:** The mutable output tensor is always the first parameter."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:47
+msgid "**Entry attributes:**"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Attribute"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Type"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`print_ir = true`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "bool"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"Print two artifacts at JIT compile time: the generated entry point wrapper "
+"(Rust) and the compiled Tile IR text"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`unchecked_accesses`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"**Unsafe waiver.** Emit *no* safety checks — no verification in the kernel, "
+"at launch, or at compile time. Requires `unsafe fn`. The caller asserts "
+"correctness"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`deny_in_kernel_checks`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"**Safe strict.** Error at compile time if any safety check would remain in "
+"the kernel (i.e. cannot be discharged at compile time or hoisted to launch). "
+"Checks are still fully verified — this only forbids ones that cost device "
+"registers. The diagnostic names the check that could not leave the kernel "
+"and why"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`preconditions = ( ... )`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "expr"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"Declared shape facts, verified by the generated launcher before the kernel "
+"runs and assumed by the compiler when discharging safety checks. Two forms: "
+"`dim(a, i) == dim(b, j)` (two axis extents are equal) and `dim(t, k) % d == "
+"0` (an axis extent is a multiple of the integer literal `d`). A launch whose "
+"shapes violate a declared fact is rejected with an error naming it"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`optimization_hints = expr`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"Pass an `OptimizationHints` expression to the compiler for target-specific "
+"optimization"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`dump_mlir_dir = \"path\"`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "string"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Write the compiled Tile IR text to a file in the specified directory"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:58
+msgid ""
+"`unchecked_accesses` disables verification and requires `unsafe`. "
+"`deny_in_kernel_checks` keeps verification but rejects checks that remain "
+"inside the kernel."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:62
+msgid ""
+"#[cutile::entry(print_ir = true)]\n"
+"fn debug_kernel<const S: [i32; 1]>(output: &mut Tensor<f32, S>) { ... }\n"
+"\n"
+"// Unsafe: skip all checks, no verification.\n"
+"#[cutile::entry(unchecked_accesses)]\n"
+"unsafe fn fast_kernel<const S: [i32; 1]>(output: &mut Tensor<f32, S>) "
+"{ ... }\n"
+"\n"
+"// Safe + strict: fail to compile if any safety check would stay in the "
+"kernel.\n"
+"#[cutile::entry(deny_in_kernel_checks = true)]\n"
+"fn zero_check_kernel<const S: [i32; 1]>(output: &mut Tensor<f32, S>) "
+"{ ... }\n"
+"\n"
+"#[cutile::entry(dump_mlir_dir = \"/tmp/cutile-ir\")]\n"
+"fn traced_kernel<const S: [i32; 1]>(output: &mut Tensor<f32, S>) { ... }\n"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:78
+msgid "**Module attributes:**"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`tile_rust_crate = true`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"Internal: used when defining kernels inside the cutile crate itself (changes "
+"import paths from `cutile::` to `crate::`)"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:84
+msgid ""
+"#[cutile::module]                          // standard user module\n"
+"mod my_kernels { ... }\n"
+"\n"
+"#[crate::module(tile_rust_crate = true)]   // internal to cutile crate\n"
+"pub mod creation { ... }\n"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:92
+msgid "Entry Points vs Device Functions"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:94
+msgid ""
+"Functions marked with `#[cutile::entry()]` are compiled as GPU kernel entry "
+"points — they can be launched from the host with a grid configuration."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:96
+msgid ""
+"Unmarked functions inside a module are **device functions** — they are "
+"inlined at the call site during compilation. They cannot be launched "
+"directly but can be called from entry points or other device functions."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:98
+msgid ""
+"#[cutile::module]\n"
+"mod my_kernels {\n"
+"    use cutile::core::*;\n"
+"\n"
+"    // Device function: inlined into callers\n"
+"    fn relu<const S: [i32; 1]>(x: Tile<f32, S>) -> Tile<f32, S> {\n"
+"        let zero: Tile<f32, S> = constant(0.0f32, x.shape());\n"
+"        select(gt_tile(x, zero), x, zero)\n"
+"    }\n"
+"\n"
+"    #[cutile::entry()]\n"
+"    fn apply_relu<const S: [i32; 1]>(\n"
+"        output: &mut Tensor<f32, S>,\n"
+"        input: &Tensor<f32, { [-1] }>,\n"
+"    ) {\n"
+"        let pid = program_id(0);\n"
+"        let tile: Tile<f32, S> = input.load_tile(shape!(S), [pid]);\n"
+"        output.store(relu(tile));  // device function call, inlined\n"
+"    }\n"
+"}\n"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:121
+msgid "Inter-Module Device Function Calls"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:123
+msgid ""
+"Device functions defined in one `#[cutile::module]` can be called from entry "
+"points in another module. When Module B does `use crate::activations::*`, "
+"two things happen:"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:127
+msgid ""
+"**Rust's type checker** resolves the function signatures at compile time."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:128
+msgid ""
+"**The macro** records Module A as a dependency of Module B, including Module "
+"A's AST in the collected module list for JIT compilation."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:131
+msgid ""
+"At JIT time, the compiler sees all dependent module ASTs and inlines device "
+"functions from any of them into the entry point."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:134
+msgid ""
+"Each module is identified by its fully-qualified path (via `module_path!"
+"()`), so shared dependencies like `cutile::core` are automatically "
+"deduplicated even when imported by multiple modules."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:138
+msgid ""
+"/// Module A: reusable activation device functions (no entry points).\n"
+"#[cutile::module]\n"
+"mod activations {\n"
+"    use cutile::core::*;\n"
+"\n"
+"    pub fn relu<const S: [i32; 1]>(x: Tile<f32, S>) -> Tile<f32, S> {\n"
+"        let zero: Tile<f32, S> = constant(0.0f32, x.shape());\n"
+"        max_tile(x, zero)\n"
+"    }\n"
+"\n"
+"    pub fn square<const S: [i32; 1]>(x: Tile<f32, S>) -> Tile<f32, S> {\n"
+"        x * x\n"
+"    }\n"
+"}\n"
+"\n"
+"/// Module B: kernels that call device functions from Module A.\n"
+"#[cutile::module]\n"
+"mod my_kernels {\n"
+"    use cutile::core::*;\n"
+"    use crate::activations::{relu, square};  // import from Module A\n"
+"\n"
+"    #[cutile::entry()]\n"
+"    fn apply_relu_square<const S: [i32; 1]>(\n"
+"        output: &mut Tensor<f32, S>,\n"
+"        input: &Tensor<f32, { [-1] }>,\n"
+"    ) {\n"
+"        let pid = program_id(0);\n"
+"        let tile: Tile<f32, S> = input.load_tile(shape!(S), [pid]);\n"
+"        let activated: Tile<f32, S> = relu(tile);   // inlined from Module "
+"A\n"
+"        output.store(square(activated));             // inlined from Module "
+"A\n"
+"    }\n"
+"}\n"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:173
+msgid "See `cutile-examples/examples/inter_module.rs` for a runnable version."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:175
+msgid "`cutile::core` internals"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:177
+msgid ""
+"`cutile::core` (defined in `_core.rs`) is itself a `#[cutile::module]` "
+"containing the built-in DSL operations. When you write `use cutile::core::*;"
+"`, the macro records it as a dependency and includes its AST. The JIT "
+"compiler then resolves calls to `constant`, `iota`, `mma`, `reduce_sum`, "
+"etc. from core's AST and inlines them into your entry point — exactly the "
+"same mechanism as user-defined inter-module calls."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:186
+msgid "Types"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:188
+msgid "Tile"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:190
+msgid ""
+"`Tile<E: ElementType, const S: [i32; N]>` — A multi-dimensional array of GPU "
+"values. This is the fundamental compute type. Tiles are register-resident "
+"and processed in parallel by all threads in a warp/block."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:192
+msgid ""
+"// Shapes are const generics\n"
+"let a: Tile<f32, { [128] }>;          // 1D: 128 f32 elements\n"
+"let b: Tile<f32, { [16, 16] }>;       // 2D: 16x16 matrix\n"
+"let c: Tile<i32, { [4, 8, 2] }>;      // 3D\n"
+"\n"
+"// Scalar tile (rank 0)\n"
+"let s: Tile<f32, { [] }>;\n"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:202 ../../../reference/dsl-api.md:228
+msgid "**Methods:**"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:203
+msgid "`tile.shape()` — Returns the tile's `Shape<S>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:204
+msgid "`tile.broadcast(shape)` — Broadcast to a larger shape"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:205
+msgid "`tile.reshape(shape)` — Reshape (must preserve element count)"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:206
+msgid "`tile.transpose()` — Transpose a rank-2 tile"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:208
+msgid ""
+"**Arithmetic operators:** `+`, `-`, `*`, `/` are overloaded for element-wise "
+"operations between tiles of the same shape and type. Integer `/` and `%` "
+"follow Rust semantics: the quotient truncates toward zero (`-7 / 2 == -3`) "
+"and the remainder takes the dividend's sign (`-7 % 2 == -1`); unsigned "
+"element types divide as unsigned. Use `ceil_div` for a quotient rounded "
+"toward positive infinity."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:210
+msgid ""
+"let z: Tile<f32, { [128] }> = a + b;     // element-wise add\n"
+"let w: Tile<f32, { [128] }> = a * b - c; // chained arithmetic\n"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:215
+msgid "Tensor"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:217
+msgid ""
+"`Tensor<E: ElementType, const S: [i32; N]>` — A device-side tensor view. "
+"Represents memory that lives in GPU global memory. Unlike `Tile`, tensors "
+"must be loaded/stored explicitly."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:219
+msgid ""
+"Static dimensions are known at compile time; dynamic dimensions are marked "
+"with `-1`:"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:221
+msgid ""
+"fn kernel(\n"
+"    output: &mut Tensor<f32, { [128, 128] }>,  // static: 128x128\n"
+"    input: &Tensor<f32, { [-1, -1] }>,          // dynamic: shape provided "
+"at runtime\n"
+")\n"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:229
+msgid "`tensor.shape()` — Returns the tensor's `Shape<S>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:230
+msgid ""
+"`tensor.load()` — Load the entire tile (only for `&mut Tensor`, loads output "
+"tile)"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:231
+msgid "`tensor.store(tile)` — Store a tile to the tensor"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:232
+msgid ""
+"`tensor.load_tile(shape, [indices])` — Load a tile at a specific partition "
+"index"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:233
+msgid ""
+"`tensor.partition(shape)` — Create a `Partition` view for block-indexed "
+"loading"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:234
+msgid ""
+"`tensor.partition_permuted(shape, dim_map)` — Create a permuted `Partition` "
+"view"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:235
+msgid ""
+"`tensor.partition_mut(shape)` — Create a mutable `PartitionMut` view "
+"(requires `&mut Tensor`; safe because every unproven store through the view "
+"is itself `unsafe`)"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:236
+msgid ""
+"`unsafe tensor.partition_full_mut(shape)` — Create a mutable `PartitionMut` "
+"view over the full tensor, without the tile-block offset, for schedule-"
+"driven kernels"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:238
+msgid "Partition / PartitionMut"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:240
+msgid ""
+"`Partition<'a, E, const D: [i32; N]>` — A read-only partitioned view of a "
+"tensor, dividing it into tiles indexed by program ID."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:242
+msgid "`PartitionMut<'a, E, const D: [i32; N]>` — A mutable partitioned view."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:244
+msgid ""
+"let part: Partition<f32, { [128, 128] }> = input.partition(shape![128, "
+"128]);\n"
+"let tile: Tile<f32, { [128, 128] }> = part.load([pid_m, pid_n]);\n"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:249
+msgid "Shape / Array"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:251
+msgid ""
+"`Shape<const D: [i32; N]>` — A compile-time shape descriptor. Created with "
+"`shape!`:"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:253
+msgid ""
+"let shape: Shape<{ [128, 64] }> = shape![128, 64];\n"
+"let shape: Shape<S> = tensor.shape();\n"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:258
+msgid ""
+"`Array<const D: [i32; N]>` — A compile-time array (used for strides and "
+"indices)."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:260
+msgid "Const Generic Array (CGA) Syntax"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:262
+msgid ""
+"Shapes can use literal dimensions, scalar const generics, or a const generic "
+"array (`const S: [i32; N]`):"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:265
+msgid "**1. Explicit values** — when dimensions are known literals:"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:267
+msgid ""
+"fn kernel(\n"
+"    output: &mut Tensor<f32, { [128, 64] }>,   // fixed 128x64\n"
+"    input: &Tensor<f32, { [-1, -1] }>,          // dynamic (runtime) shape\n"
+")\n"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:274
+msgid ""
+"**2. Const generic parameters** — when dimensions are specified at launch "
+"time:"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:276
+msgid ""
+"fn gemm<const BM: i32, const BN: i32, const BK: i32>(\n"
+"    output: &mut Tensor<f32, { [BM, BN] }>,    // shape from generics\n"
+"    a: &Tensor<f32, { [-1, -1] }>,\n"
+")\n"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:283
+msgid ""
+"**3. Const generic array (CGA)** — when the entire shape is a single generic "
+"parameter:"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:285
+msgid ""
+"fn add<const S: [i32; 1]>(                      // S is the whole shape\n"
+"    output: &mut Tensor<f32, S>,\n"
+"    input: &Tensor<f32, { [-1] }>,\n"
+")\n"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:292
+msgid ""
+"In `const S: [i32; N]`, the rank `N` must be a literal fixed at definition "
+"time. It cannot itself be generic, so this form cannot make one kernel work "
+"for both 1D and 2D tensors:"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:296
+msgid ""
+"// NOT supported: generic rank\n"
+"fn add<const N: usize, const S: [i32; N]>(output: &mut Tensor<f32, S>) "
+"{ ... }\n"
+"\n"
+"// Instead, write separate kernels per rank:\n"
+"fn add_1d<const S: [i32; 1]>(output: &mut Tensor<f32, S>) { ... }\n"
+"fn add_2d<const S: [i32; 2]>(output: &mut Tensor<f32, S>) { ... }\n"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:305
+msgid "**When to use which:**"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Pattern"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Use when"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`{ [128, 64] }`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Dimensions are fixed literals"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`{ [BM, BN] }`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Each dimension is an independent generic (e.g., GEMM tile sizes)"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`const S: [i32; 1]`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "The whole shape is generic but rank is known"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`{ [-1] }`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Dimension is dynamic (provided at runtime by the host)"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:314
+msgid ""
+"Dynamic dimensions (`-1`) are resolved at runtime from the tensor's actual "
+"shape. Static dimensions are baked into the compiled kernel. Mixing is "
+"allowed: `{ [-1, 128] }` means \"dynamic first axis, static second axis.\""
+msgstr ""
+
+#: ../../../reference/dsl-api.md:316
+msgid "PointerTile"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:318
+msgid ""
+"`PointerTile<P: Pointer, const D: [i32; N]>` — A tile of device pointers. "
+"Used for scatter/gather and atomic operations."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:320
+msgid ""
+"let ptr: PointerTile<*mut f32, { [] }> = pointer_to_tile(raw_ptr);\n"
+"let offset_ptrs: PointerTile<*mut f32, { [128] }> = ptr.broadcast(shape!"
+"[128]).offset_tile(offsets);\n"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:325
+msgid "Token"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:327
+msgid ""
+"`Token` — An ordering token for memory operations. Tokens enforce ordering "
+"between loads and stores without requiring full barriers."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:329
+msgid ""
+"let token: Token = new_token_unordered();\n"
+"let joined: Token = join_tokens(&[token_a, token_b]);\n"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:334
+msgid "ElementType"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:336
+msgid "Trait implemented by all scalar types usable in tiles:"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`f16`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "IEEE 754 half-precision"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`bf16`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Brain floating-point"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`f32`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Single-precision"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`f64`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Double-precision"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`i8`, `i16`, `i32`, `i64`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Signed integers"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`u8`, `u16`, `u32`, `u64`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Unsigned integers"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`bool`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Boolean"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`tf32`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "TensorFloat-32 (NVIDIA)"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`f8e4m3fn`, `f8e5m2`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "FP8 (storage only; convert to `f16`/`f32` for compute)"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`f8e8m0fnu`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "FP8 scale format for block-scaled low-precision MMA"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`f4e2m1fn`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Logical FP4 E2M1 tile element; unpack from packed storage before MMA"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`f4e2m1fnx2`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"Byte-addressable packed storage for two `f4e2m1fn` values; unpack before MMA"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`i4`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"Tile IR 4-bit signless integer type for quantization and pack/unpack paths"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:354
+msgid ""
+"`f4e2m1fn` and `i4` are sub-byte Tile IR element types. Use `f4e2m1fnx2` or "
+"`u8` for byte-addressable packed FP4 tensor storage at host and kernel "
+"boundaries, then unpack to logical `f4e2m1fn` tiles before block-scaled MMA. "
+"`i4` is not the NVFP4 type and is not a supported high-level integer MMA "
+"operand in cuTile Rust today."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:362
+msgid "Operations"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:364
+msgid "Tile IR Operation Mapping"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:366
+msgid ""
+"The functions in this reference are the Rust DSL surface for [CUDA Tile IR "
+"operations](https://docs.nvidia.com/cuda/tile-ir/latest/sections/operations."
+"html). Most low-level operations in `cutile::core` map directly to a "
+"`cuda_tile.*` operation. The Rust name is usually either the Tile IR "
+"operation name without the `cuda_tile.` prefix, or a small wrapper with a "
+"Rust-oriented name and type signature."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:373
+msgid "Examples:"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Rust DSL surface"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Tile IR operation family"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"`constant`, `iota`, `broadcast`, `reshape`, `transpose`, `permute`, `cat`, "
+"`extract`, `select`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"Core tile ops such as `cuda_tile.constant`, `cuda_tile.iota`, `cuda_tile."
+"broadcast`, `cuda_tile.reshape`, `cuda_tile.permute`, `cuda_tile.cat`, "
+"`cuda_tile.extract`, `cuda_tile.select`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"`addf`, `mulf`, `fma`, `exp`, `sqrt`, `maxf`, `cmpf` and operator overloads"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"Floating-point ops such as `cuda_tile.addf`, `cuda_tile.mulf`, `cuda_tile."
+"fma`, `cuda_tile.exp`, `cuda_tile.sqrt`, `cuda_tile.maxf`, `cuda_tile.cmpf`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"`addi`, `muli`, `shli`, `shri`, `andi`, `ori`, `xori`, `cmpi` and operator "
+"overloads"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"Integer and bitwise ops such as `cuda_tile.addi`, `cuda_tile.muli`, "
+"`cuda_tile.shli`, `cuda_tile.andi`, `cuda_tile.cmpi`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"`convert_tile`, `bitcast`, `exti`, `trunci`, `int_to_ptr`, `ptr_to_int`, "
+"`ptr_to_ptr`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"Conversion ops such as `cuda_tile.bitcast`, `cuda_tile.exti`, `cuda_tile."
+"trunci`, `cuda_tile.int_to_ptr`, `cuda_tile.ptr_to_int`, `cuda_tile."
+"ptr_to_ptr`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`pack`, `unpack`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"Rank-1 byte packing and unpacking ops such as `cuda_tile.pack` and "
+"`cuda_tile.unpack`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`Tile<f4e2m1fn, ...>::pack`, `Tile<f4e2m1fnx2, ...>::unpack`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"Rust helpers that flatten shaped FP4 tiles, call rank-1 `cuda_tile.pack`/"
+"`cuda_tile.unpack`, and reshape the result"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"`load_ptr_tko`, `store_ptr_tko`, `atomic_rmw_tko`, `atomic_cas_tko`, "
+"`new_token_unordered`, `join_tokens`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"Memory, atomic, and token ops such as `cuda_tile.load_ptr_tko`, `cuda_tile."
+"store_ptr_tko`, `cuda_tile.atomic_rmw_tko`, `cuda_tile.atomic_cas_tko`, "
+"`cuda_tile.make_token`, `cuda_tile.join_tokens`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"`load_like`/`load_tile_like`, `tensor.load_tile`, `tensor.store`, partition "
+"and tensor view helpers"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"View ops such as `cuda_tile.load_view_tko`, `cuda_tile.store_view_tko`, "
+"`cuda_tile.make_tensor_view`, `cuda_tile.make_partition_view`, plus compiler-"
+"generated shape/stride plumbing"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"`assume_div_by`, `assume_bounds_*`, `cuda_tile_print!`, `cuda_tile_assert!`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"Compiler and debugging ops such as `cuda_tile.assume`, `cuda_tile."
+"print_tko`, and `cuda_tile.assert`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:387
+msgid ""
+"Some Tile IR operations are intentionally compiler-owned rather than public "
+"DSL functions. `cuda_tile.module`, `cuda_tile.entry`, `cuda_tile.return`, "
+"and control-flow operations are generated from Rust modules, entry "
+"attributes, `return`, `if`, `for`, `loop`, `while`, `break`, and `continue` "
+"syntax. Tile IR 13.4 additionally permits a kernel `return` inside `loop`/"
+"`while`, including a conditional branch within that loop. This exits the "
+"kernel, not just the loop. It is not supported inside an inlined helper or "
+"beneath any `for` loop. Other nested returns remain compile errors; guard "
+"the remaining statements with the condition instead. `break` inside `for` is "
+"also a compile error (`cuda_tile.for` cannot exit early; use `while`/"
+"`loop`). `continue` is supported in every loop form."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:399
+msgid ""
+"Tile IR attributes such as memory ordering, memory scope, comparison "
+"predicate, rounding mode, overflow behavior, and flush-to-zero mode are "
+"represented as Rust marker types and traits where possible. This lets the "
+"Rust type checker reject unsupported attribute combinations before the JIT "
+"compiler lowers the operation."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:405
+msgid "Raw Tile IR versioned surface"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:407
+msgid ""
+"The raw intrinsics live in `cutile::core`; view constructors and their types "
+"also live in `cutile::tileir`. They are for callers that can uphold the "
+"documented unsafe invariants. Existing convenience APIs remain unchanged. "
+"The JIT checks both the selected assembler's bytecode version and the actual "
+"target architecture. Type, attribute and operand-configuration requirements "
+"apply even when an operation itself predates them."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "API / option"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Requires"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Meaning"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`unsafe insert(source, destination, indices)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "13.4"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"Replace one sub-tile; one scalar i32 index per axis, in units of the source "
+"tile"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`unsafe fpowi(base, exponent)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"Signed integer exponent tile with the same shape; at most 32-bit exponents"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`unsafe fpowf(base, exponent)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "13.2"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Alias for the existing floating-point `pow` operation"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`unsafe gdc_launch_dependents_tko(Option<Token>)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Signal that dependent grids may start; does not itself publish memory"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`unsafe gdc_wait_tko(Option<Token>)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"Wait for dependency completion; chain subsequent dependent memory operations "
+"to its result token"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`unsafe memory_fence_alias_tko(token)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Establish the Tile IR alias fence required when changing access paths"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`unsafe alloca(num_elem, alignment, allocation::Local/Global)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "13.3"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"Per-tile-block allocation; compile-time nonnegative count and power-of-two "
+"alignment"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`unsafe ftoi_saturating(tile, saturating::Enabled/Disabled)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "13.4 if enabled"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Float-to-int with `NearestIntToZero`; saturation is opt-in"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`unsafe ptr_with_attr_none(pointer_tile)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"Explicit `ptr_attr<none>`, distinct from absent classification; inherited by "
+"derived views"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`unsafe mmaf_with_fast_acc(a, b, accumulator, fast_acc)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "13.3 if enabled"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"Explicit `fast_acc::Enabled/Disabled`; normal MMA type/shape constraints "
+"apply"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`unsafe exp_with_rounding(tile, rounding)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "13.3 for Approx"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`rounding::Full` or f32 `rounding::Approx`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`unsafe tanh_with_rounding(tile, rounding)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`rounding::NearestIntToZero`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Float-to-integer rounding mode"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`rounding::NearestAway`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"Float conversion mode, only for supported source/destination combinations"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`f8e5m3fnu`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "13.4 and sm_107+"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Unsigned scale format; scaled MMA with this scale type requires sm_107"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:432
+msgid ""
+"`load_view_raw`, `store_view_raw`, and `atomic_red_view_raw` accept "
+"partition, gather/scatter, or strided views. The latter two view types "
+"require 13.3; view atomic reduction also requires 13.3 and an unpadded "
+"partition or strided view. Indices are an array or tuple in tensor-axis "
+"order; a gather/scatter view's sparse axis takes a rank-one integer tile, "
+"and its other axes take scalar i32 indices. Padding supports `None`, `Zero`, "
+"`Nan`, `PosInf`, and `NegInf` where the element type permits it."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:440
+msgid ""
+"let (value, done): (Tile<f32, {[4]}>, Token) = unsafe {\n"
+"    load_view_raw(&view, [0i32], None, ordering::Weak, scope::Device,\n"
+"        tma::Disabled, None, [false], shape![4])\n"
+"};\n"
+"let stored = unsafe {\n"
+"    store_view_raw(&view, value, [0i32], Some(done), ordering::Weak,\n"
+"        scope::Device, tma::Disabled, None, [false])\n"
+"};\n"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:451
+msgid ""
+"These calls expose optional input tokens, ordering/scope, and (for loads and "
+"stores) TMA and latency hints. Each `inbounds` boolean corresponds to one "
+"index; any `true` requires 13.4 and promises that axis is in bounds. False "
+"does not make a raw unpadded access safe. The caller must ensure valid live "
+"storage, alignment, non-racing accesses, and all required token "
+"dependencies. Raw stores do not establish exclusive ownership through their "
+"`&view` argument."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:458
+msgid ""
+"`assume_div_by_raw(value, divisor: u64, every: Option<i64>, along: "
+"Option<i64>)`, `assume_bounds_raw(value, lower: Option<i64>, upper: "
+"Option<i64>)`, and `assume_same_elements_raw(value, groups: [i64; N])` "
+"expose the full-width, arbitrary-rank predicates on 13.2+. They are unsafe "
+"promises, not runtime checks. A divisor must be a power of two no greater "
+"than 2^62; `every` and `along` must be supplied together. Bounds must fit "
+"the signed operand width."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:465
+msgid ""
+"On 13.3+, `#[cutile::module(producer = \"my compiler\")]` writes producer "
+"metadata, and `#[cuda_tile::global(constant = true, visibility = "
+"\"private\")]` marks an existing `Global` static constant/private. Defaults "
+"remain mutable and public; constant globals cannot be written through the "
+"`Global` API."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:470
+msgid "Memory: Load and Store"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Function"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Signature"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`tensor.load()`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`&mut Tensor<E, S> -> Tile<E, S>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Load the output tile"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`tensor.store(tile)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`(&mut Tensor<E, S>, Tile<E, S>)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Store a tile to the tensor"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`tensor.load_tile(shape, idx)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`(&Tensor<E, S>, Shape<R>, [i32; N]) -> Tile<E, R>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Load at a partition index"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`load_tile_mut(tensor)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`(&mut Tensor<E, S>) -> Tile<E, S>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Load output tile (convenience)"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`src.load_like(dst)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`(&Tensor, &Tensor) -> Tile`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"Load from src at dst's tile-block position (rank 1-3); also the free "
+"function `load_tile_like(src, dst)`. src must match the shape of the whole "
+"tensor behind dst (not dst's per-program slab), and dst must be a "
+"partitioned mutable output"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:480
+msgid ""
+"// Pattern 1: Direct load/store on mutable tensor\n"
+"let tile: Tile<f32, { [128] }> = load_tile_mut(output);\n"
+"output.store(tile * scale_tile);\n"
+"\n"
+"// Pattern 2: Load at program position\n"
+"let pid = program_id(0);\n"
+"let tile: Tile<f32, { [128] }> = input.load_tile(shape![128], [pid]);\n"
+"\n"
+"// Pattern 3: Load-like (positional)\n"
+"let tile_x: Tile<f32, { [16, 16] }> = x.load_like(output);\n"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:493
+msgid "Grid and Program IDs"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`program_id(axis)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`(i32) -> i32`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "This tile program's index along grid axis `axis` (0, 1, or 2)"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`num_programs(axis)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "The launch grid extent along grid axis `axis` (0, 1, or 2)"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`get_tile_block_id()`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`() -> (i32, i32, i32)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "All three (x, y, z) program indices as a tuple"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`get_num_tile_blocks()`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "All three (x, y, z) grid extents as a tuple"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:502
+msgid "For each axis `k`, `0 <= program_id(k) < num_programs(k)`."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:504
+msgid ""
+"let pid = program_id(0);\n"
+"let n = num_programs(0);\n"
+"// Grid-stride loop\n"
+"for i in (pid..total).step_by(n as usize) { ... }\n"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:511
+msgid "Arithmetic (Element-wise)"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:513
+msgid ""
+"In addition to operator overloading (`+`, `-`, `*`, `/`, `%`; integer `/` "
+"truncates toward zero and `%` takes the dividend's sign, exactly as in Rust, "
+"for signed and unsigned element types alike), these explicit functions are "
+"available:"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`absi(x)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`Tile<E, S> -> Tile<E, S>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Absolute value (integer)"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`absf(x)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Absolute value (float)"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`negi(x, overflow)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`(Tile<E, S>, overflow::Mode) -> Tile<E, S>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"Negation (integer); `overflow::{None, NoSignedWrap, NoUnsignedWrap, NoWrap}`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`negf(x)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Negation (float)"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`fma(lhs, rhs, acc, rounding, ftz)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"`(Tile<E, S>, Tile<E, S>, Tile<E, S>, rounding::Mode, ftz::Mode) -> Tile<E, "
+"S>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Fused multiply-add: `lhs * rhs + acc`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`pow(base, exp)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`(Tile<E, S>, Tile<E, S>) -> Tile<E, S>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Power"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`ceil_div(a, b)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`(E, E) -> E`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Ceiling division (scalar)"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`true_div(a, b)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "True (floating-point) division"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`mulhii(a, b)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "High bits of integer multiply"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:527
+msgid ""
+"// Absolute value\n"
+"let abs_x: Tile<f32, S> = absf(x);\n"
+"let abs_i: Tile<i32, S> = absi(int_tile);\n"
+"\n"
+"// Fused multiply-add: a * b + c (single instruction, no intermediate "
+"rounding)\n"
+"let result: Tile<f32, S> = fma(a, b, c, rounding::NearestEven, ftz::"
+"Disabled);\n"
+"\n"
+"// Power\n"
+"let squared: Tile<f32, S> = pow(x, broadcast_scalar(2.0f32, x.shape()));\n"
+"\n"
+"// Negation\n"
+"let neg_x: Tile<f32, S> = negf(x);\n"
+"let neg_i: Tile<i32, S> = negi(int_tile, overflow::None);\n"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:543
+msgid "Math (Floating-Point)"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`exp(x)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "e^x"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`exp2(x, ftz)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`(Tile<E, S>, ftz::Mode) -> Tile<E, S>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "2^x"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`log(x)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Natural logarithm"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`log2(x)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Base-2 logarithm"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`sqrt(x, rounding, ftz)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`(Tile<E, S>, rounding::Mode, ftz::Mode) -> Tile<E, S>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Square root"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`rsqrt(x, ftz)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Reciprocal square root (1/sqrt(x))"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`sin(x)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Sine"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`cos(x)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Cosine"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`tan(x)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Tangent"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`sinh(x)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Hyperbolic sine"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`cosh(x)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Hyperbolic cosine"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`tanh(x)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Hyperbolic tangent"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`ceil(x)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Ceiling"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`floor(x)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Floor"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`maxf(lhs, rhs, nan, ftz)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`(Tile<E, S>, Tile<E, S>, nan::Mode, ftz::Mode) -> Tile<E, S>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Float max; `nan::Enabled` propagates NaN"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`minf(lhs, rhs, nan, ftz)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Float min; `nan::Enabled` propagates NaN"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`addf(lhs, rhs, rounding, ftz)`, `subf(…)`, `mulf(…)`, `divf(…)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`(Tile<E, S>, Tile<E, S>, rounding::Mode, ftz::Mode) -> Tile<E, S>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"Explicit float add/sub/mul/div with rounding and flush-to-zero control (the "
+"`+ - * /` operators use the defaults)"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:565
+msgid ""
+"There are no separate `*_ftz` functions: flush-to-zero is selected by "
+"passing `ftz::Enabled` to the base operation."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:568
+msgid ""
+"// Softmax numerics: subtract max, exponentiate\n"
+"let max_val: Tile<f32, { [BM] }> = reduce_max(x, 1i32);\n"
+"let shifted: Tile<f32, S> = x - max_val.reshape(shape![BM, 1]).broadcast(x."
+"shape());\n"
+"let softmax_exp: Tile<f32, S> = exp(shifted);\n"
+"\n"
+"// RMS normalization\n"
+"let sq: Tile<f32, S> = x * x;\n"
+"let mean_sq: Tile<f32, { [BM] }> = reduce_sum(sq, 1i32);\n"
+"let rms: Tile<f32, { [BM] }> =\n"
+"    rsqrt(mean_sq + broadcast_scalar(1e-6f32, mean_sq.shape()), ftz::"
+"Disabled);\n"
+"\n"
+"// Activation functions\n"
+"let gelu_approx: Tile<f32, S> = x * (constant(1.0f32, x.shape()) + "
+"tanh(x));\n"
+"let swish: Tile<f32, S> = x / (constant(1.0f32, x.shape()) + exp(negf(x)));\n"
+"\n"
+"// exp2 is faster than exp on GPU — convert: exp(x) = exp2(x * log2(e))\n"
+"let log2_e: f32 = 1.4426950408889634f32;\n"
+"let fast_exp: Tile<f32, S> = exp2(x * broadcast_scalar(log2_e, x.shape()), "
+"ftz::Disabled);\n"
+"\n"
+"// Flush-to-zero: pass ftz::Enabled to treat denormals as zero (faster on "
+"some hardware, f32 only)\n"
+"let clamped: Tile<f32, S> =\n"
+"    maxf(x, broadcast_scalar(0.0f32, x.shape()), nan::Disabled, ftz::"
+"Enabled);\n"
+"let sum: Tile<f32, S> = addf(a, b, rounding::NearestEven, ftz::Enabled);\n"
+"let product: Tile<f32, S> = mulf(a, b, rounding::NearestEven, ftz::"
+"Enabled);\n"
+"let fma_result: Tile<f32, S> = fma(a, b, c, rounding::NearestEven, ftz::"
+"Enabled);\n"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:596
+msgid "Comparison"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`eq_tile(a, b)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`-> Tile<bool, S>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Equal"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`ne_tile(a, b)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Not equal"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`gt_tile(a, b)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Greater than"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`ge_tile(a, b)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Greater or equal"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`lt_tile(a, b)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Less than"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`le_tile(a, b)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Less or equal"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`select(cond, a, b)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`(Tile<bool, S>, Tile<E, S>, Tile<E, S>) -> Tile<E, S>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Conditional select"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`min(a, b)` / `max(a, b)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Scalar min/max"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`min_tile(a, b)` / `max_tile(a, b)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Element-wise min/max"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:610
+msgid ""
+"let mask: Tile<bool, { [128] }> = lt_tile(indices, len_tile);\n"
+"let result: Tile<f32, { [128] }> = select(mask, values, zeros);\n"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:615
+msgid "Creation"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`constant(value, shape)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`(E, Shape<S>) -> Tile<E, S>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Fill a tile with a constant"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`iota(shape)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`(Shape<S>) -> Tile<E, S>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Sequential indices `[0, 1, 2, ...]` (1D only)"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`broadcast_scalar(val, shape)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Broadcast a scalar to a tile shape"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:623
+msgid ""
+"let zeros: Tile<f32, { [128] }> = constant(0.0f32, shape![128]);\n"
+"let indices: Tile<i32, { [64] }> = iota(shape![64]);  // [0, 1, 2, ..., 63]\n"
+"let scale: Tile<f32, { [16, 16] }> = broadcast_scalar(2.0f32, shape![16, "
+"16]);\n"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:629
+msgid "Shape Manipulation"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`tile.reshape(shape)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`Tile<E, S> -> Tile<E, R>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Reshape (preserves element count)"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`tile.broadcast(shape)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Broadcast to a larger shape"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`tile.transpose()`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`Tile<E, [M, N]> -> Tile<E, [N, M]>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Rank-2 transpose"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`reshape(tile, shape)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`(Tile<E, S>, Shape<R>) -> Tile<E, R>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Free function reshape"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`broadcast(tile, shape)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Free function broadcast"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`permute(tile, permutation)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`(Tile<E, A>, Array<I>) -> Tile<E, R>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"Transpose / permute dimensions (e.g. `const_array![1, 0]`); the result shape "
+"`R` is ascribed at the call site"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`cat(a, b, dim)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`(Tile<E, SLhs>, Tile<E, SRhs>, i32) -> Tile<E, SOut>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Concatenate along a dimension"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`extract(tile, indices)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`(Tile<E, SIn>, [Tile<i32, {[]}>; N]) -> Tile<E, SOut>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"Extract a sub-tile at rank-0 index tiles; the result shape `SOut` is "
+"ascribed at the call site"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`shape[index]`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`(Shape<S>, usize) -> i32`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Read one runtime dimension from a shape"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:643
+msgid ""
+"let row: Tile<f32, { [128] }> = iota(shape![128]);\n"
+"let col: Tile<f32, { [128, 1] }> = row.reshape(shape![128, 1]);\n"
+"let matrix: Tile<f32, { [128, 64] }> = col.broadcast(shape![128, 64]);\n"
+"let n_cols: i32 = matrix.shape()[1];\n"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:650
+msgid "Reduction and Scan"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`reduce_sum(tile, dim)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`(Tile<E, S>, i32) -> Tile<E, R>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Sum reduction along one dimension"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`reduce_max(tile, dim)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Max reduction"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`reduce_min(tile, dim)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Min reduction"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`reduce_prod(tile, dim)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Product reduction"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`reduce(tile, dim, identity, f)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`(Tile<E, S>, i32, E, Fn(E, E) -> E) -> Tile<E, S>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"Custom reduction; typed with the input shape (only `reduce_min/max/sum/prod` "
+"collapse the axis in their return type)"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`scan_sum(tile, dim, reverse, identity)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`(Tile<E, S>, i32, reverse::Mode, E) -> Tile<E, S>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Prefix sum"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`scan(tile, dim, reverse, identity, f)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`(Tile<E, S>, i32, reverse::Mode, E, Fn(E, E) -> E) -> Tile<E, S>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Custom prefix scan"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:662
+msgid ""
+"// Sum each row of a [128, 64] tile to [128] (reduce along axis 1)\n"
+"let row_sums: Tile<f32, { [128] }> = reduce_sum(matrix, 1i32);\n"
+"\n"
+"// Prefix sum along axis 0\n"
+"let prefix: Tile<f32, { [128] }> = scan_sum(row, 0i32, reverse::Forward, "
+"0.0f32);\n"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:670
+msgid "Matrix Multiply"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`mma(a, b, c)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"`(Tile<E1, {[M,K]}>, Tile<E1, {[K,N]}>, Tile<E2, {[M,N]}>) -> Tile<E2, {[M,"
+"N]}>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"Matrix multiply-accumulate; the accumulator element type may differ from the "
+"inputs (e.g. `f16` inputs, `f32` accumulator)"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`mmaf_scaled(a, b, c, a_scale, b_scale)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"`(Tile<E, A>, Tile<E, B>, Tile<f32, C>, Tile<S, AS>, Tile<S, BS>) -> "
+"Tile<f32, C>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Block-scaled floating-point matrix multiply-accumulate"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:677
+msgid "Maps to hardware tensor cores when available."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:679
+msgid ""
+"let mut acc: Tile<f32, { [16, 16] }> = constant(0.0f32, shape![16, 16]);\n"
+"for k in 0i32..(K/BK) {\n"
+"    let a_tile: Tile<f32, { [16, 8] }> = a_part.load([pid_m, k]);\n"
+"    let b_tile: Tile<f32, { [8, 16] }> = b_part.load([k, pid_n]);\n"
+"    acc = mma(a_tile, b_tile, acc);\n"
+"}\n"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:688
+msgid ""
+"`mmaf_scaled` is used for FP4/FP8 block-scaled matrix multiply. Packed FP4 "
+"tensors should be represented as `Tensor<f4e2m1fnx2, ...>`, unpacked with "
+"`tile.unpack(shape![...])` to logical `Tile<f4e2m1fn, ...>` operands, and "
+"then passed to `mmaf_scaled` with FP8 scale tiles. The raw `pack` and "
+"`unpack` ops operate on rank-1 tiles; the FP4 tile methods emit the required "
+"flatten/pack-or-unpack/reshape sequence. See [Inference with NVFP4/MXFP8](../"
+"tutorials/11-nvfp4-inference.md) for the full pattern."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:697
+msgid "Low-Level Memory Ops"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:699
+msgid ""
+"These APIs are close to the Tile IR memory/view operations. Prefer the high-"
+"level methods above (`tensor.load_tile`, `partition.load`, `partition_mut."
+"store`, `x.load_like(z)`, `tensor.store`) unless you are building custom "
+"views, raw-pointer kernels, or compiler-facing helpers."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:704
+msgid "View construction and queries"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:706
+msgid ""
+"View constructors create typed tensor or partition views from lower-level "
+"metadata. Raw view constructors are `unsafe`: callers must preserve "
+"ordering, aliasing, layout, and lifetime invariants. In particular, a read-"
+"only view must not discard the tensor's token and race an earlier store."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`unsafe make_tensor_view(base, shape, strides, token)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"`(PointerTile<*mut E, {[]}>, Shape<D>, Array<C>, Token) -> Tensor<E, D>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Build a tensor view from a base pointer"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`unsafe make_partition_view(tensor, tile, padding, dim_map, token)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"`(&Tensor<E, S>, Shape<R>, padding::Mode, dim_map::Mode, Token) -> "
+"Partition<E, R>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Build a read-only partition view"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`unsafe make_partition_view_mut(tensor, tile, padding, token)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`(&Tensor<E, S>, Shape<R>, padding::Mode, Token) -> PartitionMut<E, R>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Build a mutable partition view"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`get_tensor_shape(tensor)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`&Tensor<E, S> -> [i32; N]`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Query a tensor view's runtime shape"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`get_index_space_shape(partition)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`&Partition<E, S> -> [i32; N]`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Query a partition's tile-grid shape"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`get_tensor_token(tensor)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`&Tensor<E, S> -> Token`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Read a tensor view's memory token"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`unsafe set_tensor_token(tensor, token)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`(&Tensor<E, S>, Token)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"Install an ordering dependency on a function-level tensor binding, outside "
+"control-flow regions"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`get_partition_token(partition)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`&Partition<E, S> -> Token`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Read a read-only partition token"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`get_partition_token_mut(partition)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`&PartitionMut<E, S> -> Token`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Read a mutable partition token"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`num_tiles(partition, axis)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`(&Partition<E, S>, i32) -> i32`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Number of tiles along one partition axis"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`unsafe load_tensor(ptrs, idx, shape, strides)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`(&Tensor<i64, S>, [i32; N], Shape<R>, Array<C>) -> Tensor<T, R>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Load a strided tensor view from an integer pointer tensor"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:725
+msgid ""
+"let shape = input.shape();\n"
+"let token = get_tensor_token(input);\n"
+"// SAFETY: keep the tensor's own ordering token and use the view within its "
+"borrow.\n"
+"let part = unsafe {\n"
+"    make_partition_view(input, shape, padding::None, dim_map::Identity, "
+"token)\n"
+"};\n"
+"let tiles_m: i32 = num_tiles(&part, 0);\n"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:735
+msgid "View loads and stores"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:737
+msgid ""
+"These are the direct memory operations on partition views. They expose Tile "
+"IR ordering, scope, latency, and TMA controls explicitly."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`load_view_tko(view, index, ordering, scope, latency, tma)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`(&Partition<E, S>, [i32; N], O, Sc, Option<i32>, T) -> Tile<E, S>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Load a tile from a read-only partition"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`unsafe load_view_tko_mut(view, index, ordering, scope, latency, tma)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`(&PartitionMut<E, S>, [i32; N], O, Sc, Option<i32>, T) -> Tile<E, S>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Load from a mutable partition; unsafe aliasing contract"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"`unsafe store_view_tko_mut(view, tile, index, ordering, scope, latency, tma)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"`(&mut PartitionMut<E, S>, Tile<E, S>, [i32; N], O, Sc, Option<i32>, T) -> "
+"Token`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Store a tile into a mutable partition"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:746
+msgid ""
+"let pid = program_id(0);\n"
+"let tile: Tile<f32, S> =\n"
+"    load_view_tko(&part, [pid], ordering::Weak, scope::TileBlock, None, tma::"
+"Enabled);\n"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:752
+msgid "Pointer-based loads and stores"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"`unsafe load_ptr_tko(ptrs, ordering, Option<scope>, mask, fill, token, "
+"Latency<N>)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`-> (Tile<E, S>, Token)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Scatter-gather load via pointers"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"`unsafe store_ptr_tko(ptrs, values, ordering, Option<scope>, mask, token, "
+"Latency<N>)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`-> Token`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Scatter-gather store via pointers"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`pointer_to_tile(ptr)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`P -> PointerTile<P, {[]}>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Convert raw pointer to scalar pointer tile"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`tile_to_pointer(ptile)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`PointerTile<P, {[]}> -> P`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Convert back"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`addptr(ptile, offset)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`(PointerTile<P, D>, i32) -> PointerTile<P, D>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Offset a pointer tile by a scalar"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`addptr_tile(ptile, offsets)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`(PointerTile<P, D>, Tile<I, D>) -> PointerTile<P, D>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Offset a pointer tile by an index tile"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`broadcast_ptr(ptile, shape)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`(PointerTile<P, S>, Shape<R>) -> PointerTile<P, R>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Broadcast a pointer tile to a larger shape"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`reshape_ptr(ptile, shape)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Reshape a pointer tile"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:765
+msgid ""
+"`load_ptr_tko` and `store_ptr_tko` dereference raw device pointers and are "
+"`unsafe fn`s: call them inside an `unsafe` block. The snippets below omit "
+"the block for brevity."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:769
+msgid ""
+"let base: PointerTile<*mut f32, { [] }> = pointer_to_tile(ptr);\n"
+"let ptrs: PointerTile<*mut f32, { [128] }> = base.broadcast(shape![128])."
+"offset_tile(offsets);\n"
+"let (values, token): (Tile<f32, { [128] }>, Token) =\n"
+"    load_ptr_tko(ptrs, ordering::Weak, None::<scope::TileBlock>, None, None, "
+"None, Latency::<0>);\n"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:776
+msgid "Atomics"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:778
+msgid ""
+"Module-scope atomic storage uses `Global<A, { [] }>`, where `A` implements "
+"the sealed `Atomic` trait:"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:781
+msgid ""
+"static COUNTER: Global<AtomicI32, { [] }> = Global::new(0i32);\n"
+"// Inside a kernel:\n"
+"let one: Tile<i32, { [] }> = constant(1i32, shape![]);\n"
+"let (previous, token) = COUNTER.atomic_add(one, ordering::Relaxed, scope::"
+"Device);\n"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:788
+msgid ""
+"Supported markers are `AtomicI32`, `AtomicU32`, `AtomicI64`, `AtomicU64`, "
+"`AtomicF32`, and `AtomicF64`. Their `Atomic::Value` types are the "
+"corresponding scalars; these are device-DSL markers, not host atomic "
+"objects. Only scalar globals are currently supported."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:793
+msgid ""
+"Global `load` accepts `Relaxed`/`Acquire`; `store` accepts `Relaxed`/"
+"`Release`; `atomic_add` accepts `Relaxed`/`Acquire`/`Release`/`AcqRel`. All "
+"require `Device` or `System` scope. Rust and the JIT reject weak or tile-"
+"block-scoped global accesses. A load followed by a store is not an atomic "
+"increment: use `atomic_add`."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:799
+msgid ""
+"The ordering contract remains Tile IR's explicit token model, not `std::"
+"sync::atomic` semantics for surrounding memory. Global operations return "
+"completion tokens but accept no input token. They do not automatically order "
+"other tensor or raw-pointer accesses: do not use them alone for publication "
+"protocols, which also require explicit token dependencies."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:805
+msgid ""
+"The raw intrinsics below remain unsafe and retain Tile IR's broader ordering/"
+"scope choices."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`unsafe atomic_rmw_tko(ptrs, arg, mode, ordering, scope, mask, token)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"`(PointerTile<*mut E, S>, Tile<E, S>, atomic::Mode, ordering::AtomicMode, "
+"scope::Mode, Option<Tile<bool, S>>, Option<Token>) -> (Tile<E, S>, Token)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Atomic read-modify-write"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`unsafe atomic_cas_tko(ptrs, cmp, val, ordering, scope, mask, token)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid ""
+"`(PointerTile<*mut E, S>, Tile<E, S>, Tile<E, S>, ordering::AtomicMode, "
+"scope::Mode, Option<Tile<bool, S>>, Option<Token>) -> (Tile<E, S>, Token)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Atomic compare-and-swap"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:813
+msgid ""
+"**RMW modes:** `atomic::{Add, AddF, And, Or, Xor, Max, Min, Umax, Umin, Xchg}"
+"`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:815
+msgid ""
+"**Memory orderings:** `ordering::{Relaxed, Acquire, Release, AcqRel}` "
+"(atomics; load/store also accept `Weak`)"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:817
+msgid "**Scopes:** `scope::{TileBlock, Device, System}`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:819
+msgid ""
+"Both atomics dereference raw device pointers and are `unsafe fn`s, like "
+"`load_ptr_tko`/`store_ptr_tko`:"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:822
+msgid ""
+"unsafe {\n"
+"    atomic_rmw_tko(ptrs, increments, atomic::Add, ordering::Relaxed, scope::"
+"Device, None, None);\n"
+"    atomic_cas_tko(ptrs, expected, desired, ordering::AcqRel, scope::System, "
+"None, None);\n"
+"}\n"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:829
+msgid "Tokens"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:831
+msgid ""
+"Tokens track ordering dependencies between memory operations. A token "
+"returned from a load guarantees that the load has completed before any "
+"operation that consumes that token. `join_tokens` merges multiple tokens "
+"into one, ensuring all joined operations complete before the result token is "
+"used."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:833
+msgid ""
+"This enables fine-grained ordering without full barriers: independent loads "
+"can execute in parallel, and a store only waits for the specific loads it "
+"depends on."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`new_token_unordered()`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`() -> Token`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Create a fresh ordering token (no ordering guarantee)"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`join_tokens(tokens)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`(&[Token]) -> Token`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Join multiple tokens: result waits for all inputs"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:840
+msgid ""
+"// Thread tokens through a load → compute → store sequence:\n"
+"let token: Token = new_token_unordered();\n"
+"\n"
+"// Load returns a new token guaranteeing the load completed\n"
+"let (data, load_token): (Tile<f32, { [128] }>, Token) =\n"
+"    load_ptr_tko(src_ptrs, ordering::Weak, None::<scope::TileBlock>, None, "
+"None, None, Latency::<0>);\n"
+"\n"
+"// Compute on the loaded data\n"
+"let result: Tile<f32, { [128] }> = data * data;\n"
+"\n"
+"// Store uses the load token: waits for the load before writing\n"
+"let store_token: Token =\n"
+"    store_ptr_tko(dst_ptrs, result, ordering::Weak, None::<scope::"
+"TileBlock>, None, Some(load_token), Latency::<0>);\n"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:856
+msgid ""
+"// Join tokens from two independent loads before a dependent store:\n"
+"let (a_data, a_token): (Tile<f32, { [128] }>, Token) =\n"
+"    load_ptr_tko(a_ptrs, ordering::Weak, None::<scope::TileBlock>, None, "
+"None, None, Latency::<0>);\n"
+"let (b_data, b_token): (Tile<f32, { [128] }>, Token) =\n"
+"    load_ptr_tko(b_ptrs, ordering::Weak, None::<scope::TileBlock>, None, "
+"None, None, Latency::<0>);\n"
+"\n"
+"// Both loads must complete before the store\n"
+"let combined: Token = join_tokens(&[a_token, b_token]);\n"
+"let result: Tile<f32, { [128] }> = a_data + b_data;\n"
+"let _: Token =\n"
+"    store_ptr_tko(out_ptrs, result, ordering::Weak, None::<scope::"
+"TileBlock>, None, Some(combined), Latency::<0>);\n"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:870
+msgid "Bitwise"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`andi(a, b)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Bitwise AND"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`ori(a, b)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Bitwise OR"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`xori(a, b)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Bitwise XOR"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`shli(lhs, rhs, overflow)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`(Tile<E, S>, Tile<E, S>, overflow::Mode) -> Tile<E, S>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Shift left"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`shri(lhs, rhs)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Shift right (arithmetic for signed `E`, logical for unsigned)"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:880
+msgid ""
+"// Mask lower 8 bits\n"
+"let mask: Tile<i32, S> = constant(0xFF, x.shape());\n"
+"let low_byte: Tile<i32, S> = andi(x, mask);\n"
+"\n"
+"// Shift left by 2 (multiply by 4)\n"
+"let shift: Tile<i32, S> = constant(2, x.shape());\n"
+"let shifted: Tile<i32, S> = shli(x, shift, overflow::None);\n"
+"\n"
+"// Toggle bits with XOR\n"
+"let toggled: Tile<i32, S> = xori(x, mask);\n"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:893
+msgid "Type Conversion"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`convert_tile(tile)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`Tile<FROM, S> -> Tile<TO, S>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Convert element type"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`convert_scalar(x)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`impl Scalar -> S`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Convert scalar type"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`scalar_to_tile(x)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`impl Scalar -> Tile<E, {[]}>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Wrap a scalar in a rank-0 tile"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`tile_to_scalar(tile)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`Tile<E, {[]}> -> S`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Convert a rank-0 tile back to a scalar"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`ftof(tile, rounding)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`Tile<EIn, S> -> Tile<EOut, S>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Float-to-float conversion with rounding mode"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`ftoi(tile, rounding)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Float-to-integer conversion with rounding mode"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`itof(tile, rounding)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Integer-to-float conversion with rounding mode"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`bitcast(tile)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Reinterpret bits (no conversion)"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`exti(tile)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Extend integer (sign/zero)"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`trunci(tile, overflow)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Truncate integer with overflow mode"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`int_to_ptr(tile)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`Tile<SRC_T, S> -> PointerTile<*mut PTR_T, S>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Integer to pointer"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`ptr_to_int(ptrs)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`PointerTile<*mut E, S> -> Tile<E, S>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Pointer to integer tile"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`ptr_to_ptr(ptrs)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`PointerTile<*mut EIn, S> -> PointerTile<*mut EOut, S>`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Pointer cast"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:911
+msgid ""
+"// Float to int conversion\n"
+"let indices: Tile<i32, { [128] }> = iota(shape![128]);\n"
+"let float_indices: Tile<f32, { [128] }> = convert_tile(indices);\n"
+"\n"
+"// Bitcast: reinterpret f32 bits as u32 (no value conversion)\n"
+"let float_tile: Tile<f32, { [128] }> = constant(1.0f32, shape![128]);\n"
+"let bits: Tile<u32, { [128] }> = bitcast(float_tile);  // 0x3F800000\n"
+"\n"
+"// Integer extension and truncation\n"
+"let small: Tile<i16, { [64] }> = constant(42i16, shape![64]);\n"
+"let wide: Tile<i32, { [64] }> = exti(small);     // sign-extend i16 -> i32\n"
+"let narrow: Tile<i16, { [64] }> = trunci(wide, overflow::None);\n"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:926
+msgid "Compiler Hints"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`assume_div_by::<_, N>(val)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`T -> T`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Assert value is divisible by N"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`assume_bounds_lower::<_, L>(val)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Assert value >= L"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`assume_bounds_upper::<_, U>(val)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Assert value <= U"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`assume_bounds::<_, L, U>(val)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Assert L <= value <= U"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:935
+msgid ""
+"These are `unsafe` — incorrect assumptions produce undefined behavior. They "
+"enable compiler optimizations like vectorized loads and simplified index "
+"arithmetic."
+msgstr ""
+
+#: ../../../reference/dsl-api.md:937
+msgid ""
+"// Tell the compiler a dimension is a multiple of 16 (enables wider vector "
+"loads)\n"
+"let dim: i32 = unsafe { assume_div_by::<_, 16>(dim) };\n"
+"\n"
+"// Bound an index (enables range-based optimizations)\n"
+"let idx: i32 = unsafe { assume_bounds::<_, 0, 1024>(idx) };\n"
+"\n"
+"// Combine: non-negative and aligned\n"
+"let stride: i32 = unsafe { assume_bounds_lower::<_, 0>(stride) };\n"
+"let stride: i32 = unsafe { assume_div_by::<_, 4>(stride) };\n"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:948
+msgid "Debugging"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Macro"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`cuda_tile_print!(fmt, args...)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "Printf-style GPU print"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "`cuda_tile_assert!(cond, msg)`"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:0
+msgid "GPU assertion"
+msgstr ""
+
+#: ../../../reference/dsl-api.md:955
+msgid ""
+"let pid0 = program_id(0);\n"
+"let pid1 = program_id(1);\n"
+"let pid2 = program_id(2);\n"
+"cuda_tile_print!(\"Program ({}, {}, {})\\n\", pid0, pid1, pid2);\n"
+"\n"
+"// Assert a condition — aborts the kernel if false\n"
+"cuda_tile_assert!(len > 0, \"Length must be positive\");\n"
+"\n"
+"// Print scalars for debugging (runs on every program, so output may "
+"interleave)\n"
+"let offset = pid0 * 128;\n"
+"cuda_tile_print!(\"offset = {}\\n\", offset);\n"
+msgstr ""
