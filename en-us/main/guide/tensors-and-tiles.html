@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+
+
+<html lang="en-US" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Tensors and Tiles &#8212; cuTile Rust</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/nvidia-sphinx-theme.css?v=933278ad" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=4011299f" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/lightbox.css?v=31fdf494" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../_static/documentation_options.js?v=66d1f95f"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'guide/tensors-and-tiles';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <script src="../_static/js/lightbox.js?v=17028852"></script>
+    <link rel="canonical" href="https://projects.localizethedocs.org/cutile-rs-book-l10n/guide/tensors-and-tiles.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Compilation" href="jit-compilation.html" />
+    <link rel="prev" title="Host vs. Device Code" href="host-vs-device.html" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en-US"/>
+  <meta name="docsearch:version" content="main" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+<script type="text/javascript" src="../ltd-provenance.js"></script>
+<script type="text/javascript" src="../ltd-current.js"></script>
+<script type="text/javascript" src="../../../ltd-config.js"></script>
+<script type="text/javascript" src="../../../ltd-flyout.js"></script>
+
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" class="logo__image only-light" alt=""/>
+    <img src="../_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cuTile Rust</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item"><div class="github-links">
+  <!--
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/stargazers" target="_blank" rel="noopener">
+    <i class="fa-solid fa-star" aria-hidden="true"></i>
+    <span class="sr-only">Star</span>
+  </a>
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/fork" target="_blank" rel="noopener">
+    <i class="fa-solid fa-code-fork" aria-hidden="true"></i>
+    <span class="sr-only">Fork</span>
+  </a>
+  -->
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/NVIDIA/cuda-rust" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button></div>
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><div class="github-links">
+  <!--
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/stargazers" target="_blank" rel="noopener">
+    <i class="fa-solid fa-star" aria-hidden="true"></i>
+    <span class="sr-only">Star</span>
+  </a>
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/fork" target="_blank" rel="noopener">
+    <i class="fa-solid fa-code-fork" aria-hidden="true"></i>
+    <span class="sr-only">Fork</span>
+  </a>
+  -->
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/NVIDIA/cuda-rust" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button></div>
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><div class="sidebar-tree">
+    <p class="sidebar-tree-title">
+        Table of Contents
+    </p>
+    <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/01-hello-world.html">1. Hello World</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/02-vector-addition.html">2. Vector Addition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/03-saxpy.html">3. SAXPY</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/04-matrix-multiplication.html">4. Matrix Multiplication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/05-fused-softmax.html">5. Fused Softmax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/06-flash-attention.html">6. Fused Multihead Attention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/07-intro-to-async.html">7. Intro to Async Execution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/08-data-parallel-mlp.html">8. Data Parallel MLP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/09-pointer-addition.html">9. Pointer Addition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/10-cuda-graphs.html">10. CUDA Graphs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/11-nvfp4-inference.html">11. Inference with NVFP4/MXFP8</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/12-dgx-spark-inference.html">12. LLM Inference on DGX Spark</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="host-vs-device.html">Host vs. Device Code</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tensors and Tiles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jit-compilation.html">Compilation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="device-operations.html">Device Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="performance.html">Performance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autotuning.html">Autotuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bounds-check-placement.html">Bounds-Check Placement</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interoperability.html">Interoperability</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debugging-and-profiling.html">Debugging and Profiling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="useful-mental-models.html">Useful Mental Models</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../reference/dsl-api.html">DSL API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/host-api.html">Host API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/compatibility.html">CUDA and Tile IR compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/glossary.html">Glossary</a></li>
+</ul>
+
+</div></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Tensors and Tiles</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="tensors-and-tiles">
+<h1>Tensors and Tiles<a class="headerlink" href="#tensors-and-tiles" title="Link to this heading">#</a></h1>
+<p>cuTile Rust kernels operate by moving data from tensors into tiles, computing on those tiles, and storing the result back to tensors.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Property</p></th>
+<th class="head"><p>Tensor</p></th>
+<th class="head"><p>Tile</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Location</p></td>
+<td><p>Global memory (HBM)</p></td>
+<td><p>Registers</p></td>
+</tr>
+<tr class="row-odd"><td><p>Mutability</p></td>
+<td><p>Mutable or read-only</p></td>
+<td><p>Immutable</p></td>
+</tr>
+<tr class="row-even"><td><p>Shape</p></td>
+<td><p>Static, dynamic, or mixed</p></td>
+<td><p>Static</p></td>
+</tr>
+<tr class="row-odd"><td><p>Operations</p></td>
+<td><p>Load and store</p></td>
+<td><p>Arithmetic, reductions, matrix multiply, shape ops</p></td>
+</tr>
+<tr class="row-even"><td><p>Lifetime</p></td>
+<td><p>Persists across kernels</p></td>
+<td><p>Exists only inside a kernel</p></td>
+</tr>
+<tr class="row-odd"><td><p>Addressable</p></td>
+<td><p>Yes</p></td>
+<td><p>No</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="cp">#[cutile::entry()]</span>
+<span class="k">fn</span><span class="w"> </span><span class="nf">add</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">S</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="kt">i32</span><span class="p">;</span><span class="w"> </span><span class="mi">2</span><span class="p">]</span><span class="o">&gt;</span><span class="p">(</span>
+<span class="w">    </span><span class="n">z</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">mut</span><span class="w"> </span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="n">S</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">y</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">tile_x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="n">load_like</span><span class="p">(</span><span class="n">z</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">tile_y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">y</span><span class="p">.</span><span class="n">load_like</span><span class="p">(</span><span class="n">z</span><span class="p">);</span>
+<span class="w">    </span><span class="n">z</span><span class="p">.</span><span class="n">store</span><span class="p">(</span><span class="n">tile_x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">tile_y</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The output tensor is mutable and already partitioned by the host launcher. The input tensors are read-only and can be loaded into tiles that match the output partition.</p>
+<section id="tensor-partition-tile">
+<h2>Tensor, Partition, Tile<a class="headerlink" href="#tensor-partition-tile" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Tensor&lt;E,</span> <span class="pre">S&gt;</span></code> is the device-side view of global memory. Kernels receive tensors as parameters. A tensor can be loaded into a <code class="docutils literal notranslate"><span class="pre">Tile&lt;E,</span> <span class="pre">S&gt;</span></code> or used to create a device-side partition.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Partition&lt;E,</span> <span class="pre">S&gt;</span></code> is a tiled view of a tensor. On the host, partitioning a mutable tensor determines how many tile blocks launch and which region each block writes. On the device, partitioning a read-only tensor lets a kernel load arbitrary tiles by index.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Tile&lt;E,</span> <span class="pre">S&gt;</span></code> is an immutable register-resident array fragment. Tile operations create new tiles instead of mutating the original value:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">tile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="n">load_like</span><span class="p">(</span><span class="n">z</span><span class="p">);</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">shifted</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tile</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">1.0</span><span class="k">f32</span><span class="p">;</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">scaled</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">shifted</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">2.0</span><span class="k">f32</span><span class="p">;</span>
+<span class="n">z</span><span class="p">.</span><span class="n">store</span><span class="p">(</span><span class="n">scaled</span><span class="p">);</span>
+</pre></div>
+</div>
+<p><img alt="Data flow: Load from Tensor to Tile, Compute in registers, Store back to Tensor" src="../_images/data-flow.svg" /></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Tensor -&gt; Partition -&gt; Tile -&gt; Compute -&gt; Store
+</pre></div>
+</div>
+</section>
+<section id="partitioning-and-the-grid">
+<h2>Partitioning and the Grid<a class="headerlink" href="#partitioning-and-the-grid" title="Link to this heading">#</a></h2>
+<p>Mutable outputs are partitioned on the host before launch:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">api</span><span class="p">::</span><span class="n">zeros</span><span class="p">::</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">1024</span><span class="p">,</span><span class="w"> </span><span class="mi">1024</span><span class="p">]).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">add</span><span class="p">((</span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="n">z</span><span class="p">).</span><span class="n">partition</span><span class="p">([</span><span class="mi">64</span><span class="p">,</span><span class="w"> </span><span class="mi">64</span><span class="p">]),</span><span class="w"> </span><span class="o">&amp;</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">y</span><span class="p">).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The partition shape becomes the static shape seen by the kernel. A <code class="docutils literal notranslate"><span class="pre">[1024,</span> <span class="pre">1024]</span></code> tensor partitioned as <code class="docutils literal notranslate"><span class="pre">[64,</span> <span class="pre">64]</span></code> creates a logical grid of <code class="docutils literal notranslate"><span class="pre">(16,</span> <span class="pre">16,</span> <span class="pre">1)</span></code> tile blocks. Each tile block receives one writable sub-tensor.</p>
+<p>Read-only inputs do not need host-side partitioning. Inside the kernel, partition them with the shape needed by the algorithm:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">pid_m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">program_id</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">part_x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="n">partition</span><span class="p">(</span><span class="n">shape</span><span class="o">!</span><span class="p">[</span><span class="n">BM</span><span class="p">,</span><span class="w"> </span><span class="n">BK</span><span class="p">]);</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">tile_x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">part_x</span><span class="p">.</span><span class="n">load</span><span class="p">([</span><span class="n">pid_m</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">]);</span>
+</pre></div>
+</div>
+<p>The same read-only tensor can be partitioned multiple ways inside one kernel. This is common in matrix multiplication, where the left-hand side and right-hand side are loaded with different tile shapes.</p>
+<p>The launch grid is inferred from mutable output partitions unless the launcher sets it explicitly:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="n">kernel</span><span class="p">(</span><span class="n">z</span><span class="p">.</span><span class="n">partition</span><span class="p">([</span><span class="mi">64</span><span class="p">,</span><span class="w"> </span><span class="mi">64</span><span class="p">]),</span><span class="w"> </span><span class="n">x</span><span class="p">).</span><span class="n">grid</span><span class="p">((</span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>When a kernel has multiple mutable outputs, their inferred grids must match.</p>
+</section>
+<section id="static-and-dynamic-shapes">
+<h2>Static and Dynamic Shapes<a class="headerlink" href="#static-and-dynamic-shapes" title="Link to this heading">#</a></h2>
+<p>Static dimensions are compile-time constants. Dynamic dimensions use <code class="docutils literal notranslate"><span class="pre">-1</span></code> and are resolved from the runtime tensor shape.</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="cp">#[cutile::entry()]</span>
+<span class="k">fn</span><span class="w"> </span><span class="nf">normalize</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">S</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="kt">i32</span><span class="p">;</span><span class="w"> </span><span class="mi">2</span><span class="p">]</span><span class="o">&gt;</span><span class="p">(</span>
+<span class="w">    </span><span class="n">z</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">mut</span><span class="w"> </span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="n">S</span><span class="o">&gt;</span><span class="p">,</span><span class="w">          </span><span class="c1">// Static tile shape from partition.</span>
+<span class="w">    </span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="p">,</span><span class="w">   </span><span class="c1">// Runtime full tensor shape.</span>
+<span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">tile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="n">load_like</span><span class="p">(</span><span class="n">z</span><span class="p">);</span>
+<span class="w">    </span><span class="n">z</span><span class="p">.</span><span class="n">store</span><span class="p">(</span><span class="n">tile</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Static shapes let the compiler check operations and optimize layout. Dynamic dimensions let the same compiled variant handle different full tensor sizes. The common pattern is static output tile shape and dynamic read-only input shape.</p>
+<p>Const generic arrays such as <code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">S:</span> <span class="pre">[i32;</span> <span class="pre">2]</span></code> and <code class="docutils literal notranslate"><span class="pre">shape![BM,</span> <span class="pre">BK]</span></code> carry tile dimensions through the type system. Changing a const generic value can create a new compiled variant.</p>
+</section>
+<section id="loading-computing-storing">
+<h2>Loading, Computing, Storing<a class="headerlink" href="#loading-computing-storing" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">input.load_like(output)</span></code> loads a read-only tensor region matching the output tensor’s tile shape and tile-block coordinates. For explicit device-side partitions, call <code class="docutils literal notranslate"><span class="pre">partition.load(index)</span></code>:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">part_x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="n">partition</span><span class="p">(</span><span class="n">shape</span><span class="o">!</span><span class="p">[</span><span class="n">BM</span><span class="p">,</span><span class="w"> </span><span class="n">BK</span><span class="p">]);</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">tile_x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">part_x</span><span class="p">.</span><span class="n">load</span><span class="p">([</span><span class="n">pid_m</span><span class="p">,</span><span class="w"> </span><span class="n">k_tile</span><span class="p">]);</span>
+</pre></div>
+</div>
+<p>Writable tensors store tile results:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tile_x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">tile_y</span><span class="p">;</span>
+<span class="n">z</span><span class="p">.</span><span class="n">store</span><span class="p">(</span><span class="n">result</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Use <code class="docutils literal notranslate"><span class="pre">load_tile_mut</span></code> when a kernel needs to read the existing output value before writing a new one:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">acc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">load_tile_mut</span><span class="p">(</span><span class="n">z</span><span class="p">);</span>
+<span class="n">z</span><span class="p">.</span><span class="n">store</span><span class="p">(</span><span class="n">acc</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">update</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="kernel-operations">
+<span id="operations-at-a-glance"></span><h2>Kernel operations<a class="headerlink" href="#kernel-operations" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Category</p></th>
+<th class="head"><p>Examples</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Load and store</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">load_like</span></code> (method form of <code class="docutils literal notranslate"><span class="pre">load_tile_like</span></code>), <code class="docutils literal notranslate"><span class="pre">load_tile_mut</span></code>, <code class="docutils literal notranslate"><span class="pre">Partition::load</span></code>, <code class="docutils literal notranslate"><span class="pre">Tensor::store</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Arithmetic</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">+</span></code>, <code class="docutils literal notranslate"><span class="pre">-</span></code>, <code class="docutils literal notranslate"><span class="pre">*</span></code>, <code class="docutils literal notranslate"><span class="pre">/</span></code>, <code class="docutils literal notranslate"><span class="pre">fma</span></code>, <code class="docutils literal notranslate"><span class="pre">true_div</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Math</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">exp</span></code>, <code class="docutils literal notranslate"><span class="pre">log</span></code>, <code class="docutils literal notranslate"><span class="pre">sqrt</span></code>, <code class="docutils literal notranslate"><span class="pre">rsqrt</span></code>, <code class="docutils literal notranslate"><span class="pre">sin</span></code>, <code class="docutils literal notranslate"><span class="pre">cos</span></code>, <code class="docutils literal notranslate"><span class="pre">tanh</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Reduction and scan</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">reduce_max</span></code>, <code class="docutils literal notranslate"><span class="pre">reduce_sum</span></code>, <code class="docutils literal notranslate"><span class="pre">reduce_min</span></code>, <code class="docutils literal notranslate"><span class="pre">scan</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Matrix multiply</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mma</span></code>, <code class="docutils literal notranslate"><span class="pre">mmaf_scaled</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Shape manipulation</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">reshape</span></code>, <code class="docutils literal notranslate"><span class="pre">broadcast</span></code>, <code class="docutils literal notranslate"><span class="pre">transpose</span></code>, <code class="docutils literal notranslate"><span class="pre">shape!</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Comparison</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">gt_tile</span></code>, <code class="docutils literal notranslate"><span class="pre">ge_tile</span></code>, <code class="docutils literal notranslate"><span class="pre">lt_tile</span></code>, <code class="docutils literal notranslate"><span class="pre">le_tile</span></code>, <code class="docutils literal notranslate"><span class="pre">eq_tile</span></code>, <code class="docutils literal notranslate"><span class="pre">select</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Creation and conversion</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">constant</span></code>, <code class="docutils literal notranslate"><span class="pre">iota</span></code>, <code class="docutils literal notranslate"><span class="pre">convert_tile</span></code>, <code class="docutils literal notranslate"><span class="pre">pack</span></code>, <code class="docutils literal notranslate"><span class="pre">unpack</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>For element types, operation signatures, and lower-level memory operations, see the <a class="reference internal" href="../reference/dsl-api.html"><span class="std std-doc">DSL API</span></a>.</p>
+</section>
+<section id="broadcasting-and-reductions">
+<h2>Broadcasting and Reductions<a class="headerlink" href="#broadcasting-and-reductions" title="Link to this heading">#</a></h2>
+<p>Broadcasting expands a scalar or smaller tile to match a larger tile shape. It follows NumPy-style rules: align dimensions from the right; each dimension must either match or be 1.</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">bias</span><span class="p">:</span><span class="w"> </span><span class="nc">Tile</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">BN</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">..</span><span class="p">.;</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="nc">Tile</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="n">BM</span><span class="p">,</span><span class="w"> </span><span class="n">BN</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">..</span><span class="p">.;</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">bias</span><span class="p">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">shape</span><span class="o">!</span><span class="p">[</span><span class="n">BM</span><span class="p">,</span><span class="w"> </span><span class="n">BN</span><span class="p">]);</span>
+</pre></div>
+</div>
+<p>Reductions collapse one axis. Reshape the reduced result before broadcasting it back:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">fn</span><span class="w"> </span><span class="nf">softmax</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">BM</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">BN</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="o">&gt;</span><span class="p">(</span>
+<span class="w">    </span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="nc">Tile</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="n">BM</span><span class="p">,</span><span class="w"> </span><span class="n">BN</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nc">Tile</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="n">BM</span><span class="p">,</span><span class="w"> </span><span class="n">BN</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">max</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">reduce_max</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="k">i32</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="o">!</span><span class="p">[</span><span class="n">BM</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">])</span>
+<span class="w">        </span><span class="p">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">shape</span><span class="o">!</span><span class="p">[</span><span class="n">BM</span><span class="p">,</span><span class="w"> </span><span class="n">BN</span><span class="p">]);</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">stable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">max</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">exp_x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">exp</span><span class="p">(</span><span class="n">stable</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">sum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">reduce_sum</span><span class="p">(</span><span class="n">exp_x</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="k">i32</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="o">!</span><span class="p">[</span><span class="n">BM</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">])</span>
+<span class="w">        </span><span class="p">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">shape</span><span class="o">!</span><span class="p">[</span><span class="n">BM</span><span class="p">,</span><span class="w"> </span><span class="n">BN</span><span class="p">]);</span>
+
+<span class="w">    </span><span class="n">true_div</span><span class="p">(</span><span class="n">exp_x</span><span class="p">,</span><span class="w"> </span><span class="n">sum</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<section id="numerically-stable-softmax">
+<h3>Numerically Stable Softmax<a class="headerlink" href="#numerically-stable-softmax" title="Link to this heading">#</a></h3>
+<p>Subtract the per-row maximum before <code class="docutils literal notranslate"><span class="pre">exp</span></code> when implementing softmax. This prevents overflow on large positive inputs and is the pattern used in fused softmax and attention kernels.</p>
+</section>
+</section>
+<section id="tiled-matrix-multiply">
+<h2>Tiled Matrix Multiply<a class="headerlink" href="#tiled-matrix-multiply" title="Link to this heading">#</a></h2>
+<p>Matrix multiply accumulates repeated <code class="docutils literal notranslate"><span class="pre">mma</span></code> calls across the K dimension. Each tile block owns one output tile. Each loop iteration loads a <code class="docutils literal notranslate"><span class="pre">[BM,</span> <span class="pre">BK]</span></code> tile from the left input and a <code class="docutils literal notranslate"><span class="pre">[BK,</span> <span class="pre">BN]</span></code> tile from the right input.</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">fn</span><span class="w"> </span><span class="nf">tiled_gemm</span><span class="o">&lt;</span>
+<span class="w">    </span><span class="n">E</span><span class="p">:</span><span class="w"> </span><span class="nc">ElementType</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">BM</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">BN</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">BK</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="p">,</span>
+<span class="o">&gt;</span><span class="p">(</span>
+<span class="w">    </span><span class="n">z</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">mut</span><span class="w"> </span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="n">BM</span><span class="p">,</span><span class="w"> </span><span class="n">BN</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="n">E</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">y</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="n">E</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">pid_m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">program_id</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">pid_n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">program_id</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">k_tiles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="n">shape</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">BK</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">part_x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="n">partition</span><span class="p">(</span><span class="n">shape</span><span class="o">!</span><span class="p">[</span><span class="n">BM</span><span class="p">,</span><span class="w"> </span><span class="n">BK</span><span class="p">]);</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">part_y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">y</span><span class="p">.</span><span class="n">partition</span><span class="p">(</span><span class="n">shape</span><span class="o">!</span><span class="p">[</span><span class="n">BK</span><span class="p">,</span><span class="w"> </span><span class="n">BN</span><span class="p">]);</span>
+
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">acc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">constant</span><span class="p">(</span><span class="mf">0.0</span><span class="k">f32</span><span class="p">,</span><span class="w"> </span><span class="n">shape</span><span class="o">!</span><span class="p">[</span><span class="n">BM</span><span class="p">,</span><span class="w"> </span><span class="n">BN</span><span class="p">]);</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="n">k_tile</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="mi">0</span><span class="k">i32</span><span class="o">..</span><span class="n">k_tiles</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">tile_x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">part_x</span><span class="p">.</span><span class="n">load</span><span class="p">([</span><span class="n">pid_m</span><span class="p">,</span><span class="w"> </span><span class="n">k_tile</span><span class="p">]);</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">tile_y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">part_y</span><span class="p">.</span><span class="n">load</span><span class="p">([</span><span class="n">k_tile</span><span class="p">,</span><span class="w"> </span><span class="n">pid_n</span><span class="p">]);</span>
+<span class="w">        </span><span class="n">acc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mma</span><span class="p">(</span><span class="n">tile_x</span><span class="p">,</span><span class="w"> </span><span class="n">tile_y</span><span class="p">,</span><span class="w"> </span><span class="n">acc</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">z</span><span class="p">.</span><span class="n">store</span><span class="p">(</span><span class="n">acc</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The output accumulator usually uses a wider type than the inputs. For example, FP16 or FP8 inputs often accumulate into FP32.</p>
+</section>
+<section id="type-safety-and-generics">
+<h2>Type Safety and Generics<a class="headerlink" href="#type-safety-and-generics" title="Link to this heading">#</a></h2>
+<p>The compiler catches shape mismatches, element-type mismatches, and invalid matrix multiply shapes before code runs:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">a</span><span class="p">:</span><span class="w"> </span><span class="nc">Tile</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">..</span><span class="p">.;</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">b</span><span class="p">:</span><span class="w"> </span><span class="nc">Tile</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">..</span><span class="p">.;</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mma</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">acc</span><span class="p">);</span><span class="w"> </span><span class="c1">// Error: inner dimensions do not match.</span>
+</pre></div>
+</div>
+<p>Use explicit conversion when element types differ:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">y_float</span><span class="p">:</span><span class="w"> </span><span class="nc">Tile</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">convert_tile</span><span class="p">(</span><span class="n">y_int</span><span class="p">);</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x_float</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">y_float</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Generic kernels can support multiple shapes and element types:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="cp">#[cutile::entry()]</span>
+<span class="k">fn</span><span class="w"> </span><span class="nf">scale</span><span class="o">&lt;</span><span class="n">E</span><span class="p">:</span><span class="w"> </span><span class="nc">ElementType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">S</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="kt">i32</span><span class="p">;</span><span class="w"> </span><span class="mi">2</span><span class="p">]</span><span class="o">&gt;</span><span class="p">(</span>
+<span class="w">    </span><span class="n">z</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">mut</span><span class="w"> </span><span class="n">Tensor</span><span class="o">&lt;</span><span class="n">E</span><span class="p">,</span><span class="w"> </span><span class="n">S</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="n">E</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">alpha</span><span class="p">:</span><span class="w"> </span><span class="nc">E</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">tile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="n">load_like</span><span class="p">(</span><span class="n">z</span><span class="p">);</span>
+<span class="w">    </span><span class="n">z</span><span class="p">.</span><span class="n">store</span><span class="p">(</span><span class="n">tile</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">alpha</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Each concrete element type and const generic value can produce a separate compiled variant. Dynamic tensor dimensions do not.</p>
+<hr class="docutils" />
+<p>Continue to <a class="reference internal" href="jit-compilation.html"><span class="std std-doc">Compilation</span></a>.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="host-vs-device.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Host vs. Device Code</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="jit-compilation.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Compilation</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tensor-partition-tile">Tensor, Partition, Tile</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#partitioning-and-the-grid">Partitioning and the Grid</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#static-and-dynamic-shapes">Static and Dynamic Shapes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-computing-storing">Loading, Computing, Storing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#kernel-operations">Kernel operations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#broadcasting-and-reductions">Broadcasting and Reductions</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#numerically-stable-softmax">Numerically Stable Softmax</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tiled-matrix-multiply">Tiled Matrix Multiply</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#type-safety-and-generics">Type Safety and Generics</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+  
+    <div class="footer-items__center">
+      
+        <div class="footer-item"><footer class="bd-footer-content">
+  <div class="footer-container" style="padding: 1rem 0 2rem 0; border-top: 1px solid var(--pst-color-border); text-align: left;">
+    
+    <!-- NVIDIA Logo -->
+    <div style="margin-bottom: 1rem;">
+      <img src="../_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" 
+           alt="NVIDIA" 
+           style="height: 3.5rem; filter: brightness(0);"
+           class="only-light">
+      <img src="../_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" 
+           alt="NVIDIA" 
+           style="height: 3.5rem;"
+           class="only-dark pst-js-only">
+    </div>
+    
+    <!-- Footer Links - single line, left aligned -->
+    <div style="font-size: 0.8125rem; margin-bottom: 0.5rem; color: var(--pst-color-text-muted);">
+      <a href="https://www.nvidia.com/en-us/about-nvidia/privacy-policy/" target="_blank" style="color: inherit; text-decoration: none;">Privacy Policy</a> | 
+      <a href="https://www.nvidia.com/en-us/preferences/email-preferences/" target="_blank" style="color: inherit; text-decoration: none;">Your Privacy Choices</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/terms-of-service/" target="_blank" style="color: inherit; text-decoration: none;">Terms of Service</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/accessibility/" target="_blank" style="color: inherit; text-decoration: none;">Accessibility</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/company-policies/" target="_blank" style="color: inherit; text-decoration: none;">Corporate Policies</a> | 
+      <a href="https://www.nvidia.com/en-us/product-security/" target="_blank" style="color: inherit; text-decoration: none;">Product Security</a> | 
+      <a href="https://www.nvidia.com/en-us/contact/" target="_blank" style="color: inherit; text-decoration: none;">Contact</a>
+    </div>
+    
+    <!-- Copyright -->
+    <div style="font-size: 0.8125rem; color: var(--pst-color-text-muted);">
+      Copyright &copy; 2025, NVIDIA.
+    </div>
+    
+  </div>
+</footer></div>
+      
+    </div>
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

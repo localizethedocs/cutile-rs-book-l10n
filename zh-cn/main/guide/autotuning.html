@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Autotuning &#8212; cuTile Rust</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/nvidia-sphinx-theme.css?v=933278ad" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=4011299f" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/lightbox.css?v=31fdf494" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../_static/documentation_options.js?v=d786bb5c"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/translations.js?v=540d3cec"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'guide/autotuning';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <script src="../_static/js/lightbox.js?v=17028852"></script>
+    <link rel="canonical" href="https://projects.localizethedocs.org/cutile-rs-book-l10n/guide/autotuning.html" />
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="Bounds-Check Placement" href="bounds-check-placement.html" />
+    <link rel="prev" title="Performance" href="performance.html" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="zh-CN"/>
+  <meta name="docsearch:version" content="main" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+<script type="text/javascript" src="../ltd-provenance.js"></script>
+<script type="text/javascript" src="../ltd-current.js"></script>
+<script type="text/javascript" src="../../../ltd-config.js"></script>
+<script type="text/javascript" src="../../../ltd-flyout.js"></script>
+
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">跳转至主要内容</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>回到顶部</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="版本警告"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="网页导航">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" class="logo__image only-light" alt=""/>
+    <img src="../_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cuTile Rust</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item"><div class="github-links">
+  <!--
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/stargazers" target="_blank" rel="noopener">
+    <i class="fa-solid fa-star" aria-hidden="true"></i>
+    <span class="sr-only">Star</span>
+  </a>
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/fork" target="_blank" rel="noopener">
+    <i class="fa-solid fa-code-fork" aria-hidden="true"></i>
+    <span class="sr-only">Fork</span>
+  </a>
+  -->
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/NVIDIA/cuda-rust" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="搜索" aria-label="搜索" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button></div>
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="亮色"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="暗色"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>亮色</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>暗色</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="当前页面">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><div class="github-links">
+  <!--
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/stargazers" target="_blank" rel="noopener">
+    <i class="fa-solid fa-star" aria-hidden="true"></i>
+    <span class="sr-only">Star</span>
+  </a>
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/fork" target="_blank" rel="noopener">
+    <i class="fa-solid fa-code-fork" aria-hidden="true"></i>
+    <span class="sr-only">Fork</span>
+  </a>
+  -->
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/NVIDIA/cuda-rust" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="搜索" aria-label="搜索" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button></div>
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="亮色"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="暗色"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>亮色</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>暗色</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><div class="sidebar-tree">
+    <p class="sidebar-tree-title">
+        Table of Contents
+    </p>
+    <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/01-hello-world.html">1. Hello World</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/02-vector-addition.html">2. Vector Addition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/03-saxpy.html">3. SAXPY</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/04-matrix-multiplication.html">4. Matrix Multiplication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/05-fused-softmax.html">5. Fused Softmax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/06-flash-attention.html">6. Fused Multihead Attention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/07-intro-to-async.html">7. Intro to Async Execution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/08-data-parallel-mlp.html">8. Data Parallel MLP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/09-pointer-addition.html">9. Pointer Addition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/10-cuda-graphs.html">10. CUDA Graphs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/11-nvfp4-inference.html">11. Inference with NVFP4/MXFP8</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/12-dgx-spark-inference.html">12. LLM Inference on DGX Spark</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="host-vs-device.html">Host vs. Device Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tensors-and-tiles.html">Tensors and Tiles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jit-compilation.html">Compilation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="device-operations.html">Device Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="performance.html">Performance</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Autotuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bounds-check-placement.html">Bounds-Check Placement</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interoperability.html">Interoperability</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debugging-and-profiling.html">Debugging and Profiling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="useful-mental-models.html">Useful Mental Models</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../reference/dsl-api.html">DSL API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/host-api.html">Host API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/compatibility.html">CUDA and Tile IR compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/glossary.html">Glossary</a></li>
+</ul>
+
+</div></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="初始页面">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Autotuning</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="autotuning">
+<h1>Autotuning<a class="headerlink" href="#autotuning" title="链接到此标题。">#</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">cutile::tune</span></code> searches a declared space of kernel configurations, measures
+each candidate with <code class="docutils literal notranslate"><span class="pre">cutile::bench</span></code>'s device-event timing, and persists both
+the trials and the winner. It is gated behind the <code class="docutils literal notranslate"><span class="pre">experimental-tune</span></code>
+feature, and the API may change between releases:</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="n">cutile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">version</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">"..."</span><span class="p">,</span><span class="w"> </span><span class="n">features</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">[</span><span class="s2">"experimental-tune"</span><span class="p">]</span><span class="w"> </span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Use a closure to tune an individual kernel, or implement <code class="docutils literal notranslate"><span class="pre">Objective</span></code> to
+measure a whole request. The <code class="docutils literal notranslate"><span class="pre">autotune</span></code> example uses a closure:
+<code class="docutils literal notranslate"><span class="pre">cargo</span> <span class="pre">run</span> <span class="pre">-p</span> <span class="pre">cutile-examples</span> <span class="pre">--example</span> <span class="pre">autotune</span> <span class="pre">--features</span> <span class="pre">experimental-tune</span></code>.</p>
+<section id="declaring-a-space-and-running-the-search">
+<h2>Declaring a space and running the search<a class="headerlink" href="#declaring-a-space-and-running-the-search" title="链接到此标题。">#</a></h2>
+<p>A configuration is a set of named integer or string parameters; the space
+is the list of configurations. Only <code class="docutils literal notranslate"><span class="pre">configs</span></code> and the terminal <code class="docutils literal notranslate"><span class="pre">run</span></code> are
+required. The rest of the builder is optional: <code class="docutils literal notranslate"><span class="pre">prune</span></code> filters candidates,
+<code class="docutils literal notranslate"><span class="pre">budget</span></code> bounds wall-clock, <code class="docutils literal notranslate"><span class="pre">log</span></code> makes the run resumable, and <code class="docutils literal notranslate"><span class="pre">require</span></code>
+declares incumbents the search must cover.</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">configs</span><span class="p">:</span><span class="w"> </span><span class="nb">Vec</span><span class="o">&lt;</span><span class="n">Config</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">16</span><span class="k">i64</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="mi">64</span><span class="p">,</span><span class="w"> </span><span class="mi">128</span><span class="p">]</span>
+<span class="w">    </span><span class="p">.</span><span class="n">into_iter</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="o">|</span><span class="n">bn</span><span class="o">|</span><span class="w"> </span><span class="n">Config</span><span class="p">::</span><span class="n">new</span><span class="p">([(</span><span class="s">"BN"</span><span class="p">,</span><span class="w"> </span><span class="n">ParamValue</span><span class="p">::</span><span class="n">Int</span><span class="p">(</span><span class="n">bn</span><span class="p">))]))</span>
+<span class="w">    </span><span class="p">.</span><span class="n">collect</span><span class="p">();</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Autotuner</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="s">"fmha_decode"</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">configs</span><span class="p">(</span><span class="n">configs</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">prune</span><span class="p">(</span><span class="o">|</span><span class="n">c</span><span class="o">|</span><span class="w"> </span><span class="n">c</span><span class="p">.</span><span class="n">int</span><span class="p">(</span><span class="s">"BN"</span><span class="p">).</span><span class="n">unwrap</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">pp</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">require</span><span class="p">(</span><span class="fm">vec!</span><span class="p">[</span><span class="n">shipping_config</span><span class="p">])</span>
+<span class="w">    </span><span class="p">.</span><span class="n">budget</span><span class="p">(</span><span class="n">Duration</span><span class="p">::</span><span class="n">from_secs</span><span class="p">(</span><span class="mi">300</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="n">arch</span><span class="p">(</span><span class="s">"sm_100"</span><span class="p">)</span><span class="w"> </span><span class="c1">// record the arch; a resume from another arch is refused</span>
+<span class="w">    </span><span class="p">.</span><span class="n">log</span><span class="p">(</span><span class="s">"fmha_decode.trials.jsonl"</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">run</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">,</span><span class="w"> </span><span class="o">|</span><span class="n">stream</span><span class="p">,</span><span class="w"> </span><span class="n">config</span><span class="o">|</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// The setup closure is yours: read the config, build the kernel's</span>
+<span class="w">        </span><span class="c1">// composed launcher for it, run it once as a correctness gate, and</span>
+<span class="w">        </span><span class="c1">// return the closure to be timed. Err(..) records the candidate as</span>
+<span class="w">        </span><span class="c1">// invalid and the search continues.</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">bn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">config</span><span class="p">.</span><span class="n">int</span><span class="p">(</span><span class="s">"BN"</span><span class="p">).</span><span class="n">unwrap</span><span class="p">();</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">launch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">move</span><span class="w"> </span><span class="o">|</span><span class="n">stream</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Stream</span><span class="o">&gt;|</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">fmha_decode</span><span class="p">(</span><span class="n">out</span><span class="p">.</span><span class="n">partition</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">bn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="kt">i32</span><span class="p">]),</span><span class="w"> </span><span class="o">&amp;</span><span class="n">q</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">v</span><span class="p">)</span>
+<span class="w">                </span><span class="p">.</span><span class="n">generics</span><span class="p">(</span><span class="n">generics_for</span><span class="p">(</span><span class="n">bn</span><span class="p">))</span>
+<span class="w">                </span><span class="p">.</span><span class="n">sync_on</span><span class="p">(</span><span class="n">stream</span><span class="p">)</span>
+<span class="w">        </span><span class="p">};</span>
+<span class="w">        </span><span class="n">launch</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="w">        </span><span class="nb">Ok</span><span class="p">(</span><span class="n">launch</span><span class="p">)</span>
+<span class="w">    </span><span class="p">})</span><span class="o">?</span><span class="p">;</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">best</span><span class="p">:</span><span class="w"> </span><span class="nc">Config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">output</span><span class="p">.</span><span class="n">best</span><span class="p">.</span><span class="n">expect</span><span class="p">(</span><span class="s">"a winner"</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The two best candidates are compared in a paired A/B runoff to account for
+clock and temperature drift. A finalist that fails setup forfeits.</p>
+<p>Every <code class="docutils literal notranslate"><span class="pre">require</span></code>d configuration must belong to the search space. These
+configurations are measured first, before the budget can cut off the search.
+The winner must match or beat each of them.</p>
+<p>Trial logs record the tuner name and a hash of the search space. A log from
+a different tuner or space is rejected.</p>
+</section>
+<section id="measuring-a-full-request-with-objective">
+<span id="engine-scale-measurement-implements-objective"></span><h2>Measuring a full request with <code class="docutils literal notranslate"><span class="pre">Objective</span></code><a class="headerlink" href="#measuring-a-full-request-with-objective" title="链接到此标题。">#</a></h2>
+<p>When the objective is end-to-end (tokens per second, request latency), the
+library cannot own the launch. Implement <code class="docutils literal notranslate"><span class="pre">Objective</span></code> instead: <code class="docutils literal notranslate"><span class="pre">configs()</span></code>
+exposes the space, <code class="docutils literal notranslate"><span class="pre">measure(index)</span></code> applies one candidate at engine scope
+and returns a <code class="docutils literal notranslate"><span class="pre">Trial</span></code> built with <code class="docutils literal notranslate"><span class="pre">Trial::measured</span></code> or <code class="docutils literal notranslate"><span class="pre">Trial::invalid</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">budget_remaining()</span></code> reports what is left. <code class="docutils literal notranslate"><span class="pre">Autotuner::run_objective</span></code> then
+provides the same trial logging, resume, and <code class="docutils literal notranslate"><span class="pre">require</span></code> coverage as the
+closure path:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">objective</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EngineObjective</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="n">engine</span><span class="p">,</span><span class="w"> </span><span class="n">configs</span><span class="p">);</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Autotuner</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="s">"engine_prefill"</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">arch</span><span class="p">(</span><span class="n">current_arch</span><span class="p">)</span><span class="w"> </span><span class="c1">// e.g. "sm_100"; resume refuses a foreign-arch log</span>
+<span class="w">    </span><span class="p">.</span><span class="n">log</span><span class="p">(</span><span class="s">"prefill.trials.jsonl"</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">require</span><span class="p">(</span><span class="fm">vec!</span><span class="p">[</span><span class="n">current_default</span><span class="p">])</span>
+<span class="w">    </span><span class="p">.</span><span class="n">run_objective</span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="n">objective</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>This path has no paired runoff: the library cannot re-time an engine
+objective through its bench closures. <code class="docutils literal notranslate"><span class="pre">Output::best</span></code> is the best sequential
+median. The caller can re-measure finalists together to check for drift.</p>
+<p>Serialized <code class="docutils literal notranslate"><span class="pre">Trial</span></code> records remain compatible across cuTile upgrades. An
+incompatible change increments the log schema version, and <code class="docutils literal notranslate"><span class="pre">TrialLog::open</span></code>
+rejects the old schema.</p>
+</section>
+<section id="committing-winners">
+<h2>Committing winners<a class="headerlink" href="#committing-winners" title="链接到此标题。">#</a></h2>
+<p>A <code class="docutils literal notranslate"><span class="pre">tune::Record</span></code> persists winners so production loads them instead of
+re-searching: one JSON file per kernel, written by <code class="docutils literal notranslate"><span class="pre">save</span></code> and committed
+next to the code it tunes. The file holds a provenance header (kernel
+name, source hash, cutile version, <code class="docutils literal notranslate"><span class="pre">tileiras</span></code> fingerprint, architecture,
+search-space hash) and one entry per shape-class bucket.</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">use</span><span class="w"> </span><span class="n">cutile</span><span class="p">::</span><span class="n">tune</span><span class="p">::{</span><span class="n">L2Key</span><span class="p">,</span><span class="w"> </span><span class="n">Record</span><span class="p">,</span><span class="w"> </span><span class="n">RecordEntry</span><span class="p">,</span><span class="w"> </span><span class="n">Workspace</span><span class="p">};</span>
+
+<span class="c1">// After tuning: `winner` is the winning Trial, `best` its Config</span>
+<span class="c1">// (`output.best`), and `launcher` the kernel's composed builder applied</span>
+<span class="c1">// with `best`'s values — the same call expression production dispatches.</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">TrialState</span><span class="p">::</span><span class="n">Measured</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">median_ms</span><span class="p">,</span><span class="w"> </span><span class="n">reps</span><span class="p">,</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">winner</span><span class="p">.</span><span class="n">state</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="fm">unreachable!</span><span class="p">(</span><span class="s">"the winner was measured"</span><span class="p">);</span>
+<span class="p">};</span>
+<span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">record</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Record</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="o">&amp;</span><span class="n">workspace</span><span class="p">);</span>
+<span class="n">record</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">RecordEntry</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">bucket</span><span class="p">:</span><span class="w"> </span><span class="s">"tg&lt;=512"</span><span class="p">.</span><span class="n">into</span><span class="p">(),</span>
+<span class="w">    </span><span class="n">config</span><span class="p">:</span><span class="w"> </span><span class="nc">best</span><span class="p">,</span>
+<span class="w">    </span><span class="n">median_ms</span><span class="p">,</span>
+<span class="w">    </span><span class="n">samples</span><span class="p">:</span><span class="w"> </span><span class="nc">reps</span><span class="p">,</span>
+<span class="w">    </span><span class="n">l2_key</span><span class="p">:</span><span class="w"> </span><span class="nb">Some</span><span class="p">(</span><span class="n">L2Key</span><span class="p">::</span><span class="n">current</span><span class="p">(</span><span class="n">launcher</span><span class="p">.</span><span class="n">l2_cache_key</span><span class="p">()</span><span class="o">?</span><span class="p">)),</span>
+<span class="p">});</span>
+<span class="n">record</span><span class="p">.</span><span class="n">save</span><span class="p">(</span><span class="o">&amp;</span><span class="n">path</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+
+<span class="c1">// In production: load, verified against the running workspace.</span>
+<span class="kd">let</span><span class="w"> </span><span class="p">(</span><span class="n">record</span><span class="p">,</span><span class="w"> </span><span class="n">warnings</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Record</span><span class="p">::</span><span class="n">load_verified</span><span class="p">(</span><span class="o">&amp;</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">workspace</span><span class="p">,</span><span class="w"> </span><span class="o">|</span><span class="n">entry</span><span class="o">|</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nb">Ok</span><span class="p">(</span><span class="nb">Some</span><span class="p">(</span><span class="n">specialize_for</span><span class="p">(</span><span class="o">&amp;</span><span class="n">entry</span><span class="p">.</span><span class="n">config</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="n">l2_cache_key</span><span class="p">()</span><span class="o">?</span><span class="p">))</span>
+<span class="p">})</span><span class="o">?</span><span class="p">;</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">entry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">record</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">"tg&lt;=512"</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>A bucket is a plain string label, matched exactly by <code class="docutils literal notranslate"><span class="pre">Record::get</span></code>; the
+predicate that decides which bucket a runtime shape falls into lives in
+the consumer's dispatch code, and the record only stores the label.
+<code class="docutils literal notranslate"><span class="pre">median_ms</span></code> and <code class="docutils literal notranslate"><span class="pre">samples</span></code> are the winner's measured median latency and
+the number of timed reps behind it — provenance for a human reading the
+committed file, not inputs to verification. The <code class="docutils literal notranslate"><span class="pre">l2_key</span></code> is the winner's
+persistent-cache key, computed from the composed builder without
+compiling or launching (<code class="docutils literal notranslate"><span class="pre">.l2_cache_key()</span></code>).</p>
+<p><code class="docutils literal notranslate"><span class="pre">load_verified</span></code> rejects a record if its kernel, architecture, source hash,
+or search space differs from the running workspace. It also recomputes each
+entry's cache key to check the kernel's dependencies and toolchain. Changes
+that affect only timing produce warnings.</p>
+</section>
+<section id="warming-and-managing-the-kernel-cache-during-sweeps">
+<h2>Warming and managing the kernel cache during sweeps<a class="headerlink" href="#warming-and-managing-the-kernel-cache-during-sweeps" title="链接到此标题。">#</a></h2>
+<p>Call <code class="docutils literal notranslate"><span class="pre">.compile()</span></code> on the same builder used for <code class="docutils literal notranslate"><span class="pre">.execute</span></code> or <code class="docutils literal notranslate"><span class="pre">.sync_on</span></code> to
+warm the specialization that will run. <code class="docutils literal notranslate"><span class="pre">api::meta</span></code> tensors supply shape and
+dtype without device allocation or kernel launches:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="n">my_module</span><span class="p">::</span><span class="n">my_kernel</span><span class="p">(</span><span class="n">api</span><span class="p">::</span><span class="n">meta</span><span class="p">::</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">64</span><span class="p">,</span><span class="w"> </span><span class="mi">64</span><span class="p">]).</span><span class="n">sync</span><span class="p">()</span><span class="o">?</span><span class="p">.</span><span class="n">partition</span><span class="p">([</span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">]),</span><span class="w"> </span><span class="o">..</span><span class="p">.)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">generics</span><span class="p">(</span><span class="n">generics</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">compile_options</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">compile</span><span class="p">()</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Tuning sweeps and long-running serving engines can accumulate many
+specializations, and each cached kernel holds device memory. The in-memory
+kernel cache is intentionally unbounded. The <code class="docutils literal notranslate"><span class="pre">unsafe</span></code> functions
+<code class="docutils literal notranslate"><span class="pre">clear_kernel_cache()</span></code>, <code class="docutils literal notranslate"><span class="pre">evict_kernel(&amp;key)</span></code>, and <code class="docutils literal notranslate"><span class="pre">retain_kernels(pred)</span></code> in
+<code class="docutils literal notranslate"><span class="pre">cutile::tile_kernel</span></code> are available without any Cargo feature. They remove
+entries, releasing each module's device memory when its last holder drops.
+These functions are <code class="docutils literal notranslate"><span class="pre">unsafe</span></code>: synchronize every stream that may still be
+running a cached kernel before evicting it. Between tuning trials or while
+a serving engine is idle,
+callers can evict and then reload the needed specializations. The autotuning
+API in <code class="docutils literal notranslate"><span class="pre">cutile::tune</span></code> still requires <code class="docutils literal notranslate"><span class="pre">experimental-tune</span></code>.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="performance.html"
+       title="上一页">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">上一页</p>
+        <p class="prev-next-title">Performance</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="bounds-check-placement.html"
+       title="下一页">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">下一页</p>
+        <p class="prev-next-title">Bounds-Check Placement</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> 当前页面
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#declaring-a-space-and-running-the-search">Declaring a space and running the search</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#measuring-a-full-request-with-objective">Measuring a full request with <code class="docutils literal notranslate"><span class="pre">Objective</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#committing-winners">Committing winners</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#warming-and-managing-the-kernel-cache-during-sweeps">Warming and managing the kernel cache during sweeps</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+  
+    <div class="footer-items__center">
+      
+        <div class="footer-item"><footer class="bd-footer-content">
+  <div class="footer-container" style="padding: 1rem 0 2rem 0; border-top: 1px solid var(--pst-color-border); text-align: left;">
+    
+    <!-- NVIDIA Logo -->
+    <div style="margin-bottom: 1rem;">
+      <img src="../_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" 
+           alt="NVIDIA" 
+           style="height: 3.5rem; filter: brightness(0);"
+           class="only-light">
+      <img src="../_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" 
+           alt="NVIDIA" 
+           style="height: 3.5rem;"
+           class="only-dark pst-js-only">
+    </div>
+    
+    <!-- Footer Links - single line, left aligned -->
+    <div style="font-size: 0.8125rem; margin-bottom: 0.5rem; color: var(--pst-color-text-muted);">
+      <a href="https://www.nvidia.com/en-us/about-nvidia/privacy-policy/" target="_blank" style="color: inherit; text-decoration: none;">Privacy Policy</a> | 
+      <a href="https://www.nvidia.com/en-us/preferences/email-preferences/" target="_blank" style="color: inherit; text-decoration: none;">Your Privacy Choices</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/terms-of-service/" target="_blank" style="color: inherit; text-decoration: none;">Terms of Service</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/accessibility/" target="_blank" style="color: inherit; text-decoration: none;">Accessibility</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/company-policies/" target="_blank" style="color: inherit; text-decoration: none;">Corporate Policies</a> | 
+      <a href="https://www.nvidia.com/en-us/product-security/" target="_blank" style="color: inherit; text-decoration: none;">Product Security</a> | 
+      <a href="https://www.nvidia.com/en-us/contact/" target="_blank" style="color: inherit; text-decoration: none;">Contact</a>
+    </div>
+    
+    <!-- Copyright -->
+    <div style="font-size: 0.8125rem; color: var(--pst-color-text-muted);">
+      Copyright &copy; 2025, NVIDIA.
+    </div>
+    
+  </div>
+</footer></div>
+      
+    </div>
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

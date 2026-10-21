@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+
+
+<html lang="en-US" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>10. CUDA Graphs &#8212; cuTile Rust</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/nvidia-sphinx-theme.css?v=933278ad" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=4011299f" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/lightbox.css?v=31fdf494" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../_static/documentation_options.js?v=66d1f95f"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/10-cuda-graphs';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <script src="../_static/js/lightbox.js?v=17028852"></script>
+    <link rel="canonical" href="https://projects.localizethedocs.org/cutile-rs-book-l10n/tutorials/10-cuda-graphs.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="11. Inference with NVFP4/MXFP8" href="11-nvfp4-inference.html" />
+    <link rel="prev" title="9. Pointer Addition" href="09-pointer-addition.html" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en-US"/>
+  <meta name="docsearch:version" content="main" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+<script type="text/javascript" src="../ltd-provenance.js"></script>
+<script type="text/javascript" src="../ltd-current.js"></script>
+<script type="text/javascript" src="../../../ltd-config.js"></script>
+<script type="text/javascript" src="../../../ltd-flyout.js"></script>
+
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" class="logo__image only-light" alt=""/>
+    <img src="../_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cuTile Rust</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item"><div class="github-links">
+  <!--
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/stargazers" target="_blank" rel="noopener">
+    <i class="fa-solid fa-star" aria-hidden="true"></i>
+    <span class="sr-only">Star</span>
+  </a>
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/fork" target="_blank" rel="noopener">
+    <i class="fa-solid fa-code-fork" aria-hidden="true"></i>
+    <span class="sr-only">Fork</span>
+  </a>
+  -->
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/NVIDIA/cuda-rust" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button></div>
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><div class="github-links">
+  <!--
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/stargazers" target="_blank" rel="noopener">
+    <i class="fa-solid fa-star" aria-hidden="true"></i>
+    <span class="sr-only">Star</span>
+  </a>
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/fork" target="_blank" rel="noopener">
+    <i class="fa-solid fa-code-fork" aria-hidden="true"></i>
+    <span class="sr-only">Fork</span>
+  </a>
+  -->
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/NVIDIA/cuda-rust" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button></div>
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><div class="sidebar-tree">
+    <p class="sidebar-tree-title">
+        Table of Contents
+    </p>
+    <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="01-hello-world.html">1. Hello World</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02-vector-addition.html">2. Vector Addition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03-saxpy.html">3. SAXPY</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04-matrix-multiplication.html">4. Matrix Multiplication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05-fused-softmax.html">5. Fused Softmax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06-flash-attention.html">6. Fused Multihead Attention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07-intro-to-async.html">7. Intro to Async Execution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08-data-parallel-mlp.html">8. Data Parallel MLP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="09-pointer-addition.html">9. Pointer Addition</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">10. CUDA Graphs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11-nvfp4-inference.html">11. Inference with NVFP4/MXFP8</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12-dgx-spark-inference.html">12. LLM Inference on DGX Spark</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guide/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/host-vs-device.html">Host vs. Device Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/tensors-and-tiles.html">Tensors and Tiles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/jit-compilation.html">Compilation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/device-operations.html">Device Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/performance.html">Performance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/autotuning.html">Autotuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/bounds-check-placement.html">Bounds-Check Placement</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/interoperability.html">Interoperability</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/debugging-and-profiling.html">Debugging and Profiling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/useful-mental-models.html">Useful Mental Models</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../reference/dsl-api.html">DSL API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/host-api.html">Host API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/compatibility.html">CUDA and Tile IR compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/glossary.html">Glossary</a></li>
+</ul>
+
+</div></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">10. CUDA Graphs</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="cuda-graphs">
+<h1>10. CUDA Graphs<a class="headerlink" href="#cuda-graphs" title="Link to this heading">#</a></h1>
+<p>CUDA graphs let you capture an entire GPU workload once and replay it
+many times, eliminating per-launch overhead. This tutorial builds a
+multi-layer forward pass using DeviceOp combinators, captures it as
+a CUDA graph, and replays it in a token loop.</p>
+<hr class="docutils" />
+<section id="motivation">
+<h2>Motivation<a class="headerlink" href="#motivation" title="Link to this heading">#</a></h2>
+<p>Every kernel launch involves CPU-side work: selecting a stream, setting up
+arguments, invoking the driver. For workloads that repeat the same graph of
+operations (e.g., the forward pass of a transformer), this per-launch
+overhead can dominate — especially at small batch sizes where kernels are
+fast relative to their launch cost.</p>
+<p>A CUDA graph records the entire sequence of operations once, then replays
+it with a single driver call. The GPU sees the full graph up front and can
+schedule internal work more aggressively.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Without graphs:                     With graphs:
+
+  CPU: launch → wait → launch →      CPU: launch_graph → wait
+       wait → launch → wait               (single call)
+  GPU: ████   ████   ████            GPU: ████████████████
+       gaps between kernels                no gaps
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="the-model">
+<h2>The Model<a class="headerlink" href="#the-model" title="Link to this heading">#</a></h2>
+<p>We’ll build a minimal transformer-style layer stack: each layer performs
+RMSNorm → Q projection (matvec) → O projection (matvec) → residual add.
+The hidden state flows through all layers sequentially.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>input
+  │
+  ├─ Layer 0: RMSNorm → Q MatVec → O MatVec → Add(residual, hidden)
+  │
+  ├─ Layer 1: RMSNorm → Q MatVec → O MatVec → Add(residual, hidden)
+  │
+  └─ … (n_layers)
+</pre></div>
+</div>
+<section id="kernels">
+<h3>Kernels<a class="headerlink" href="#kernels" title="Link to this heading">#</a></h3>
+<p>Three cutile kernels handle the compute. Each follows the output-first
+convention (<code class="docutils literal notranslate"><span class="pre">&amp;mut</span> <span class="pre">Tensor</span></code> as the first parameter):</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="cp">#[cutile::module]</span>
+<span class="k">mod</span><span class="w"> </span><span class="nn">kernels</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">use</span><span class="w"> </span><span class="n">cutile</span><span class="p">::</span><span class="n">core</span><span class="p">::</span><span class="o">*</span><span class="p">;</span>
+
+<span class="w">    </span><span class="sd">/// RMS normalization: out = rms_norm(x) * w</span>
+<span class="w">    </span><span class="cp">#[cutile::entry()]</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">rms_norm</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">D</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">BS</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="o">&gt;</span><span class="p">(</span>
+<span class="w">        </span><span class="n">out</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">mut</span><span class="w"> </span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">D</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">        </span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">D</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">        </span><span class="n">w</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="n">D</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">        </span><span class="n">eps</span><span class="p">:</span><span class="w"> </span><span class="kt">f32</span><span class="p">,</span>
+<span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* tile-level implementation */</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">    </span><span class="sd">/// Matrix-vector multiply: out = x @ w^T</span>
+<span class="w">    </span><span class="cp">#[cutile::entry()]</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">matvec</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">BN</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">BK</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">K</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="o">&gt;</span><span class="p">(</span>
+<span class="w">        </span><span class="n">out</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">mut</span><span class="w"> </span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="n">BN</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">        </span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">K</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">        </span><span class="n">w</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">K</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* tile-level implementation */</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">    </span><span class="sd">/// Element-wise add: out = a + b</span>
+<span class="w">    </span><span class="cp">#[cutile::entry()]</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">add</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">B</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="o">&gt;</span><span class="p">(</span>
+<span class="w">        </span><span class="n">out</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">mut</span><span class="w"> </span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="n">B</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">        </span><span class="n">a</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">        </span><span class="n">b</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* tile-level implementation */</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="model-state">
+<h3>Model State<a class="headerlink" href="#model-state" title="Link to this heading">#</a></h3>
+<p>Weights are shared across all forward calls. Buffers are pre-allocated once
+and reused every token — the graph replays into the same memory:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">LayerWeights</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">norm_w</span><span class="p">:</span><span class="w"> </span><span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">wq</span><span class="p">:</span><span class="w"> </span><span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">wo</span><span class="p">:</span><span class="w"> </span><span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;&gt;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="k">struct</span><span class="w"> </span><span class="nc">LayerBuffers</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">norm</span><span class="p">:</span><span class="w"> </span><span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">q</span><span class="p">:</span><span class="w"> </span><span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">o</span><span class="p">:</span><span class="w"> </span><span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">residual</span><span class="p">:</span><span class="w"> </span><span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;&gt;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="building-the-lazy-graph">
+<h2>Building the Lazy Graph<a class="headerlink" href="#building-the-lazy-graph" title="Link to this heading">#</a></h2>
+<p>Build the forward pass as a lazy <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> for graph capture:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">fn</span><span class="w"> </span><span class="nf">build_forward</span><span class="p">(</span>
+<span class="w">    </span><span class="n">cfg</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Config</span><span class="p">,</span>
+<span class="w">    </span><span class="n">weights</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="p">[</span><span class="n">LayerWeights</span><span class="p">],</span>
+<span class="w">    </span><span class="n">input</span><span class="p">:</span><span class="w"> </span><span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">buffers</span><span class="p">:</span><span class="w"> </span><span class="nb">Vec</span><span class="o">&lt;</span><span class="n">LayerBuffers</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="k">impl</span><span class="w"> </span><span class="n">DeviceOp</span><span class="o">&lt;</span><span class="n">Output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">()</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">SharedDeviceOp</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;&gt;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">ops</span><span class="p">:</span><span class="w"> </span><span class="nb">Vec</span><span class="o">&lt;</span><span class="n">BoxedDeviceOp</span><span class="o">&lt;</span><span class="p">()</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">Vec</span><span class="p">::</span><span class="n">with_capacity</span><span class="p">(</span><span class="n">buffers</span><span class="p">.</span><span class="n">len</span><span class="p">());</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">hidden</span><span class="p">:</span><span class="w"> </span><span class="nc">SharedDeviceOp</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="n">cuda_async</span><span class="p">::</span><span class="n">device_operation</span><span class="p">::</span><span class="n">shared</span><span class="p">(</span><span class="n">input</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">w</span><span class="p">,</span><span class="w"> </span><span class="n">bufs</span><span class="p">)</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">weights</span><span class="p">.</span><span class="n">iter</span><span class="p">().</span><span class="n">zip</span><span class="p">(</span><span class="n">buffers</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// RMSNorm: hidden(1,d) × norm_w → norm(1,d)</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">norm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rms_norm</span><span class="p">(</span>
+<span class="w">            </span><span class="n">bufs</span><span class="p">.</span><span class="n">norm</span><span class="p">.</span><span class="n">try_partition</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">cfg</span><span class="p">.</span><span class="n">d</span><span class="p">]).</span><span class="n">expect</span><span class="p">(</span><span class="s">"sole buffer owner"</span><span class="p">),</span>
+<span class="w">            </span><span class="n">hidden</span><span class="p">.</span><span class="n">clone</span><span class="p">().</span><span class="n">reshape</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">cfg</span><span class="p">.</span><span class="n">d</span><span class="p">]),</span>
+<span class="w">            </span><span class="n">w</span><span class="p">.</span><span class="n">norm_w</span><span class="p">.</span><span class="n">clone</span><span class="p">(),</span>
+<span class="w">            </span><span class="n">cfg</span><span class="p">.</span><span class="n">eps</span><span class="p">,</span>
+<span class="w">        </span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="n">generics</span><span class="p">(</span><span class="n">cfg</span><span class="p">.</span><span class="n">rms_generics</span><span class="p">())</span>
+<span class="w">        </span><span class="p">.</span><span class="n">first</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="n">unpartition</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="n">shared</span><span class="p">();</span>
+
+<span class="w">        </span><span class="c1">// Q projection: norm @ wq^T → q</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">matvec</span><span class="p">(</span>
+<span class="w">            </span><span class="n">bufs</span><span class="p">.</span><span class="n">q</span><span class="p">.</span><span class="n">try_partition</span><span class="p">([</span><span class="n">cfg</span><span class="p">.</span><span class="n">bn</span><span class="p">]).</span><span class="n">expect</span><span class="p">(</span><span class="s">"sole buffer owner"</span><span class="p">),</span>
+<span class="w">            </span><span class="n">norm</span><span class="p">.</span><span class="n">clone</span><span class="p">(),</span>
+<span class="w">            </span><span class="n">w</span><span class="p">.</span><span class="n">wq</span><span class="p">.</span><span class="n">clone</span><span class="p">(),</span>
+<span class="w">        </span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="n">generics</span><span class="p">(</span><span class="n">cfg</span><span class="p">.</span><span class="n">mv_generics</span><span class="p">())</span>
+<span class="w">        </span><span class="p">.</span><span class="n">first</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="n">unpartition</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="n">shared</span><span class="p">();</span>
+
+<span class="w">        </span><span class="c1">// O projection: q @ wo^T → o</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">o</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">matvec</span><span class="p">(</span>
+<span class="w">            </span><span class="n">bufs</span><span class="p">.</span><span class="n">o</span><span class="p">.</span><span class="n">try_partition</span><span class="p">([</span><span class="n">cfg</span><span class="p">.</span><span class="n">bn</span><span class="p">]).</span><span class="n">expect</span><span class="p">(</span><span class="s">"sole buffer owner"</span><span class="p">),</span>
+<span class="w">            </span><span class="n">q</span><span class="p">.</span><span class="n">clone</span><span class="p">().</span><span class="n">reshape</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">cfg</span><span class="p">.</span><span class="n">d</span><span class="p">]),</span>
+<span class="w">            </span><span class="n">w</span><span class="p">.</span><span class="n">wo</span><span class="p">.</span><span class="n">clone</span><span class="p">(),</span>
+<span class="w">        </span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="n">generics</span><span class="p">(</span><span class="n">cfg</span><span class="p">.</span><span class="n">mv_generics</span><span class="p">())</span>
+<span class="w">        </span><span class="p">.</span><span class="n">first</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="n">unpartition</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="n">shared</span><span class="p">();</span>
+
+<span class="w">        </span><span class="c1">// Residual add: hidden + o → residual</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">residual</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">add</span><span class="p">(</span>
+<span class="w">            </span><span class="n">bufs</span><span class="p">.</span><span class="n">residual</span><span class="p">.</span><span class="n">try_partition</span><span class="p">([</span><span class="n">cfg</span><span class="p">.</span><span class="n">block</span><span class="p">]).</span><span class="n">expect</span><span class="p">(</span><span class="s">"sole buffer owner"</span><span class="p">),</span>
+<span class="w">            </span><span class="n">hidden</span><span class="p">.</span><span class="n">clone</span><span class="p">().</span><span class="n">reshape</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="n">cfg</span><span class="p">.</span><span class="n">d</span><span class="p">]),</span>
+<span class="w">            </span><span class="n">o</span><span class="p">.</span><span class="n">clone</span><span class="p">(),</span>
+<span class="w">        </span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="n">first</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="n">unpartition</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="n">shared</span><span class="p">();</span>
+
+<span class="w">        </span><span class="n">hidden</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">residual</span><span class="p">.</span><span class="n">clone</span><span class="p">();</span>
+
+<span class="w">        </span><span class="c1">// Keep the layer's work in the graph; the fixed buffers hold the data.</span>
+<span class="w">        </span><span class="n">ops</span><span class="p">.</span><span class="n">push</span><span class="p">(</span>
+<span class="w">            </span><span class="n">zip</span><span class="o">!</span><span class="p">(</span><span class="n">norm</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">,</span><span class="w"> </span><span class="n">o</span><span class="p">,</span><span class="w"> </span><span class="n">residual</span><span class="p">)</span>
+<span class="w">                </span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="o">|</span><span class="n">_</span><span class="o">|</span><span class="w"> </span><span class="p">())</span>
+<span class="w">                </span><span class="p">.</span><span class="n">boxed</span><span class="p">(),</span>
+<span class="w">        </span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// DeviceOpVec produces Vec&lt;()&gt;; discard it so the capture yields CudaGraph&lt;()&gt;.</span>
+<span class="w">    </span><span class="p">(</span><span class="n">DeviceOpVec</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="n">ops</span><span class="p">).</span><span class="n">map</span><span class="p">(</span><span class="o">|</span><span class="n">_</span><span class="o">|</span><span class="w"> </span><span class="p">()),</span><span class="w"> </span><span class="n">hidden</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The combinators in <code class="docutils literal notranslate"><span class="pre">build_forward</span></code> have these roles:</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">.shared()</span></code></strong> — Each intermediate result is shared so it can feed into
+both the next kernel and the final buffer collection. The underlying
+computation runs once; downstream consumers get <code class="docutils literal notranslate"><span class="pre">Arc::clone()</span></code>.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">.first()</span></code></strong> — Kernel launches return a tuple of all arguments.
+<code class="docutils literal notranslate"><span class="pre">.first()</span></code> extracts just the output (the <code class="docutils literal notranslate"><span class="pre">&amp;mut</span> <span class="pre">Tensor</span></code> parameter).</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">try_partition</span></code></strong> — Converts <code class="docutils literal notranslate"><span class="pre">Arc&lt;Tensor&lt;T&gt;&gt;</span></code> into a <code class="docutils literal notranslate"><span class="pre">Partition</span></code> by
+proving sole ownership (Arc refcount == 1). It returns <code class="docutils literal notranslate"><span class="pre">Err</span></code> when the Arc
+has other owners; the <code class="docutils literal notranslate"><span class="pre">.expect(...)</span></code> above turns that into a panic.
+(<code class="docutils literal notranslate"><span class="pre">shared(...)</span></code> is <code class="docutils literal notranslate"><span class="pre">cuda_async::device_operation::shared</span></code>; it is not in the
+prelude.)</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">DeviceOpVec</span></code></strong> — Collects boxed ops for each layer’s graph work. Its
+output is <code class="docutils literal notranslate"><span class="pre">Vec&lt;()&gt;</span></code>, so the trailing <code class="docutils literal notranslate"><span class="pre">.map(|_|</span> <span class="pre">())</span></code> is what makes the
+captured graph a <code class="docutils literal notranslate"><span class="pre">CudaGraph&lt;()&gt;</span></code>.</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="capturing-the-graph">
+<h2>Capturing the Graph<a class="headerlink" href="#capturing-the-graph" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">.graph_on(stream)</span></code> executes the operation once in CUDA’s stream capture mode,
+recording all GPU work into a replayable graph:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">input</span><span class="p">:</span><span class="w"> </span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">api</span><span class="p">::</span><span class="n">rand</span><span class="p">([</span><span class="n">cfg</span><span class="p">.</span><span class="n">d</span><span class="p">],</span><span class="w"> </span><span class="nb">None</span><span class="p">).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">input_arc</span><span class="p">:</span><span class="w"> </span><span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">unsafe</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">input</span><span class="p">.</span><span class="n">into_shared_alias</span><span class="p">()</span><span class="w"> </span><span class="p">};</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">buffers</span><span class="p">:</span><span class="w"> </span><span class="nb">Vec</span><span class="o">&lt;</span><span class="n">_</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="o">..</span><span class="n">cfg</span><span class="p">.</span><span class="n">n_layers</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="o">|</span><span class="n">_</span><span class="o">|</span><span class="w"> </span><span class="n">LayerBuffers</span><span class="p">::</span><span class="n">allocate</span><span class="p">(</span><span class="n">cfg</span><span class="p">.</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">stream</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="n">collect</span><span class="p">::</span><span class="o">&lt;</span><span class="nb">Result</span><span class="o">&lt;</span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">_</span><span class="o">&gt;&gt;</span><span class="p">()</span><span class="o">?</span><span class="p">;</span>
+<span class="k">unsafe</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">stream</span><span class="p">.</span><span class="n">synchronize</span><span class="p">()</span><span class="w"> </span><span class="p">}</span><span class="o">?</span><span class="p">;</span>
+
+<span class="c1">// Build lazy graph (no GPU work).</span>
+<span class="kd">let</span><span class="w"> </span><span class="p">(</span><span class="n">forward_op</span><span class="p">,</span><span class="w"> </span><span class="n">output_shared</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">build_forward</span><span class="p">(</span><span class="o">&amp;</span><span class="n">cfg</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">weights</span><span class="p">,</span><span class="w"> </span><span class="n">input_arc</span><span class="p">,</span><span class="w"> </span><span class="n">buffers</span><span class="p">);</span>
+
+<span class="c1">// Capture: executes once, records everything, returns CudaGraph.</span>
+<span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">graph</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">forward_op</span><span class="p">.</span><span class="n">graph_on</span><span class="p">(</span><span class="n">stream</span><span class="p">.</span><span class="n">clone</span><span class="p">())</span><span class="o">?</span><span class="p">;</span>
+
+<span class="c1">// Retrieve the output from the capture execution.</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">output_shared</span><span class="p">.</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>After capture:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">graph</span></code> holds the recorded CUDA graph, ready for replay.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">input</span></code> is the fixed input buffer whose pointer is baked into the graph.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">output</span></code> points to the final layer’s residual buffer, which the graph rewrites on replay.</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="the-module-pattern">
+<h2>The Module Pattern<a class="headerlink" href="#the-module-pattern" title="Link to this heading">#</a></h2>
+<p>Implement <code class="docutils literal notranslate"><span class="pre">Module</span></code> to call the graph through <code class="docutils literal notranslate"><span class="pre">forward</span></code>:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">trait</span><span class="w"> </span><span class="n">Module</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">type</span><span class="w"> </span><span class="nc">Input</span><span class="p">:</span><span class="w"> </span><span class="nb">Send</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="o">?</span><span class="nb">Sized</span><span class="p">;</span>
+<span class="w">    </span><span class="k">type</span><span class="w"> </span><span class="nc">Output</span><span class="p">:</span><span class="w"> </span><span class="nb">Send</span><span class="p">;</span>
+<span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">input</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Self</span><span class="p">::</span><span class="n">Input</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">Result</span><span class="o">&lt;</span><span class="bp">Self</span><span class="p">::</span><span class="n">Output</span><span class="p">,</span><span class="w"> </span><span class="n">DeviceError</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">struct</span><span class="w"> </span><span class="nc">GraphModel</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">graph</span><span class="p">:</span><span class="w"> </span><span class="nc">CudaGraph</span><span class="o">&lt;</span><span class="p">()</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">input</span><span class="p">:</span><span class="w"> </span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">output</span><span class="p">:</span><span class="w"> </span><span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;&gt;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="k">impl</span><span class="w"> </span><span class="n">Module</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">GraphModel</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">type</span><span class="w"> </span><span class="nc">Input</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">type</span><span class="w"> </span><span class="nc">Output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Arc</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;&gt;</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">input</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Self</span><span class="p">::</span><span class="n">Input</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">Result</span><span class="o">&lt;</span><span class="bp">Self</span><span class="p">::</span><span class="n">Output</span><span class="p">,</span><span class="w"> </span><span class="n">DeviceError</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// Copy new embedding into the baked-in input buffer.</span>
+<span class="w">        </span><span class="bp">self</span><span class="p">.</span><span class="n">graph</span><span class="p">.</span><span class="n">update</span><span class="p">(</span><span class="n">api</span><span class="p">::</span><span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="bp">self</span><span class="p">.</span><span class="n">input</span><span class="p">,</span><span class="w"> </span><span class="n">input</span><span class="p">))</span><span class="o">?</span><span class="p">;</span>
+<span class="w">        </span><span class="c1">// Replay the entire forward pass with a single driver call.</span>
+<span class="w">        </span><span class="bp">self</span><span class="p">.</span><span class="n">graph</span><span class="p">.</span><span class="n">launch</span><span class="p">().</span><span class="n">sync_on</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">graph</span><span class="p">.</span><span class="n">stream</span><span class="p">())</span><span class="o">?</span><span class="p">;</span>
+<span class="w">        </span><span class="nb">Ok</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">output</span><span class="p">.</span><span class="n">clone</span><span class="p">())</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Each <code class="docutils literal notranslate"><span class="pre">forward</span></code> call:</p>
+<ol class="arabic simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">graph.update(memcpy(…))</span></code></strong> — Copies new input data into the
+pre-allocated input buffer. This runs on the graph’s stream, so it
+completes before the graph launches.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">graph.launch().sync_on(…)</span></code></strong> — Replays all captured kernels. The GPU sees the
+full operation sequence and can schedule aggressively.</p></li>
+<li><p><strong>Returns <code class="docutils literal notranslate"><span class="pre">output.clone()</span></code></strong> — The output <code class="docutils literal notranslate"><span class="pre">Arc</span></code> points to the same
+device memory the graph wrote into. No copy needed.</p></li>
+</ol>
+<hr class="docutils" />
+<p><a id="putting-it-together"></a></p>
+</section>
+<section id="inference-loop">
+<h2>Inference loop<a class="headerlink" href="#inference-loop" title="Link to this heading">#</a></h2>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">fn</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">Result</span><span class="o">&lt;</span><span class="p">(),</span><span class="w"> </span><span class="n">Error</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Device</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">stream</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">device</span><span class="p">.</span><span class="n">new_stream</span><span class="p">()</span><span class="o">?</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">cfg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Config</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">d</span><span class="p">:</span><span class="w"> </span><span class="mi">2048</span><span class="p">,</span><span class="w"> </span><span class="n">n_layers</span><span class="p">:</span><span class="w"> </span><span class="mi">22</span><span class="p">,</span><span class="w"> </span><span class="n">block</span><span class="p">:</span><span class="w"> </span><span class="mi">128</span><span class="p">,</span><span class="w"> </span><span class="n">bn</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="n">bk</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="n">eps</span><span class="p">:</span><span class="w"> </span><span class="mf">1e-5</span><span class="w"> </span><span class="p">};</span>
+
+<span class="w">    </span><span class="c1">// Allocate weights (random for this example).</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">weights</span><span class="p">:</span><span class="w"> </span><span class="nb">Vec</span><span class="o">&lt;</span><span class="n">LayerWeights</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="o">..</span><span class="n">cfg</span><span class="p">.</span><span class="n">n_layers</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="o">|</span><span class="n">_</span><span class="o">|</span><span class="w"> </span><span class="nb">Ok</span><span class="p">(</span><span class="n">LayerWeights</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">norm_w</span><span class="p">:</span><span class="w"> </span><span class="nc">api</span><span class="p">::</span><span class="n">rand</span><span class="p">([</span><span class="n">cfg</span><span class="p">.</span><span class="n">d</span><span class="p">],</span><span class="w"> </span><span class="nb">None</span><span class="p">).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="n">into</span><span class="p">(),</span>
+<span class="w">            </span><span class="n">wq</span><span class="p">:</span><span class="w"> </span><span class="nc">api</span><span class="p">::</span><span class="n">rand</span><span class="p">([</span><span class="n">cfg</span><span class="p">.</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="n">cfg</span><span class="p">.</span><span class="n">d</span><span class="p">],</span><span class="w"> </span><span class="nb">None</span><span class="p">).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="n">into</span><span class="p">(),</span>
+<span class="w">            </span><span class="n">wo</span><span class="p">:</span><span class="w"> </span><span class="nc">api</span><span class="p">::</span><span class="n">rand</span><span class="p">([</span><span class="n">cfg</span><span class="p">.</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="n">cfg</span><span class="p">.</span><span class="n">d</span><span class="p">],</span><span class="w"> </span><span class="nb">None</span><span class="p">).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="n">into</span><span class="p">(),</span>
+<span class="w">        </span><span class="p">}))</span>
+<span class="w">        </span><span class="p">.</span><span class="n">collect</span><span class="p">::</span><span class="o">&lt;</span><span class="nb">Result</span><span class="o">&lt;</span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">Error</span><span class="o">&gt;&gt;</span><span class="p">()</span><span class="o">?</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// Build and capture.</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GraphModel</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="o">&amp;</span><span class="n">cfg</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">weights</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// Inference loop — each call is a single graph launch.</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">n_tokens</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">512</span><span class="p">;</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="n">_</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="mi">0</span><span class="o">..</span><span class="n">n_tokens</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">embedding</span><span class="p">:</span><span class="w"> </span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">api</span><span class="p">::</span><span class="n">rand</span><span class="p">([</span><span class="n">cfg</span><span class="p">.</span><span class="n">d</span><span class="p">],</span><span class="w"> </span><span class="nb">None</span><span class="p">).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">_output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">model</span><span class="p">.</span><span class="n">forward</span><span class="p">(</span><span class="o">&amp;</span><span class="n">embedding</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nb">Ok</span><span class="p">(())</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="alternative-cudagraph-scope">
+<h2>Alternative: <code class="docutils literal notranslate"><span class="pre">CudaGraph::scope</span></code><a class="headerlink" href="#alternative-cudagraph-scope" title="Link to this heading">#</a></h2>
+<p>The combinator approach above requires <code class="docutils literal notranslate"><span class="pre">Arc&lt;Tensor&lt;T&gt;&gt;</span></code> + <code class="docutils literal notranslate"><span class="pre">try_partition</span></code>
+for pre-allocated buffers. <code class="docutils literal notranslate"><span class="pre">CudaGraph::scope</span></code> provides an imperative
+alternative using <code class="docutils literal notranslate"><span class="pre">&amp;mut</span></code> borrows:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">input</span><span class="p">:</span><span class="w"> </span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">api</span><span class="p">::</span><span class="n">ones</span><span class="p">::</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="n">cfg</span><span class="p">.</span><span class="n">d</span><span class="p">]).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">buffers</span><span class="p">:</span><span class="w"> </span><span class="nb">Vec</span><span class="o">&lt;</span><span class="n">LayerBuffers</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="cm">/* pre-allocate */</span><span class="p">;</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="n">graph</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CudaGraph</span><span class="p">::</span><span class="n">scope</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">,</span><span class="w"> </span><span class="o">|</span><span class="n">s</span><span class="o">|</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">w</span><span class="p">,</span><span class="w"> </span><span class="n">bufs</span><span class="p">)</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">weights</span><span class="p">.</span><span class="n">iter</span><span class="p">().</span><span class="n">zip</span><span class="p">(</span><span class="n">buffers</span><span class="p">.</span><span class="n">iter_mut</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">hidden_2d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">input</span><span class="p">.</span><span class="n">view</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">cfg</span><span class="p">.</span><span class="n">d</span><span class="p">])</span><span class="o">?</span><span class="p">;</span>
+
+<span class="w">        </span><span class="n">s</span><span class="p">.</span><span class="n">record</span><span class="p">(</span><span class="n">rms_norm</span><span class="p">(</span>
+<span class="w">            </span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="n">bufs</span><span class="p">.</span><span class="n">norm</span><span class="p">).</span><span class="n">partition</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">cfg</span><span class="p">.</span><span class="n">d</span><span class="p">]),</span>
+<span class="w">            </span><span class="o">&amp;</span><span class="n">hidden_2d</span><span class="p">,</span>
+<span class="w">            </span><span class="o">&amp;</span><span class="n">w</span><span class="p">.</span><span class="n">norm_w</span><span class="p">,</span>
+<span class="w">            </span><span class="n">cfg</span><span class="p">.</span><span class="n">eps</span><span class="p">,</span>
+<span class="w">        </span><span class="p">).</span><span class="n">generics</span><span class="p">(</span><span class="n">cfg</span><span class="p">.</span><span class="n">rms_generics</span><span class="p">()))</span><span class="o">?</span><span class="p">;</span>
+
+<span class="w">        </span><span class="n">s</span><span class="p">.</span><span class="n">record</span><span class="p">(</span><span class="n">matvec</span><span class="p">(</span>
+<span class="w">            </span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="n">bufs</span><span class="p">.</span><span class="n">q</span><span class="p">).</span><span class="n">partition</span><span class="p">([</span><span class="n">cfg</span><span class="p">.</span><span class="n">bn</span><span class="p">]),</span>
+<span class="w">            </span><span class="o">&amp;</span><span class="n">bufs</span><span class="p">.</span><span class="n">norm</span><span class="p">,</span>
+<span class="w">            </span><span class="o">&amp;</span><span class="n">w</span><span class="p">.</span><span class="n">wq</span><span class="p">,</span>
+<span class="w">        </span><span class="p">).</span><span class="n">generics</span><span class="p">(</span><span class="n">cfg</span><span class="p">.</span><span class="n">mv_generics</span><span class="p">()))</span><span class="o">?</span><span class="p">;</span>
+
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">q_2d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bufs</span><span class="p">.</span><span class="n">q</span><span class="p">.</span><span class="n">view</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">cfg</span><span class="p">.</span><span class="n">d</span><span class="p">])</span><span class="o">?</span><span class="p">;</span>
+<span class="w">        </span><span class="n">s</span><span class="p">.</span><span class="n">record</span><span class="p">(</span><span class="n">matvec</span><span class="p">(</span>
+<span class="w">            </span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="n">bufs</span><span class="p">.</span><span class="n">o</span><span class="p">).</span><span class="n">partition</span><span class="p">([</span><span class="n">cfg</span><span class="p">.</span><span class="n">bn</span><span class="p">]),</span>
+<span class="w">            </span><span class="o">&amp;</span><span class="n">q_2d</span><span class="p">,</span>
+<span class="w">            </span><span class="o">&amp;</span><span class="n">w</span><span class="p">.</span><span class="n">wo</span><span class="p">,</span>
+<span class="w">        </span><span class="p">).</span><span class="n">generics</span><span class="p">(</span><span class="n">cfg</span><span class="p">.</span><span class="n">mv_generics</span><span class="p">()))</span><span class="o">?</span><span class="p">;</span>
+
+<span class="w">        </span><span class="n">s</span><span class="p">.</span><span class="n">record</span><span class="p">(</span><span class="n">add</span><span class="p">(</span>
+<span class="w">            </span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="n">bufs</span><span class="p">.</span><span class="n">residual</span><span class="p">).</span><span class="n">partition</span><span class="p">([</span><span class="n">cfg</span><span class="p">.</span><span class="n">block</span><span class="p">]),</span>
+<span class="w">            </span><span class="o">&amp;</span><span class="n">input</span><span class="p">,</span>
+<span class="w">            </span><span class="o">&amp;</span><span class="n">bufs</span><span class="p">.</span><span class="n">o</span><span class="p">,</span>
+<span class="w">        </span><span class="p">))</span><span class="o">?</span><span class="p">;</span>
+
+<span class="w">        </span><span class="n">s</span><span class="p">.</span><span class="n">record</span><span class="p">(</span><span class="n">api</span><span class="p">::</span><span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="n">input</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">bufs</span><span class="p">.</span><span class="n">residual</span><span class="p">))</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="nb">Ok</span><span class="p">(())</span>
+<span class="p">})</span><span class="o">?</span><span class="p">;</span>
+
+<span class="n">graph</span><span class="p">.</span><span class="n">launch</span><span class="p">().</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p></p></th>
+<th class="head"><p>Combinator (<code class="docutils literal notranslate"><span class="pre">.graph()</span></code>)</p></th>
+<th class="head"><p>Scope (<code class="docutils literal notranslate"><span class="pre">CudaGraph::scope</span></code>)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Buffer ownership</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Arc&lt;Tensor&lt;T&gt;&gt;</span></code> + <code class="docutils literal notranslate"><span class="pre">try_partition</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&amp;mut</span> <span class="pre">Tensor&lt;T&gt;</span></code> borrows</p></td>
+</tr>
+<tr class="row-odd"><td><p>Write-then-read</p></td>
+<td><p>Via <code class="docutils literal notranslate"><span class="pre">.shared()</span></code> + cloning</p></td>
+<td><p>Via <code class="docutils literal notranslate"><span class="pre">record()</span></code> releasing borrows</p></td>
+</tr>
+<tr class="row-even"><td><p>Failure mode</p></td>
+<td><p>Runtime <code class="docutils literal notranslate"><span class="pre">Err</span></code> from <code class="docutils literal notranslate"><span class="pre">try_partition</span></code> (refcount != 1)</p></td>
+<td><p>Compile error (borrow conflict)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Composability</p></td>
+<td><p>Chains with <code class="docutils literal notranslate"><span class="pre">.then()</span></code>, <code class="docutils literal notranslate"><span class="pre">.map()</span></code></p></td>
+<td><p>Imperative sequential code</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">s.record(op)</span></code> only accepts operations that implement <code class="docutils literal notranslate"><span class="pre">GraphNode</span></code> — kernel
+launches and <code class="docutils literal notranslate"><span class="pre">memcpy</span></code>. Allocation ops (<code class="docutils literal notranslate"><span class="pre">api::zeros</span></code>, <code class="docutils literal notranslate"><span class="pre">dup</span></code>, etc.) are rejected
+at compile time because their addresses may change on graph replay.</p>
+</section>
+<hr class="docutils" />
+<section id="use-cases">
+<h2>Use cases<a class="headerlink" href="#use-cases" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Scenario</p></th>
+<th class="head"><p>Use CUDA graphs?</p></th>
+<th class="head"><p>Why</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Repeat the same operation graph many times</p></td>
+<td><p><strong>Yes</strong></p></td>
+<td><p>Amortizes capture cost; eliminates per-launch overhead</p></td>
+</tr>
+<tr class="row-odd"><td><p>Dynamic shapes per iteration</p></td>
+<td><p>No</p></td>
+<td><p>Captured graphs bake in tensor dimensions</p></td>
+</tr>
+<tr class="row-even"><td><p>Dynamic control flow per iteration</p></td>
+<td><p>No</p></td>
+<td><p>Captured graphs bake in the branch structure</p></td>
+</tr>
+<tr class="row-odd"><td><p>Small number of iterations</p></td>
+<td><p>Maybe</p></td>
+<td><p>Capture cost (~1 execution) must be amortized</p></td>
+</tr>
+<tr class="row-even"><td><p>Profiling individual kernels</p></td>
+<td><p>No</p></td>
+<td><p>Graph replay shows as a single event</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="key-takeaways">
+<h2>Key Takeaways<a class="headerlink" href="#key-takeaways" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Concept</p></th>
+<th class="head"><p>What it means</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong><code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> graph</strong></p></td>
+<td><p>Lazy composition of GPU work — no execution until driven</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong><code class="docutils literal notranslate"><span class="pre">.graph_on(stream)</span></code></strong></p></td>
+<td><p>Capture the entire operation into a replayable <code class="docutils literal notranslate"><span class="pre">CudaGraph</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong><code class="docutils literal notranslate"><span class="pre">CudaGraph::scope</span></code></strong></p></td>
+<td><p>Imperative graph capture with <code class="docutils literal notranslate"><span class="pre">&amp;mut</span></code> borrows</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong><code class="docutils literal notranslate"><span class="pre">graph.launch()</span></code></strong></p></td>
+<td><p>Returns a <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> that replays all captured work — execute with <code class="docutils literal notranslate"><span class="pre">.sync_on()</span></code>, <code class="docutils literal notranslate"><span class="pre">.sync()</span></code>, or <code class="docutils literal notranslate"><span class="pre">.await</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong><code class="docutils literal notranslate"><span class="pre">graph.update(op)</span></code></strong></p></td>
+<td><p>Run a DeviceOp on the graph’s stream before replay (e.g., memcpy new input)</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Pre-allocated buffers</strong></p></td>
+<td><p>Graph writes into fixed memory; vary inputs via <code class="docutils literal notranslate"><span class="pre">memcpy</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong><code class="docutils literal notranslate"><span class="pre">.shared()</span></code> in graphs</strong></p></td>
+<td><p>Each intermediate executes once during capture; clones share the result</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Weight tensors in <code class="docutils literal notranslate"><span class="pre">build_forward</span></code> are passed as <code class="docutils literal notranslate"><span class="pre">Arc&lt;Tensor&lt;T&gt;&gt;</span></code> because
+they’re shared across layers via <code class="docutils literal notranslate"><span class="pre">.clone()</span></code>. In a sync context where weights
+are only read (not shared across spawned tasks), you could pass <code class="docutils literal notranslate"><span class="pre">&amp;Tensor&lt;T&gt;</span></code>
+instead — the borrow checker ensures the weights outlive the graph capture.
+See <a class="reference internal" href="07-intro-to-async.html#borrowed-inputs-and-spawn-safety"><span class="std std-ref">Tutorial 7</span></a> for
+details on borrowed inputs.</p>
+</div>
+<hr class="docutils" />
+<section id="exercise-1-add-a-second-graph">
+<h3>Exercise 1: Add a Second Graph<a class="headerlink" href="#exercise-1-add-a-second-graph" title="Link to this heading">#</a></h3>
+<p>Capture a second graph that computes the backward pass (or a simplified
+version). How would you sequence the forward and backward graphs?</p>
+</section>
+<section id="exercise-2-measure-the-speedup">
+<h3>Exercise 2: Measure the Speedup<a class="headerlink" href="#exercise-2-measure-the-speedup" title="Link to this heading">#</a></h3>
+<p>Add timing around <code class="docutils literal notranslate"><span class="pre">graph.launch()</span></code> vs a non-graph path that rebuilds and
+executes the <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> each iteration. How does the speedup scale with
+<code class="docutils literal notranslate"><span class="pre">n_layers</span></code>?</p>
+</section>
+<section id="exercise-3-dynamic-input-shapes">
+<h3>Exercise 3: Dynamic Input Shapes<a class="headerlink" href="#exercise-3-dynamic-input-shapes" title="Link to this heading">#</a></h3>
+<p>The current approach bakes in the tensor dimensions at capture time. What
+would need to change to support variable sequence lengths? (Hint: consider
+capturing multiple graphs for common sizes.)</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="full-reference-examples">
+<h2>Full Reference Examples<a class="headerlink" href="#full-reference-examples" title="Link to this heading">#</a></h2>
+<p>The scope-based reference example with benchmarks:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cargo<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </span>cutile-examples<span class="w"> </span>--example<span class="w"> </span>cuda_graphs
+</pre></div>
+</div>
+<p>The DeviceOp-combinator variant:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cargo<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </span>cutile-examples<span class="w"> </span>--example<span class="w"> </span>cuda_graphs_deviceop
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="see-also">
+<h2>See also<a class="headerlink" href="#see-also" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../guide/device-operations.html"><span class="std std-doc">Device Operations</span></a> — where CUDA graphs fit alongside sync and async execution</p></li>
+<li><p><a class="reference internal" href="../reference/host-api.html#cuda-graph-integration"><span class="std std-ref">Host API: CUDA Graph Integration</span></a> — <code class="docutils literal notranslate"><span class="pre">.graph_on(stream)</span></code> and <code class="docutils literal notranslate"><span class="pre">CudaGraph::scope</span></code> signatures</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="09-pointer-addition.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">9. Pointer Addition</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="11-nvfp4-inference.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">11. Inference with NVFP4/MXFP8</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motivation">Motivation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-model">The Model</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#kernels">Kernels</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#model-state">Model State</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#building-the-lazy-graph">Building the Lazy Graph</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#capturing-the-graph">Capturing the Graph</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-module-pattern">The Module Pattern</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inference-loop">Inference loop</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alternative-cudagraph-scope">Alternative: <code class="docutils literal notranslate"><span class="pre">CudaGraph::scope</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-cases">Use cases</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-takeaways">Key Takeaways</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-1-add-a-second-graph">Exercise 1: Add a Second Graph</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-2-measure-the-speedup">Exercise 2: Measure the Speedup</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-3-dynamic-input-shapes">Exercise 3: Dynamic Input Shapes</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#full-reference-examples">Full Reference Examples</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#see-also">See also</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+  
+    <div class="footer-items__center">
+      
+        <div class="footer-item"><footer class="bd-footer-content">
+  <div class="footer-container" style="padding: 1rem 0 2rem 0; border-top: 1px solid var(--pst-color-border); text-align: left;">
+    
+    <!-- NVIDIA Logo -->
+    <div style="margin-bottom: 1rem;">
+      <img src="../_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" 
+           alt="NVIDIA" 
+           style="height: 3.5rem; filter: brightness(0);"
+           class="only-light">
+      <img src="../_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" 
+           alt="NVIDIA" 
+           style="height: 3.5rem;"
+           class="only-dark pst-js-only">
+    </div>
+    
+    <!-- Footer Links - single line, left aligned -->
+    <div style="font-size: 0.8125rem; margin-bottom: 0.5rem; color: var(--pst-color-text-muted);">
+      <a href="https://www.nvidia.com/en-us/about-nvidia/privacy-policy/" target="_blank" style="color: inherit; text-decoration: none;">Privacy Policy</a> | 
+      <a href="https://www.nvidia.com/en-us/preferences/email-preferences/" target="_blank" style="color: inherit; text-decoration: none;">Your Privacy Choices</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/terms-of-service/" target="_blank" style="color: inherit; text-decoration: none;">Terms of Service</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/accessibility/" target="_blank" style="color: inherit; text-decoration: none;">Accessibility</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/company-policies/" target="_blank" style="color: inherit; text-decoration: none;">Corporate Policies</a> | 
+      <a href="https://www.nvidia.com/en-us/product-security/" target="_blank" style="color: inherit; text-decoration: none;">Product Security</a> | 
+      <a href="https://www.nvidia.com/en-us/contact/" target="_blank" style="color: inherit; text-decoration: none;">Contact</a>
+    </div>
+    
+    <!-- Copyright -->
+    <div style="font-size: 0.8125rem; color: var(--pst-color-text-muted);">
+      Copyright &copy; 2025, NVIDIA.
+    </div>
+    
+  </div>
+</footer></div>
+      
+    </div>
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

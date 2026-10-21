@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-TW" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Device Operations &#8212; cuTile Rust</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/nvidia-sphinx-theme.css?v=933278ad" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=4011299f" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/lightbox.css?v=31fdf494" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../_static/documentation_options.js?v=a7999bab"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/translations.js?v=cbf116e0"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'guide/device-operations';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <script src="../_static/js/lightbox.js?v=17028852"></script>
+    <link rel="canonical" href="https://projects.localizethedocs.org/cutile-rs-book-l10n/guide/device-operations.html" />
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜尋" href="../search.html" />
+    <link rel="next" title="Performance" href="performance.html" />
+    <link rel="prev" title="Compilation" href="jit-compilation.html" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="zh-TW"/>
+  <meta name="docsearch:version" content="main" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+<script type="text/javascript" src="../ltd-provenance.js"></script>
+<script type="text/javascript" src="../ltd-current.js"></script>
+<script type="text/javascript" src="../../../ltd-config.js"></script>
+<script type="text/javascript" src="../../../ltd-flyout.js"></script>
+
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">跳转至主要内容</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>回到顶部</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="版本警告"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="网页导航">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" class="logo__image only-light" alt=""/>
+    <img src="../_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cuTile Rust</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item"><div class="github-links">
+  <!--
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/stargazers" target="_blank" rel="noopener">
+    <i class="fa-solid fa-star" aria-hidden="true"></i>
+    <span class="sr-only">Star</span>
+  </a>
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/fork" target="_blank" rel="noopener">
+    <i class="fa-solid fa-code-fork" aria-hidden="true"></i>
+    <span class="sr-only">Fork</span>
+  </a>
+  -->
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/NVIDIA/cuda-rust" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="搜尋" aria-label="搜尋" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button></div>
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="亮色"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="暗色"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>亮色</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>暗色</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="当前页面">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><div class="github-links">
+  <!--
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/stargazers" target="_blank" rel="noopener">
+    <i class="fa-solid fa-star" aria-hidden="true"></i>
+    <span class="sr-only">Star</span>
+  </a>
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/fork" target="_blank" rel="noopener">
+    <i class="fa-solid fa-code-fork" aria-hidden="true"></i>
+    <span class="sr-only">Fork</span>
+  </a>
+  -->
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/NVIDIA/cuda-rust" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="搜尋" aria-label="搜尋" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button></div>
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="亮色"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="暗色"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>亮色</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>暗色</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><div class="sidebar-tree">
+    <p class="sidebar-tree-title">
+        Table of Contents
+    </p>
+    <p aria-level="2" class="caption" role="heading"><span class="caption-text">教學課程</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/01-hello-world.html">1. Hello World</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/02-vector-addition.html">2. Vector Addition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/03-saxpy.html">3. SAXPY</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/04-matrix-multiplication.html">4. Matrix Multiplication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/05-fused-softmax.html">5. Fused Softmax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/06-flash-attention.html">6. Fused Multihead Attention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/07-intro-to-async.html">7. Intro to Async Execution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/08-data-parallel-mlp.html">8. Data Parallel MLP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/09-pointer-addition.html">9. Pointer Addition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/10-cuda-graphs.html">10. CUDA Graphs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/11-nvfp4-inference.html">11. Inference with NVFP4/MXFP8</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/12-dgx-spark-inference.html">12. LLM Inference on DGX Spark</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">使用者指南</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="host-vs-device.html">Host vs. Device Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tensors-and-tiles.html">Tensors and Tiles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jit-compilation.html">Compilation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Device Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="performance.html">Performance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autotuning.html">Autotuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bounds-check-placement.html">Bounds-Check Placement</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interoperability.html">Interoperability</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debugging-and-profiling.html">Debugging and Profiling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="useful-mental-models.html">Useful Mental Models</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">參考</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../reference/dsl-api.html">DSL API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/host-api.html">Host API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/compatibility.html">CUDA and Tile IR compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/glossary.html">Glossary</a></li>
+</ul>
+
+</div></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="初始页面">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Device Operations</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="device-operations">
+<h1>Device Operations<a class="headerlink" href="#device-operations" title="連結到這個標頭">#</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> describes GPU work on the host. Tensor constructors, kernel
+launchers, and memory copies return operations that you can compose with
+<code class="docutils literal notranslate"><span class="pre">.then()</span></code>, <code class="docutils literal notranslate"><span class="pre">.shared()</span></code>, <code class="docutils literal notranslate"><span class="pre">zip!</span></code>, and <code class="docutils literal notranslate"><span class="pre">unzip</span></code>. Run the resulting graph with
+<code class="docutils literal notranslate"><span class="pre">.sync()</span></code> or <code class="docutils literal notranslate"><span class="pre">.await</span></code>, or capture it for replay with <code class="docutils literal notranslate"><span class="pre">.graph()</span></code>.</p>
+<hr class="docutils" />
+<section id="the-deviceop-model">
+<h2>The DeviceOp Model<a class="headerlink" href="#the-deviceop-model" title="連結到這個標頭">#</a></h2>
+<p>Your Rust code runs on the CPU (the <em>host</em>) and schedules work on the GPU (the <em>device</em>). A <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> is how you express that scheduling: the host constructs and composes operations, the device executes them in parallel when the runtime asks it to.</p>
+<p><img alt="Host-device execution: how kernel calls flow from the host to the GPU" src="../_images/async-host-device.svg" /></p>
+<p>A <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> is a lazy description of GPU work — nothing runs until you say so:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">api</span><span class="p">::</span><span class="n">zeros</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">64</span><span class="p">,</span><span class="w"> </span><span class="mi">64</span><span class="p">]);</span><span class="w">  </span><span class="c1">// DeviceOp&lt;Output=Tensor&lt;f32&gt;&gt;. No GPU work yet.</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">z</span><span class="p">.</span><span class="k">await</span><span class="o">?</span><span class="p">;</span><span class="w">          </span><span class="c1">// NOW it executes.</span>
+</pre></div>
+</div>
+<p>Every <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> implements <code class="docutils literal notranslate"><span class="pre">IntoFuture</span></code>, so every operation is awaitable:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">pub</span><span class="w"> </span><span class="k">trait</span><span class="w"> </span><span class="n">DeviceOp</span><span class="p">:</span><span class="w"> </span><span class="nb">Send</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">Sized</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">IntoFuture</span>
+<span class="k">where</span><span class="w"> </span><span class="bp">Self</span><span class="p">::</span><span class="n">Output</span><span class="p">:</span><span class="w"> </span><span class="nb">Send</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* ... */</span><span class="w"> </span><span class="p">}</span>
+</pre></div>
+</div>
+<p>When you <code class="docutils literal notranslate"><span class="pre">.await</span></code>, the conversion goes through <code class="docutils literal notranslate"><span class="pre">into_future()</span></code> → <code class="docutils literal notranslate"><span class="pre">schedule()</span></code> → <code class="docutils literal notranslate"><span class="pre">DeviceFuture</span></code> → first poll → <code class="docutils literal notranslate"><span class="pre">execute()</span></code> → GPU work. The full sequence:</p>
+<style>
+.seq-box {
+  background: #161b22;
+  border-radius: 8px;
+  padding: 24px 28px;
+  margin: 1em 0;
+  cursor: zoom-in;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow-x: auto;
+}
+.seq-box:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+.seq-box.zoomed {
+  position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%, -50%) scale(1.5);
+  z-index: 9999; cursor: zoom-out;
+  box-shadow: 0 0 0 9999px rgba(0,0,0,0.9);
+}
+.seq-box pre {
+  margin: 0;
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Roboto Mono', monospace;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.8;
+  color: #8b949e;
+}
+.seq-box .r { color: #f97583; }
+.seq-box .b { color: #79c0ff; }
+.seq-box .p { color: #d2a8ff; }
+.seq-box .g { color: #56d364; }
+.seq-box .w { color: #c9d1d9; }
+.seq-box .h { font-weight: 700; }
+</style>
+<div class="seq-box" onclick="this.classList.toggle('zoomed')">
+<pre>
+<span class="r h">Your Code</span>             <span class="b h">Tokio Runtime</span>            <span class="p h">cuTile Rust</span>            <span class="g h">GPU</span>
+    <span class="r">|</span>                       <span class="b">|</span>                       <span class="p">|</span>                   <span class="g">|</span>
+<span class="r h">.await</span>  ---------------> <span class="b h">into_future()</span>            <span class="p">|</span>                   <span class="g">|</span>
+    <span class="r">|</span>                   <span class="w">(immediate)</span>               <span class="p">|</span>                   <span class="g">|</span>
+    <span class="r">|</span>                       <span class="b">|</span>                       <span class="p">|</span>                   <span class="g">|</span>
+    <span class="r">|</span>                       <span class="b">|</span> -------------------> <span class="p h">schedule()</span>          <span class="g">|</span>
+    <span class="r">|</span>                       <span class="b">|</span>                    <span class="p">DevicePolicy</span>         <span class="g">|</span>
+    <span class="r">|</span>                       <span class="b">|</span>                       <span class="p">|</span>                   <span class="g">|</span>
+    <span class="r">|</span>                       <span class="b">|</span> <------------------- <span class="p h">DeviceFuture</span>        <span class="g">|</span>
+    <span class="r">|</span>                       <span class="b">|</span>                       <span class="p">|</span>                   <span class="g">|</span>
+    <span class="r">|</span>                 <span class="b h">first poll()</span> ---------------> <span class="p h">execute()</span>           <span class="g">|</span>
+    <span class="r">|</span>                       <span class="b">|</span>                       <span class="p">|</span>                   <span class="g">|</span>
+    <span class="r">|</span>                       <span class="b">|</span>                       <span class="p">|</span> ----------------> <span class="g h">GPU WORK!</span>
+    <span class="r">|</span>                       <span class="b">|</span>                       <span class="p">|</span>                   <span class="g">|</span>
+    <span class="r">|</span>              <span class="b h">subsequent polls</span> <-- - - - - -<span class="p">|</span>- - - - - - --><span class="g">|</span> <span class="g">checking...</span>
+    <span class="r">|</span>                       <span class="b">|</span>                       <span class="p">|</span>                   <span class="g">|</span>
+    <span class="r">|</span>                       <span class="b">|</span>                       <span class="p">|</span>                   <span class="g">|</span>
+<span class="r h">Returns</span> <span class="g"><--------------</span> <span class="b h">Ready!</span> <span class="g"><------------------</span><span class="p">|</span><span class="g">------------------+</span>
+</pre>
+<div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #30363d; display: flex; align-items: center; gap: 14px;">
+  <span style="background: #76B900; color: white; padding: 6px 14px; border-radius: 4px; font-weight: 700; font-size: 13px;">KEY INSIGHT</span>
+  <span style="color: #e6edf3; font-size: 14px; font-weight: 600;">GPU work starts at <code style="color: #d2a8ff; font-weight: 700;">execute()</code>, not at <code style="color: #f97583; font-weight: 700;">.await</code>!</span>
+</div>
+<div style="margin-top: 10px; color: #6e7681; font-size: 11px;">Click to zoom</div>
+</div><p>GPU work starts at <code class="docutils literal notranslate"><span class="pre">execute()</span></code>, which fires during the <em>first poll</em> — not at <code class="docutils literal notranslate"><span class="pre">.await</span></code> itself. <code class="docutils literal notranslate"><span class="pre">.await</span></code> is cheap; the DeviceFuture is built immediately at <code class="docutils literal notranslate"><span class="pre">into_future()</span></code>, and actual submission to the GPU happens when the runtime polls.</p>
+<p>Calling <code class="docutils literal notranslate"><span class="pre">.sync()</span></code> after every kernel leaves gaps while the CPU waits for
+completion and submits the next launch:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>CPU:  [launch] [wait......] [launch] [wait......] [launch] [wait......]
+GPU:           [kernel████]          [kernel████]          [kernel████]
+                          ↑                      ↑
+                     idle gap                idle gap
+</pre></div>
+</div>
+<p>These gaps can dominate inference when kernels take only microseconds. A
+22-layer transformer with 6 kernels per layer has 132 sync gaps per token.
+Compose the operations and synchronize once to eliminate those gaps:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rms_norm</span><span class="p">(</span><span class="n">out1</span><span class="p">,</span><span class="w"> </span><span class="n">hidden</span><span class="p">.</span><span class="n">clone</span><span class="p">(),</span><span class="w"> </span><span class="n">weight</span><span class="p">.</span><span class="n">clone</span><span class="p">(),</span><span class="w"> </span><span class="n">eps</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">first</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="n">unpartition</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="n">shared</span><span class="p">();</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">matvec</span><span class="p">(</span><span class="n">out2</span><span class="p">,</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="n">clone</span><span class="p">(),</span><span class="w"> </span><span class="n">wq</span><span class="p">.</span><span class="n">clone</span><span class="p">())</span>
+<span class="w">    </span><span class="p">.</span><span class="n">first</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="n">unpartition</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="n">shared</span><span class="p">();</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">q</span><span class="p">.</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>CPU:  [build graph...] [launch all]  [wait]
+GPU:                    [norm████][mv████][add████]
+                         no gaps — work is pipelined
+</pre></div>
+</div>
+<p>cuTile offers three execution modes for running a constructed <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code>:</p>
+<p><strong>Synchronous</strong> — <code class="docutils literal notranslate"><span class="pre">.sync()</span></code> and <code class="docutils literal notranslate"><span class="pre">.sync_on(&amp;stream)</span></code> block the thread until the result is ready. Best for scripts, debugging, and learning.</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="n">kernel</span><span class="p">(</span><span class="n">args</span><span class="o">..</span><span class="p">.).</span><span class="n">sync</span><span class="p">()</span><span class="o">?</span><span class="p">;</span><span class="w">            </span><span class="c1">// default device, default stream policy</span>
+<span class="n">kernel</span><span class="p">(</span><span class="n">args</span><span class="o">..</span><span class="p">.).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span><span class="w">  </span><span class="c1">// explicit stream</span>
+</pre></div>
+</div>
+<p><strong>Asynchronous</strong> — <code class="docutils literal notranslate"><span class="pre">.await</span></code> is non-blocking in an async context. Composes lazily for overlap.</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kernel</span><span class="p">(</span><span class="n">args</span><span class="o">..</span><span class="p">.).</span><span class="k">await</span><span class="o">?</span><span class="p">;</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">step1</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">then</span><span class="p">(</span><span class="o">|</span><span class="n">out</span><span class="o">|</span><span class="w"> </span><span class="n">step2</span><span class="p">(</span><span class="n">out</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="n">then</span><span class="p">(</span><span class="o">|</span><span class="n">out</span><span class="o">|</span><span class="w"> </span><span class="n">step3</span><span class="p">(</span><span class="n">out</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="k">await</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+<p><strong>CUDA graph</strong> — <code class="docutils literal notranslate"><span class="pre">.graph()</span></code> / <code class="docutils literal notranslate"><span class="pre">.graph_on(stream.clone())</span></code> captures a composed <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> into a reusable <code class="docutils literal notranslate"><span class="pre">CudaGraph&lt;T&gt;</span></code>. Best for hot paths that run the same pipeline many times. See <a class="reference internal" href="#cuda-graphs">CUDA Graphs</a> below for the capture/replay pattern.</p>
+</section>
+<hr class="docutils" />
+<section id="composing-deviceops">
+<h2>Composing DeviceOps<a class="headerlink" href="#composing-deviceops" title="連結到這個標頭">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code>s compose into computation graphs using four combinators: <code class="docutils literal notranslate"><span class="pre">.then()</span></code>, <code class="docutils literal notranslate"><span class="pre">zip!</span></code>, <code class="docutils literal notranslate"><span class="pre">unzip</span></code>, and <code class="docutils literal notranslate"><span class="pre">.shared()</span></code>. Graphs are constructed lazily and evaluated as a unit, which preserves ordering, avoids duplicate work through sharing, and lets independent work overlap.</p>
+<p><img alt="Lazy computation graph showing how DeviceOps compose" src="../_images/computation-graph.svg" /></p>
+<p><strong><code class="docutils literal notranslate"><span class="pre">.then()</span></code></strong> chains operations sequentially — the output of one feeds the next. Chained ops share a stream, so ordering is strict.</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">matmul</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">then</span><span class="p">(</span><span class="o">|</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">_x</span><span class="p">,</span><span class="w"> </span><span class="n">_y</span><span class="p">)</span><span class="o">|</span><span class="w"> </span><span class="n">activation</span><span class="p">(</span><span class="n">z</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="n">then</span><span class="p">(</span><span class="o">|</span><span class="p">(</span><span class="n">z</span><span class="p">,)</span><span class="o">|</span><span class="w"> </span><span class="n">normalize</span><span class="p">(</span><span class="n">z</span><span class="p">));</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="k">await</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+<p><strong><code class="docutils literal notranslate"><span class="pre">zip!</span></code></strong> combines multiple independent <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code>s into a single tuple-valued one (fan-in). <strong><code class="docutils literal notranslate"><span class="pre">unzip</span></code></strong> is the inverse: splits a tuple-producing op into independent branches (fan-out).</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>  zip! (fan-in)                     unzip (fan-out)
+
+    op_a ─┐                           ┌── branch_a
+           ├─ zip! ─── (a, b)    (a, b) ── unzip ──┤
+    op_b ─┘                           └── branch_b
+</pre></div>
+</div>
+<p>When you <code class="docutils literal notranslate"><span class="pre">unzip</span></code>, the upstream operation runs <strong>at most once</strong> regardless of how many branches consume it. An internal shared gate executes it on the first branch to poll and caches the results for the rest:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">zip</span><span class="o">!</span><span class="p">(</span><span class="n">z_op</span><span class="p">,</span><span class="w"> </span><span class="n">x_op</span><span class="p">,</span><span class="w"> </span><span class="n">y_op</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">then</span><span class="p">(</span><span class="n">my_kernel</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">unzip</span><span class="p">();</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">z</span><span class="p">.</span><span class="n">unpartition</span><span class="p">().</span><span class="n">to_host_vec</span><span class="p">().</span><span class="n">sync</span><span class="p">()</span><span class="o">?</span><span class="p">;</span><span class="w">  </span><span class="c1">// kernel runs once</span>
+</pre></div>
+</div>
+<p><strong><code class="docutils literal notranslate"><span class="pre">.shared()</span></code></strong> converts any <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> into a <code class="docutils literal notranslate"><span class="pre">Clone</span></code>-able <code class="docutils literal notranslate"><span class="pre">SharedDeviceOp&lt;T&gt;</span></code>. All clones share one <code class="docutils literal notranslate"><span class="pre">Arc</span></code> of the result; the underlying op executes once. Use it when many downstream kernels need the same input.</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">api</span><span class="p">::</span><span class="n">ones</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">]).</span><span class="n">shared</span><span class="p">();</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kernel_a</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="n">clone</span><span class="p">()).</span><span class="n">sync</span><span class="p">()</span><span class="o">?</span><span class="p">;</span><span class="w">  </span><span class="c1">// x executes here (once)</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kernel_b</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="n">clone</span><span class="p">()).</span><span class="n">sync</span><span class="p">()</span><span class="o">?</span><span class="p">;</span><span class="w">  </span><span class="c1">// Uses the cached Arc</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kernel_c</span><span class="p">(</span><span class="n">x</span><span class="p">).</span><span class="n">sync</span><span class="p">()</span><span class="o">?</span><span class="p">;</span><span class="w">          </span><span class="c1">// Also uses the cached result</span>
+</pre></div>
+</div>
+<p>Diamond (fan-out then fan-in) and broadcast are two common composition patterns:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Diamond (fan-out then fan-in):
+
+  op_a ─┐              ┌─ transform_a ─┐
+         ├── zip! ── unzip              ├── zip! ── result
+  op_b ─┘              └─ transform_b ─┘
+
+Broadcast (.shared() into parallel kernels):
+
+                     ┌── kernel_a ── result_a
+  x.shared() ──────┤
+                     ├── kernel_b ── result_b
+                     └── kernel_c ── result_c
+</pre></div>
+</div>
+<p>The execute-once mechanism assumes sequential polling from a single thread, which is the normal mode for <code class="docutils literal notranslate"><span class="pre">cuda-async</span></code>. Polling both sides of an <code class="docutils literal notranslate"><span class="pre">unzip</span></code> from different OS threads is unsafe (the gate uses a non-atomic check-then-act). Device contexts are thread-local, so the common triggering patterns fail earlier; still, avoid designs that fan out across threads.</p>
+</section>
+<hr class="docutils" />
+<section id="streams-and-scheduling">
+<h2>Streams and Scheduling<a class="headerlink" href="#streams-and-scheduling" title="連結到這個標頭">#</a></h2>
+<p>A CUDA stream is an ordered queue of GPU work. Operations on the same stream
+execute in submission order; operations on different streams may overlap.</p>
+<p>By default, cuTile distributes operations across a pool of 4 streams using a round-robin policy, so independent operations land on different streams and can overlap:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>                         ┌─────────────────────────────────────────┐
+  Your Code              │          GPU (4-stream pool)            │
+ ─────────────           │                                         │
+                         │  Stream 0: ████████                     │
+  op_a.await  ──────────►│  Stream 1:    ████████                  │
+  op_b.await  ──────────►│  Stream 2:       ████████               │
+  op_c.await  ──────────►│  Stream 3:          ████████            │
+  op_d.await  ──────────►│  Stream 0:             ████████         │
+  op_e.await  ──────────►│                                         │
+                         └─────────────────────────────────────────┘
+</pre></div>
+</div>
+<p>Operations serialize in four cases: wrap-around onto the same stream (every 4th op in the default pool); chained with <code class="docutils literal notranslate"><span class="pre">.then()</span></code> (same stream); pinned to a single stream via <code class="docutils literal notranslate"><span class="pre">.sync_on(&amp;stream)</span></code>; or awaited sequentially (the host blocks between awaits, so the next op is submitted only after the previous completes).</p>
+<p>Operations overlap when they land on different streams <strong>and</strong> are submitted before the host waits for either — typically via <code class="docutils literal notranslate"><span class="pre">zip!</span></code>, <code class="docutils literal notranslate"><span class="pre">tokio::join!</span></code>, or direct lazy composition that the async runtime polls concurrently.</p>
+<p>Data dependencies are your responsibility. The round-robin policy does not track them. If operation B reads A's output, you must force ordering:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="c1">// Chain with .then() — same stream, automatic ordering</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_tensor</span><span class="p">().</span><span class="n">then</span><span class="p">(</span><span class="o">|</span><span class="n">t</span><span class="o">|</span><span class="w"> </span><span class="n">process</span><span class="p">(</span><span class="n">t</span><span class="p">)).</span><span class="k">await</span><span class="o">?</span><span class="p">;</span>
+
+<span class="c1">// Await sequentially — host ensures ordering</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">tensor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_tensor</span><span class="p">().</span><span class="k">await</span><span class="o">?</span><span class="p">;</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">process</span><span class="p">(</span><span class="n">tensor</span><span class="p">).</span><span class="k">await</span><span class="o">?</span><span class="p">;</span>
+
+<span class="c1">// Pin to the same stream — CUDA guarantees ordering</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">stream</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">device</span><span class="p">.</span><span class="n">new_stream</span><span class="p">()</span><span class="o">?</span><span class="p">;</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">tensor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_tensor</span><span class="p">().</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">process</span><span class="p">(</span><span class="n">tensor</span><span class="p">).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The unsafe pattern — feeding A's output to B but submitting them as independent futures that land on different streams — can produce stale or partial reads:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="c1">// ⚠️ DANGER: op_b may start before op_a finishes if they land on different streams!</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">future_a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">op_a</span><span class="p">.</span><span class="n">into_future</span><span class="p">();</span><span class="w">                    </span><span class="c1">// Submitted to Stream 0</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">future_b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">op_b_reads_a_output</span><span class="p">.</span><span class="n">into_future</span><span class="p">();</span><span class="w">     </span><span class="c1">// Submitted to Stream 1</span>
+<span class="kd">let</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tokio</span><span class="p">::</span><span class="n">join</span><span class="o">!</span><span class="p">(</span><span class="n">future_a</span><span class="p">,</span><span class="w"> </span><span class="n">future_b</span><span class="p">);</span>
+</pre></div>
+</div>
+<section id="execution-method-comparison">
+<h3>Execution method comparison<a class="headerlink" href="#execution-method-comparison" title="連結到這個標頭">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Stream assignment</p></th>
+<th class="head"><p>Ordering guarantee</p></th>
+<th class="head"><p>Best for</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">.then()</span></code></p></td>
+<td><p>Shares parent's stream</p></td>
+<td><p>Strict: same stream</p></td>
+<td><p>Dependent operations</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">.sync_on(&amp;stream)</span></code></p></td>
+<td><p>Your explicit stream</p></td>
+<td><p>Strict if same stream</p></td>
+<td><p>Debugging, deterministic pipelines</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">.sync()</span></code></p></td>
+<td><p>Policy picks (round-robin)</p></td>
+<td><p>None between calls</p></td>
+<td><p>Quick scripts</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">.await</span></code></p></td>
+<td><p>Policy picks (round-robin)</p></td>
+<td><p>None between awaits</p></td>
+<td><p>Async code</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">zip!</span></code> + <code class="docutils literal notranslate"><span class="pre">.then()</span></code></p></td>
+<td><p>Single stream for the graph</p></td>
+<td><p>Strict within the graph</p></td>
+<td><p>Kernel launch patterns</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">小訣竅</p>
+<p>Sequential <code class="docutils literal notranslate"><span class="pre">.await</span></code> calls <em>appear</em> ordered from the host's perspective (each waits before the next starts), but the GPU work for each <code class="docutils literal notranslate"><span class="pre">.await</span></code> runs on whichever stream the policy assigns. For truly independent operations you want to overlap, use <code class="docutils literal notranslate"><span class="pre">zip!</span></code> or <code class="docutils literal notranslate"><span class="pre">tokio::join!</span></code>.</p>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="cuda-graphs">
+<h2>CUDA Graphs<a class="headerlink" href="#cuda-graphs" title="連結到這個標頭">#</a></h2>
+<p>A CUDA graph captures a composed <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> into a pre-compiled executable. Launching the executable submits the entire graph in a single driver call — no per-op dispatch overhead — and the same graph can be replayed many times. This matters for hot paths like per-token inference loops, where individual kernels run in microseconds and launch overhead dominates.</p>
+<p>Two capture APIs, depending on how you want to express the pipeline:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="c1">// Combinator form — capture what a DeviceOp chain produces.</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">graph</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pipeline</span><span class="p">(</span><span class="n">input</span><span class="p">).</span><span class="n">graph_on</span><span class="p">(</span><span class="n">stream</span><span class="p">.</span><span class="n">clone</span><span class="p">())</span><span class="o">?</span><span class="p">;</span>
+
+<span class="c1">// Scope form — imperative capture when you need &amp;mut between steps.</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">graph</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CudaGraph</span><span class="p">::</span><span class="n">scope</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">,</span><span class="w"> </span><span class="o">|</span><span class="n">s</span><span class="o">|</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">s</span><span class="p">.</span><span class="n">record</span><span class="p">(</span><span class="n">kernel_a</span><span class="p">((</span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="n">out_a</span><span class="p">).</span><span class="n">partition</span><span class="p">([</span><span class="mi">32</span><span class="p">]),</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="n">clone</span><span class="p">()))</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span><span class="n">s</span><span class="p">.</span><span class="n">record</span><span class="p">(</span><span class="n">kernel_b</span><span class="p">((</span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="n">out_b</span><span class="p">).</span><span class="n">partition</span><span class="p">([</span><span class="mi">32</span><span class="p">]),</span><span class="w"> </span><span class="n">x</span><span class="p">))</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span><span class="nb">Ok</span><span class="p">(())</span>
+<span class="p">})</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Once captured, replay with <code class="docutils literal notranslate"><span class="pre">graph.launch()</span></code>, which returns a <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> you can sync, await, or compose further. For parameterized replay — the common &quot;change one input per step&quot; case — <code class="docutils literal notranslate"><span class="pre">graph.update(new_op)</span></code> rewrites the graph's inputs in place without re-instantiating:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">for</span><span class="w"> </span><span class="n">token</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">tokens</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">graph</span><span class="p">.</span><span class="n">update</span><span class="p">(</span><span class="n">api</span><span class="p">::</span><span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="n">model</span><span class="p">.</span><span class="n">input</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">token</span><span class="p">))</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span><span class="n">graph</span><span class="p">.</span><span class="n">launch</span><span class="p">().</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span><span class="w">  </span><span class="c1">// no per-op dispatch</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Only operations that implement the <code class="docutils literal notranslate"><span class="pre">GraphNode</span></code> trait can be recorded: kernel launches and <code class="docutils literal notranslate"><span class="pre">memcpy</span></code>. Allocation operations (<code class="docutils literal notranslate"><span class="pre">api::zeros</span></code>, <code class="docutils literal notranslate"><span class="pre">api::ones</span></code>, etc.) are not graph-safe — allocate outside the capture closure and pass the tensors in. Inside a <code class="docutils literal notranslate"><span class="pre">scope</span></code> body, calling <code class="docutils literal notranslate"><span class="pre">.sync_on(...)</span></code>, <code class="docutils literal notranslate"><span class="pre">.sync()</span></code>, or <code class="docutils literal notranslate"><span class="pre">.await</span></code> on any <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> returns a <code class="docutils literal notranslate"><span class="pre">DeviceError</span></code>: the execution lock rejects nested execution during capture.</p>
+<p>See <a class="reference internal" href="../tutorials/10-cuda-graphs.html"><span class="std std-doc">Tutorial 10: CUDA Graphs</span></a> for a walkthrough and <a class="reference internal" href="../reference/host-api.html#cuda-graph-integration"><span class="std std-ref">Host API: CUDA Graph Integration</span></a> for the full API reference.</p>
+<hr class="docutils" />
+</section>
+<section id="passing-tensors-and-reading-results">
+<span id="practical-patterns"></span><h2>Passing tensors and reading results<a class="headerlink" href="#passing-tensors-and-reading-results" title="連結到這個標頭">#</a></h2>
+<p>Kernel <code class="docutils literal notranslate"><span class="pre">&amp;Tensor</span></code> params accept three input forms, and <code class="docutils literal notranslate"><span class="pre">&amp;mut</span> <span class="pre">Tensor</span></code> params accept two partition forms. You get back the same type you put in.</p>
+<p>Read-only inputs (<code class="docutils literal notranslate"><span class="pre">&amp;Tensor</span></code>):</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="c1">// Owned — single use, no Arc overhead.</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ones</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">]).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="kd">let</span><span class="w"> </span><span class="p">(</span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kernel</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+
+<span class="c1">// Shared — use the same tensor in multiple kernels.</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ones</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">]).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="n">into</span><span class="p">();</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">z1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kernel1</span><span class="p">(</span><span class="n">out1</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="n">clone</span><span class="p">()).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">z2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kernel2</span><span class="p">(</span><span class="n">out2</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="n">clone</span><span class="p">()).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+
+<span class="c1">// Borrowed — no allocation, borrow checker enforces lifetime.</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ones</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">]).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kernel</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">x</span><span class="p">).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Mutable outputs (<code class="docutils literal notranslate"><span class="pre">&amp;mut</span> <span class="pre">Tensor</span></code>):</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="c1">// Owned partition — must unpartition() to get the tensor back.</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">zeros</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">]).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="n">partition</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">]);</span>
+<span class="kd">let</span><span class="w"> </span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="o">..</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kernel</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">x</span><span class="p">).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">tensor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">z</span><span class="p">.</span><span class="n">unpartition</span><span class="p">();</span>
+
+<span class="c1">// Borrowed partition — writes in place, no unpartition() needed.</span>
+<span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">zeros</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">]).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kernel</span><span class="p">((</span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="n">z</span><span class="p">).</span><span class="n">partition</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">]),</span><span class="w"> </span><span class="o">&amp;</span><span class="n">x</span><span class="p">).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Borrowed inputs and borrowed partitions aren't <code class="docutils literal notranslate"><span class="pre">'static</span></code>, so <code class="docutils literal notranslate"><span class="pre">tokio::spawn</span></code> rejects them at compile time — use <code class="docutils literal notranslate"><span class="pre">Arc</span></code> and owned partitions for spawned tasks. See the <a class="reference internal" href="../reference/host-api.html#ownership-model"><span class="std std-ref">Host API: Ownership Model</span></a> for the full ownership model.</p>
+<p>Host readback is itself a <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code>. Constructing it is lazy; sync or await the readback op before using the host data:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="c1">// Bad: constructs a host copy operation, but never executes it.</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kernel</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">).</span><span class="n">first</span><span class="p">().</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">data_op</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">z</span><span class="p">.</span><span class="n">to_host_vec</span><span class="p">();</span>
+
+<span class="c1">// Good: execute the copy before reading the Vec.</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kernel</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">).</span><span class="n">first</span><span class="p">().</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">z</span><span class="p">.</span><span class="n">to_host_vec</span><span class="p">().</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="runtime-notes">
+<h2>Runtime Notes<a class="headerlink" href="#runtime-notes" title="連結到這個標頭">#</a></h2>
+<p><strong>Execution lock.</strong> cuTile enforces &quot;only one <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> executes per thread at a time.&quot; Nesting <code class="docutils literal notranslate"><span class="pre">.sync_on(...)</span></code>, <code class="docutils literal notranslate"><span class="pre">.sync()</span></code>, or <code class="docutils literal notranslate"><span class="pre">.await</span></code> inside a <code class="docutils literal notranslate"><span class="pre">.then(...)</span></code> closure or a <code class="docutils literal notranslate"><span class="pre">CudaGraph::scope</span></code> body returns a <code class="docutils literal notranslate"><span class="pre">DeviceError</span></code>. The lock exists to prevent cross-stream data races: a nested <code class="docutils literal notranslate"><span class="pre">sync_on(&amp;other_stream)</span></code> inside a <code class="docutils literal notranslate"><span class="pre">.then()</span></code> handler would submit work to a second stream without ordering it against the first. For the rare legitimate case, use <code class="docutils literal notranslate"><span class="pre">unsafe</span> <span class="pre">fn</span> <span class="pre">then_unchecked</span></code>.</p>
+<p><strong>Default device.</strong> The device each <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> lands on is thread-local. <code class="docutils literal notranslate"><span class="pre">set_default_device(id)</span></code> changes it for the current thread — the common pattern for one-thread-per-GPU worker pools. For per-op routing without touching the thread default, get a policy with <code class="docutils literal notranslate"><span class="pre">global_policy(id)</span></code> or <code class="docutils literal notranslate"><span class="pre">with_device_policy(id,</span> <span class="pre">|policy|</span> <span class="pre">...)</span></code> and call <code class="docutils literal notranslate"><span class="pre">op.schedule(&amp;policy)?</span></code>.</p>
+<p>Handles from other frameworks (cudarc, Candle, hand-rolled FFI) can be wrapped into a cuTile <code class="docutils literal notranslate"><span class="pre">Device</span></code> or <code class="docutils literal notranslate"><span class="pre">Stream</span></code> without transferring ownership via <code class="docutils literal notranslate"><span class="pre">Device::borrow_raw</span></code> / <code class="docutils literal notranslate"><span class="pre">Stream::borrow_raw</span></code> — see <a class="reference internal" href="interoperability.html"><span class="std std-doc">Interoperability</span></a>.</p>
+<hr class="docutils" />
+<p>Continue to <a class="reference internal" href="performance.html"><span class="std std-doc">Performance</span></a> for optimization techniques. For the full <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> API, see the <a class="reference internal" href="../reference/host-api.html"><span class="std std-doc">Host API</span></a>.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="jit-compilation.html"
+       title="上一页">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">上一頁</p>
+        <p class="prev-next-title">Compilation</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="performance.html"
+       title="下一页">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">下一頁</p>
+        <p class="prev-next-title">Performance</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> 当前页面
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-deviceop-model">The DeviceOp Model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#composing-deviceops">Composing DeviceOps</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#streams-and-scheduling">Streams and Scheduling</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#execution-method-comparison">Execution method comparison</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cuda-graphs">CUDA Graphs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#passing-tensors-and-reading-results">Passing tensors and reading results</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#runtime-notes">Runtime Notes</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+  
+    <div class="footer-items__center">
+      
+        <div class="footer-item"><footer class="bd-footer-content">
+  <div class="footer-container" style="padding: 1rem 0 2rem 0; border-top: 1px solid var(--pst-color-border); text-align: left;">
+    
+    <!-- NVIDIA Logo -->
+    <div style="margin-bottom: 1rem;">
+      <img src="../_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" 
+           alt="NVIDIA" 
+           style="height: 3.5rem; filter: brightness(0);"
+           class="only-light">
+      <img src="../_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" 
+           alt="NVIDIA" 
+           style="height: 3.5rem;"
+           class="only-dark pst-js-only">
+    </div>
+    
+    <!-- Footer Links - single line, left aligned -->
+    <div style="font-size: 0.8125rem; margin-bottom: 0.5rem; color: var(--pst-color-text-muted);">
+      <a href="https://www.nvidia.com/en-us/about-nvidia/privacy-policy/" target="_blank" style="color: inherit; text-decoration: none;">Privacy Policy</a> | 
+      <a href="https://www.nvidia.com/en-us/preferences/email-preferences/" target="_blank" style="color: inherit; text-decoration: none;">Your Privacy Choices</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/terms-of-service/" target="_blank" style="color: inherit; text-decoration: none;">Terms of Service</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/accessibility/" target="_blank" style="color: inherit; text-decoration: none;">Accessibility</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/company-policies/" target="_blank" style="color: inherit; text-decoration: none;">Corporate Policies</a> | 
+      <a href="https://www.nvidia.com/en-us/product-security/" target="_blank" style="color: inherit; text-decoration: none;">Product Security</a> | 
+      <a href="https://www.nvidia.com/en-us/contact/" target="_blank" style="color: inherit; text-decoration: none;">Contact</a>
+    </div>
+    
+    <!-- Copyright -->
+    <div style="font-size: 0.8125rem; color: var(--pst-color-text-muted);">
+      Copyright &copy; 2025, NVIDIA.
+    </div>
+    
+  </div>
+</footer></div>
+      
+    </div>
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

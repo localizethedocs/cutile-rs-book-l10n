@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Debugging and Profiling &#8212; cuTile Rust</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/nvidia-sphinx-theme.css?v=933278ad" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=4011299f" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/lightbox.css?v=31fdf494" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../_static/documentation_options.js?v=d786bb5c"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/translations.js?v=540d3cec"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'guide/debugging-and-profiling';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <script src="../_static/js/lightbox.js?v=17028852"></script>
+    <link rel="canonical" href="https://projects.localizethedocs.org/cutile-rs-book-l10n/guide/debugging-and-profiling.html" />
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="Useful Mental Models" href="useful-mental-models.html" />
+    <link rel="prev" title="Interoperability" href="interoperability.html" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="zh-CN"/>
+  <meta name="docsearch:version" content="main" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+<script type="text/javascript" src="../ltd-provenance.js"></script>
+<script type="text/javascript" src="../ltd-current.js"></script>
+<script type="text/javascript" src="../../../ltd-config.js"></script>
+<script type="text/javascript" src="../../../ltd-flyout.js"></script>
+
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">跳转至主要内容</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>回到顶部</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="版本警告"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="网页导航">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" class="logo__image only-light" alt=""/>
+    <img src="../_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cuTile Rust</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item"><div class="github-links">
+  <!--
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/stargazers" target="_blank" rel="noopener">
+    <i class="fa-solid fa-star" aria-hidden="true"></i>
+    <span class="sr-only">Star</span>
+  </a>
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/fork" target="_blank" rel="noopener">
+    <i class="fa-solid fa-code-fork" aria-hidden="true"></i>
+    <span class="sr-only">Fork</span>
+  </a>
+  -->
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/NVIDIA/cuda-rust" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="搜索" aria-label="搜索" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button></div>
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="亮色"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="暗色"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>亮色</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>暗色</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="当前页面">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><div class="github-links">
+  <!--
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/stargazers" target="_blank" rel="noopener">
+    <i class="fa-solid fa-star" aria-hidden="true"></i>
+    <span class="sr-only">Star</span>
+  </a>
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/fork" target="_blank" rel="noopener">
+    <i class="fa-solid fa-code-fork" aria-hidden="true"></i>
+    <span class="sr-only">Fork</span>
+  </a>
+  -->
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/NVIDIA/cuda-rust" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="搜索" aria-label="搜索" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button></div>
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="亮色"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="暗色"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>亮色</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>暗色</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><div class="sidebar-tree">
+    <p class="sidebar-tree-title">
+        Table of Contents
+    </p>
+    <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/01-hello-world.html">1. Hello World</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/02-vector-addition.html">2. Vector Addition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/03-saxpy.html">3. SAXPY</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/04-matrix-multiplication.html">4. Matrix Multiplication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/05-fused-softmax.html">5. Fused Softmax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/06-flash-attention.html">6. Fused Multihead Attention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/07-intro-to-async.html">7. Intro to Async Execution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/08-data-parallel-mlp.html">8. Data Parallel MLP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/09-pointer-addition.html">9. Pointer Addition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/10-cuda-graphs.html">10. CUDA Graphs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/11-nvfp4-inference.html">11. Inference with NVFP4/MXFP8</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/12-dgx-spark-inference.html">12. LLM Inference on DGX Spark</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="host-vs-device.html">Host vs. Device Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tensors-and-tiles.html">Tensors and Tiles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jit-compilation.html">Compilation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="device-operations.html">Device Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="performance.html">Performance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autotuning.html">Autotuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bounds-check-placement.html">Bounds-Check Placement</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interoperability.html">Interoperability</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Debugging and Profiling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="useful-mental-models.html">Useful Mental Models</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../reference/dsl-api.html">DSL API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/host-api.html">Host API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/compatibility.html">CUDA and Tile IR compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/glossary.html">Glossary</a></li>
+</ul>
+
+</div></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="初始页面">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Debugging and Profiling</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="debugging-and-profiling">
+<h1>Debugging and Profiling<a class="headerlink" href="#debugging-and-profiling" title="链接到此标题。">#</a></h1>
+<p>Start debugging with small, deterministic inputs. Read results back to the host, compare against a CPU reference, then inspect generated Tile IR or profile the GPU when correctness is established.</p>
+<section id="printing-and-assertions">
+<h2>Printing and Assertions<a class="headerlink" href="#printing-and-assertions" title="链接到此标题。">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">cuda_tile_print!</span></code> prints from inside a GPU kernel:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="cp">#[cutile::entry()]</span>
+<span class="k">fn</span><span class="w"> </span><span class="nf">debug_kernel</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">S</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="kt">i32</span><span class="p">;</span><span class="w"> </span><span class="mi">2</span><span class="p">]</span><span class="o">&gt;</span><span class="p">(</span>
+<span class="w">    </span><span class="n">z</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">mut</span><span class="w"> </span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="n">S</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">pid0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">program_id</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">pid1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">program_id</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">tile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="n">load_like</span><span class="p">(</span><span class="n">z</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">cuda_tile_print</span><span class="o">!</span><span class="p">(</span><span class="s">"Program ({}, {}): loaded tile</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">pid0</span><span class="p">,</span><span class="w"> </span><span class="n">pid1</span><span class="p">);</span>
+<span class="w">    </span><span class="n">z</span><span class="p">.</span><span class="n">store</span><span class="p">(</span><span class="n">tile</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>GPU printing is slow and serializes tile block execution. Use it for small grids and remove it before measuring performance.</p>
+<p><code class="docutils literal notranslate"><span class="pre">cuda_tile_assert!</span></code> checks conditions inside a kernel:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">n</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="n">shape</span><span class="p">()[</span><span class="mi">0</span><span class="p">];</span>
+<span class="n">cuda_tile_assert</span><span class="o">!</span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="s">"expected a non-empty input"</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="host-readback">
+<h2>Host Readback<a class="headerlink" href="#host-readback" title="链接到此标题。">#</a></h2>
+<p>Host readback is a <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code>; execute it before reading the host vector:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">z_host</span><span class="p">:</span><span class="w"> </span><span class="nb">Vec</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">z</span>
+<span class="w">    </span><span class="p">.</span><span class="n">unpartition</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="n">to_host_vec</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+
+<span class="fm">assert!</span><span class="p">(</span><span class="o">!</span><span class="n">z_host</span><span class="p">.</span><span class="n">iter</span><span class="p">().</span><span class="n">any</span><span class="p">(</span><span class="o">|</span><span class="n">x</span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="n">is_nan</span><span class="p">()));</span>
+<span class="fm">assert!</span><span class="p">(</span><span class="o">!</span><span class="n">z_host</span><span class="p">.</span><span class="n">iter</span><span class="p">().</span><span class="n">any</span><span class="p">(</span><span class="o">|</span><span class="n">x</span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="n">is_infinite</span><span class="p">()));</span>
+</pre></div>
+</div>
+<p>If a fused kernel is wrong, split it into stages and read back each intermediate. Each stage should match a simple CPU implementation on a small input.</p>
+</section>
+<section id="correctness-tests">
+<h2>Correctness Tests<a class="headerlink" href="#correctness-tests" title="链接到此标题。">#</a></h2>
+<p>Use minimal inputs first:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="cp">#[test]</span>
+<span class="k">fn</span><span class="w"> </span><span class="nf">small_add_matches_cpu</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="fm">vec!</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0</span><span class="p">,</span><span class="w"> </span><span class="mf">3.0</span><span class="p">,</span><span class="w"> </span><span class="mf">4.0</span><span class="p">];</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="fm">vec!</span><span class="p">[</span><span class="mf">10.0</span><span class="p">,</span><span class="w"> </span><span class="mf">20.0</span><span class="p">,</span><span class="w"> </span><span class="mf">30.0</span><span class="p">,</span><span class="w"> </span><span class="mf">40.0</span><span class="p">];</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">expected</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="fm">vec!</span><span class="p">[</span><span class="mf">11.0</span><span class="p">,</span><span class="w"> </span><span class="mf">22.0</span><span class="p">,</span><span class="w"> </span><span class="mf">33.0</span><span class="p">,</span><span class="w"> </span><span class="mf">44.0</span><span class="p">];</span>
+
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">run_add_kernel</span><span class="p">(</span><span class="o">&amp;</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">b</span><span class="p">);</span>
+<span class="w">    </span><span class="fm">assert_eq!</span><span class="p">(</span><span class="n">result</span><span class="p">,</span><span class="w"> </span><span class="n">expected</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Then compare larger random inputs against a CPU reference with an appropriate tolerance:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">cpu</span><span class="p">,</span><span class="w"> </span><span class="n">gpu</span><span class="p">)</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">cpu_result</span><span class="p">.</span><span class="n">iter</span><span class="p">().</span><span class="n">zip</span><span class="p">(</span><span class="n">gpu_result</span><span class="p">.</span><span class="n">iter</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="fm">assert!</span><span class="p">((</span><span class="n">cpu</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">gpu</span><span class="p">).</span><span class="n">abs</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">1e-5</span><span class="p">,</span><span class="w"> </span><span class="s">"CPU={cpu}, GPU={gpu}"</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>For numerically sensitive kernels, test edge cases: zeros, large positive values, large negative values, non-divisible shapes if supported, and known overflow-prone inputs.</p>
+</section>
+<section id="inspecting-tile-ir">
+<h2>Inspecting Tile IR<a class="headerlink" href="#inspecting-tile-ir" title="链接到此标题。">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">print_ir</span> <span class="pre">=</span> <span class="pre">true</span></code> prints the generated entry point wrapper and the Tile IR text during JIT compilation:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="cp">#[cutile::entry(print_ir = true)]</span>
+<span class="k">fn</span><span class="w"> </span><span class="nf">debug_ir_kernel</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">S</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="kt">i32</span><span class="p">;</span><span class="w"> </span><span class="mi">2</span><span class="p">]</span><span class="o">&gt;</span><span class="p">(</span><span class="o">..</span><span class="p">.)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">..</span><span class="p">.</span><span class="w"> </span><span class="p">}</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">dump_mlir_dir</span></code> writes the compiled Tile IR text to files:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="cp">#[cutile::entry(dump_mlir_dir = </span><span class="s">"/tmp/cutile-ir"</span><span class="cp">)]</span>
+<span class="k">fn</span><span class="w"> </span><span class="nf">debug_ir_kernel</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">S</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="kt">i32</span><span class="p">;</span><span class="w"> </span><span class="mi">2</span><span class="p">]</span><span class="o">&gt;</span><span class="p">(</span><span class="o">..</span><span class="p">.)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">..</span><span class="p">.</span><span class="w"> </span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Module-level dumps are also available with environment variables. They are
+written to stderr once per compiled module:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Variable</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">CUTILE_DUMP</span></code></p></td>
+<td><p>Comma-separated stages to dump: <code class="docutils literal notranslate"><span class="pre">ir</span></code> (the Tile IR module text) and <code class="docutils literal notranslate"><span class="pre">bytecode</span></code> (alias <code class="docutils literal notranslate"><span class="pre">bc</span></code>; the encoded bytecode decoded back to text), or <code class="docutils literal notranslate"><span class="pre">all</span></code>. The <code class="docutils literal notranslate"><span class="pre">ast</span></code>, <code class="docutils literal notranslate"><span class="pre">resolved</span></code>, <code class="docutils literal notranslate"><span class="pre">typed</span></code>, and <code class="docutils literal notranslate"><span class="pre">instantiated</span></code> names are accepted but no code path emits them today</p></td>
+<td><p>unset</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">CUTILE_DUMP_FILTER</span></code></p></td>
+<td><p>Comma-separated <code class="docutils literal notranslate"><span class="pre">module::function</span></code> paths; the dumps are per module, so only the <code class="docutils literal notranslate"><span class="pre">module</span></code> part is matched. Bare function names do not exclude any module</p></td>
+<td><p>unset</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="errors-and-crashes">
+<h2>Errors and Crashes<a class="headerlink" href="#errors-and-crashes" title="链接到此标题。">#</a></h2>
+<p>Most cuTile Rust errors are caught before a kernel runs:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Error</p></th>
+<th class="head"><p>Cause</p></th>
+<th class="head"><p>Fix</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Shape mismatch</p></td>
+<td><p>Incompatible tile shapes</p></td>
+<td><p>Align shapes or use <code class="docutils literal notranslate"><span class="pre">reshape</span></code> / <code class="docutils literal notranslate"><span class="pre">broadcast</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Element type mismatch</p></td>
+<td><p>Different element types in one operation</p></td>
+<td><p>Add explicit <code class="docutils literal notranslate"><span class="pre">convert_tile()</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Invalid reduction axis</p></td>
+<td><p>Axis outside the tile rank</p></td>
+<td><p>Use an axis in <code class="docutils literal notranslate"><span class="pre">0..rank</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Unsupported MMA shape or dtype</p></td>
+<td><p>No lowering for that combination</p></td>
+<td><p>Use a supported shape and element type</p></td>
+</tr>
+<tr class="row-even"><td><p>Missing entry</p></td>
+<td><p>Function is not marked with <code class="docutils literal notranslate"><span class="pre">#[cutile::entry()]</span></code></p></td>
+<td><p>Add the entry attribute</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Runtime errors usually come from out-of-bounds accesses, toolkit issues, or invalid raw-pointer usage:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Error</p></th>
+<th class="head"><p>Cause</p></th>
+<th class="head"><p>Fix</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>CUDA error: no kernel image</p></td>
+<td><p>Wrong GPU architecture or stale cubin</p></td>
+<td><p>Clear cache, rebuild, verify target SM</p></td>
+</tr>
+<tr class="row-odd"><td><p>Failed to load kernel</p></td>
+<td><p>CUDA toolkit or driver issue</p></td>
+<td><p>Check <code class="docutils literal notranslate"><span class="pre">nvidia-smi</span></code> and toolkit version</p></td>
+</tr>
+<tr class="row-even"><td><p>Out of memory</p></td>
+<td><p>Tensor allocation or JIT memory pressure</p></td>
+<td><p>Reduce allocation size or specialization count</p></td>
+</tr>
+<tr class="row-odd"><td><p>Shape mismatch at runtime</p></td>
+<td><p>Tensor size incompatible with partition</p></td>
+<td><p>Ensure expected divisibility or bounds handling</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>CPU segfaults usually mean the failure happened in host-side FFI, JIT compilation, or raw-pointer lifetime management rather than inside ordinary safe tile code. Get a backtrace first:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">RUST_BACKTRACE</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>cargo<span class="w"> </span>run
+<span class="nv">RUST_BACKTRACE</span><span class="o">=</span>full<span class="w"> </span>cargo<span class="w"> </span>run
+
+gdb<span class="w"> </span>--args<span class="w"> </span>./target/debug/my_program
+<span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>run
+<span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>bt
+</pre></div>
+</div>
+<p>Check the CUDA driver, CUDA Toolkit path, raw pointer lifetimes, spawned task lifetimes, and host memory use during first-launch compilation.</p>
+</section>
+<section id="debug-builds-and-sanitizers">
+<h2>Debug Builds and Sanitizers<a class="headerlink" href="#debug-builds-and-sanitizers" title="链接到此标题。">#</a></h2>
+<p>Device debug information follows Cargo's profile <code class="docutils literal notranslate"><span class="pre">debug</span></code> setting by
+default. With the standard profiles, <code class="docutils literal notranslate"><span class="pre">cargo</span> <span class="pre">build</span></code> enables device-debug
+mode and <code class="docutils literal notranslate"><span class="pre">cargo</span> <span class="pre">build</span> <span class="pre">--release</span></code> disables it. This is independent of
+<code class="docutils literal notranslate"><span class="pre">debug-assertions</span></code>.</p>
+<p>For example, turn device debugging off in a development build through the
+workspace's <code class="docutils literal notranslate"><span class="pre">Cargo.toml</span></code>:</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[profile.dev]</span>
+<span class="n">debug</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span>
+</pre></div>
+</div>
+<p>Cargo provides only <code class="docutils literal notranslate"><span class="pre">DEBUG=true|false</span></code> to build
+scripts, not the exact debug level. Any enabled level currently selects
+device-debug mode, including <code class="docutils literal notranslate"><span class="pre">debug</span> <span class="pre">=</span> <span class="pre">&quot;line-tables-only&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;limited&quot;</span></code>.
+It also selects device optimization level 0 unless explicitly overridden,
+even in a release profile with <code class="docutils literal notranslate"><span class="pre">debug</span> <span class="pre">=</span> <span class="pre">true</span></code>. Automatic line-only mapping
+is not implemented. Use the explicit <code class="docutils literal notranslate"><span class="pre">line</span></code> override below for optimized
+profiling. See Cargo's <a class="reference external" href="https://doc.rust-lang.org/cargo/reference/profiles.html#debug">profile settings</a> and
+<a class="reference external" href="https://doc.rust-lang.org/cargo/reference/environment-variables.html#environment-variables-cargo-sets-for-build-scripts">build-script environment</a>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">CUDA_RUST_DEBUG</span></code> overrides the Cargo-derived default when building the app.
+No per-launch <code class="docutils literal notranslate"><span class="pre">.compile_options()</span></code> call is needed:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Optimized device code with source lines for profiling.</span>
+<span class="nv">CUDA_RUST_DEBUG</span><span class="o">=</span>line<span class="w"> </span>cargo<span class="w"> </span>build<span class="w"> </span>--release
+
+<span class="c1"># Unoptimized device code with source locations and inline frames.</span>
+<span class="nv">CUDA_RUST_DEBUG</span><span class="o">=</span>full<span class="w"> </span>cargo<span class="w"> </span>build
+cuda-gdb<span class="w"> </span>--args<span class="w"> </span>./target/debug/my_program
+</pre></div>
+</div>
+<p>The accepted values are <code class="docutils literal notranslate"><span class="pre">none</span></code>, <code class="docutils literal notranslate"><span class="pre">line</span></code>, and <code class="docutils literal notranslate"><span class="pre">full</span></code>. Unset follows Cargo;
+other values fail the build. Cargo tracks changes, so no <code class="docutils literal notranslate"><span class="pre">cargo</span> <span class="pre">clean</span></code> is
+needed. The setting is captured when the target <code class="docutils literal notranslate"><span class="pre">cutile-compiler</span></code> library
+is built, not when the proc macro is built. A package-specific profile
+override for <code class="docutils literal notranslate"><span class="pre">cutile-compiler</span></code> affects this shared default; an override
+only for a kernel's crate does not. Setting the environment variable only
+when running an already-built binary does not change device compilation.</p>
+<p><code class="docutils literal notranslate"><span class="pre">CompileOptions::new()</span></code> and <code class="docutils literal notranslate"><span class="pre">CompileOptions::default()</span></code> inherit this build
+default. Use <code class="docutils literal notranslate"><span class="pre">debug_info()</span></code> to replace it for one launch. It sets both debug
+flags, so it can also turn off a build-time <code class="docutils literal notranslate"><span class="pre">full</span></code> default:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">use</span><span class="w"> </span><span class="n">cutile</span><span class="p">::</span><span class="n">tile_kernel</span><span class="p">::{</span><span class="n">CompileOptions</span><span class="p">,</span><span class="w"> </span><span class="n">DebugInfoLevel</span><span class="p">};</span>
+
+<span class="n">my_kernel</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">compile_options</span><span class="p">(</span><span class="n">CompileOptions</span><span class="p">::</span><span class="n">new</span><span class="p">().</span><span class="n">debug_info</span><span class="p">(</span><span class="n">DebugInfoLevel</span><span class="p">::</span><span class="nb">None</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="n">sync</span><span class="p">()</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Each option is part of the JIT cache key, so the modes do not share a cached
+compiled kernel. The individual flags remain available, as does sanitizer
+instrumentation:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">use</span><span class="w"> </span><span class="n">cutile</span><span class="p">::</span><span class="n">tile_kernel</span><span class="p">::{</span><span class="n">CompileOptions</span><span class="p">,</span><span class="w"> </span><span class="n">DebugInfoLevel</span><span class="p">};</span>
+
+<span class="c1">// cuda-gdb: debug information, no optimization.</span>
+<span class="n">my_kernel</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">compile_options</span><span class="p">(</span><span class="n">CompileOptions</span><span class="p">::</span><span class="n">new</span><span class="p">().</span><span class="n">debug_info</span><span class="p">(</span><span class="n">DebugInfoLevel</span><span class="p">::</span><span class="n">Full</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="n">sync</span><span class="p">()</span><span class="o">?</span><span class="p">;</span>
+
+<span class="c1">// Profiler correlation: line-number information only, full optimization.</span>
+<span class="n">my_kernel</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">compile_options</span><span class="p">(</span><span class="n">CompileOptions</span><span class="p">::</span><span class="n">new</span><span class="p">().</span><span class="n">debug_info</span><span class="p">(</span><span class="n">DebugInfoLevel</span><span class="p">::</span><span class="n">Line</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="n">sync</span><span class="p">()</span><span class="o">?</span><span class="p">;</span>
+
+<span class="c1">// Compute Sanitizer: memory-access instrumentation.</span>
+<span class="n">my_kernel</span><span class="p">(</span><span class="n">args</span><span class="p">).</span><span class="n">compile_options</span><span class="p">(</span><span class="n">CompileOptions</span><span class="p">::</span><span class="n">new</span><span class="p">().</span><span class="n">sanitize_memcheck</span><span class="p">(</span><span class="kc">true</span><span class="p">)).</span><span class="n">sync</span><span class="p">()</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">debug_info(level)</span></code> replaces both debug flags. The individual
+<code class="docutils literal notranslate"><span class="pre">device_debug(bool)</span></code> and <code class="docutils literal notranslate"><span class="pre">lineinfo(bool)</span></code> setters change only their own
+flag, leaving other inherited settings in place.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">device_debug(true)</span></code> passes <code class="docutils literal notranslate"><span class="pre">--device-debug</span></code> to the device compiler and
+implies optimization level 0. An explicit <code class="docutils literal notranslate"><span class="pre">opt_level</span></code> takes precedence,
+but <code class="docutils literal notranslate"><span class="pre">tileiras</span></code> currently rejects full debug information at optimized
+levels. The frontend also stops hoisting bounds checks out of loops.
+Checks it proved unnecessary or moved to launch time are unaffected;
+they never reach device code in any mode.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lineinfo(true)</span></code> passes <code class="docutils literal notranslate"><span class="pre">--lineinfo</span></code>: source-line correlation for Nsight Compute and Nsight Systems without changing code generation. This is the option for profiling optimized kernels.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sanitize_memcheck(true)</span></code> passes <code class="docutils literal notranslate"><span class="pre">--sanitize=memcheck</span></code> for <code class="docutils literal notranslate"><span class="pre">compute-sanitizer</span> <span class="pre">--tool</span> <span class="pre">memcheck</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">opt_level(n)</span></code> selects <code class="docutils literal notranslate"><span class="pre">--opt-level</span></code> directly; the default is 3.</p></li>
+</ul>
+<p>Full debug mode describes source locations and inline frames, not Rust
+variables or values. Tile IR currently supports control-flow debugging of
+unoptimized code but not inspection of user variables; see the
+<a class="reference external" href="https://docs.nvidia.com/cuda/tile-ir/latest/sections/debug_info.html">Tile IR debug-info documentation</a>.</p>
+<p>User helpers and methods retain their definition's source file and line
+when inlined, including across modules. Core operations are attributed to
+the user's call site. Multiple generated instructions can still map to one
+Rust line; this is not a one-to-one mapping, especially with optimization.</p>
+</section>
+<section id="profiling">
+<h2>Profiling<a class="headerlink" href="#profiling" title="链接到此标题。">#</a></h2>
+<p>Use NVIDIA <strong>Nsight Compute</strong> (<code class="docutils literal notranslate"><span class="pre">ncu</span></code>, reports opened with <code class="docutils literal notranslate"><span class="pre">ncu-ui</span></code>) for
+individual kernels: throughput, occupancy, register use, and stalls.
+<strong>Nsight Systems</strong> (<code class="docutils literal notranslate"><span class="pre">nsys</span></code>, <code class="docutils literal notranslate"><span class="pre">nsys-ui</span></code>) shows the application timeline:
+CPU/GPU scheduling, transfers, synchronization, and launch gaps.</p>
+<p>For source correlation, build with <code class="docutils literal notranslate"><span class="pre">CUDA_RUST_DEBUG=line</span></code>. Keep the Rust
+sources available on the machine where you inspect the report. Profile the
+built executable, not the Cargo build itself:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">CUDA_RUST_DEBUG</span><span class="o">=</span>line<span class="w"> </span>cargo<span class="w"> </span>build<span class="w"> </span>--release
+ncu<span class="w"> </span>--target-processes<span class="w"> </span>all<span class="w"> </span>./my_cutile_program
+ncu<span class="w"> </span>--set<span class="w"> </span>full<span class="w"> </span>-o<span class="w"> </span>profile_report<span class="w"> </span>./my_cutile_program
+ncu-ui<span class="w"> </span>profile_report.ncu-rep
+</pre></div>
+</div>
+<p>Replace <code class="docutils literal notranslate"><span class="pre">./my_cutile_program</span></code> with your binary's path, such as
+<code class="docutils literal notranslate"><span class="pre">./target/release/my_program</span></code>. An <code class="docutils literal notranslate"><span class="pre">ERR_NVGPUCTRPERM</span></code> report means this
+machine's GPU performance-counter access needs to be enabled by its
+administrator; changing line-info settings will not fix that.</p>
+<p>Use Nsight Systems for CPU/GPU scheduling:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>nsys<span class="w"> </span>profile<span class="w"> </span>./my_cutile_program
+nsys-ui<span class="w"> </span>report.nsys-rep
+</pre></div>
+</div>
+<p>Look for launch gaps, unnecessary synchronization, memory transfer overlap, and whether independent kernels actually overlap on separate streams.</p>
+<p>Tile IR display is separate from Rust source-line correlation. NVIDIA lists
+the Tile IR Source view as a new feature in <a class="reference external" href="https://developer.nvidia.com/nsight-compute-2026_3-new-features">Nsight Compute 2026.3</a>.
+If it is missing, record the Nsight Compute and CUDA Toolkit versions,
+compile options, cubin, and report before diagnosing a metadata problem.
+The standalone Tile IR dumps above remain useful independently of that view.</p>
+</section>
+<section id="regression-checks">
+<h2>Regression Checks<a class="headerlink" href="#regression-checks" title="链接到此标题。">#</a></h2>
+<p>The repository tests source provenance and compile-option cache separation
+without a GPU:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cargo<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-p<span class="w"> </span>cutile<span class="w"> </span>--test<span class="w"> </span>debug_info
+bash<span class="w"> </span>scripts/test_debug_defaults.sh
+</pre></div>
+</div>
+<p>The second command requires <code class="docutils literal notranslate"><span class="pre">jq</span></code>. It checks Cargo profiles, independent
+debug assertions and build-dependency settings, explicit overrides, and
+the line-only mapping limitation. It also checks that changing the runtime
+environment does not change the built default. Additional checks are opt-in:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Requires tileiras, nvdisasm, and readelf, but no GPU.</span>
+cargo<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-p<span class="w"> </span>cutile<span class="w"> </span>--test<span class="w"> </span>debug_info<span class="w"> </span>cubin_has_rust_lines_and_inline_frames<span class="w"> </span>--<span class="w"> </span>--ignored
+
+<span class="c1"># Requires a supported GPU and tileiras.</span>
+cargo<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-p<span class="w"> </span>cutile<span class="w"> </span>--test<span class="w"> </span>debug_info<span class="w"> </span>kernel_executes_in_all_debug_modes<span class="w"> </span>--<span class="w"> </span>--ignored
+
+<span class="c1"># Also requires cuda-gdb and timeout; stops at a helper's source line and</span>
+<span class="c1"># checks its nested inline backtrace before completing the kernel.</span>
+cargo<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-p<span class="w"> </span>cutile<span class="w"> </span>--test<span class="w"> </span>debug_info<span class="w"> </span>cuda_gdb_stops_in_cross_file_helper<span class="w"> </span>--<span class="w"> </span>--ignored
+</pre></div>
+</div>
+</section>
+<section id="debugging-checklist">
+<h2>Debugging Checklist<a class="headerlink" href="#debugging-checklist" title="链接到此标题。">#</a></h2>
+<ul class="simple">
+<li><p>Shapes match the operation and launch partition.</p></li>
+<li><p>Tensor sizes are compatible with the partition shape.</p></li>
+<li><p>Element types match or are explicitly converted.</p></li>
+<li><p>Small inputs match a CPU reference.</p></li>
+<li><p>Numerically sensitive code handles overflow and underflow.</p></li>
+<li><p>Raw pointers outlive all GPU work that uses them.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">print_ir</span></code> shows the expected Tile IR operations.</p></li>
+<li><p>Profiles are captured after correctness checks pass.</p></li>
+</ul>
+<hr class="docutils" />
+<p>Review <a class="reference internal" href="performance.html"><span class="std std-doc">Performance</span></a> for optimization strategies or <a class="reference internal" href="interoperability.html"><span class="std std-doc">Interoperability</span></a> for custom CUDA kernels.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="interoperability.html"
+       title="上一页">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">上一页</p>
+        <p class="prev-next-title">Interoperability</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="useful-mental-models.html"
+       title="下一页">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">下一页</p>
+        <p class="prev-next-title">Useful Mental Models</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> 当前页面
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#printing-and-assertions">Printing and Assertions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#host-readback">Host Readback</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#correctness-tests">Correctness Tests</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inspecting-tile-ir">Inspecting Tile IR</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#errors-and-crashes">Errors and Crashes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#debug-builds-and-sanitizers">Debug Builds and Sanitizers</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#profiling">Profiling</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#regression-checks">Regression Checks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#debugging-checklist">Debugging Checklist</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+  
+    <div class="footer-items__center">
+      
+        <div class="footer-item"><footer class="bd-footer-content">
+  <div class="footer-container" style="padding: 1rem 0 2rem 0; border-top: 1px solid var(--pst-color-border); text-align: left;">
+    
+    <!-- NVIDIA Logo -->
+    <div style="margin-bottom: 1rem;">
+      <img src="../_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" 
+           alt="NVIDIA" 
+           style="height: 3.5rem; filter: brightness(0);"
+           class="only-light">
+      <img src="../_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" 
+           alt="NVIDIA" 
+           style="height: 3.5rem;"
+           class="only-dark pst-js-only">
+    </div>
+    
+    <!-- Footer Links - single line, left aligned -->
+    <div style="font-size: 0.8125rem; margin-bottom: 0.5rem; color: var(--pst-color-text-muted);">
+      <a href="https://www.nvidia.com/en-us/about-nvidia/privacy-policy/" target="_blank" style="color: inherit; text-decoration: none;">Privacy Policy</a> | 
+      <a href="https://www.nvidia.com/en-us/preferences/email-preferences/" target="_blank" style="color: inherit; text-decoration: none;">Your Privacy Choices</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/terms-of-service/" target="_blank" style="color: inherit; text-decoration: none;">Terms of Service</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/accessibility/" target="_blank" style="color: inherit; text-decoration: none;">Accessibility</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/company-policies/" target="_blank" style="color: inherit; text-decoration: none;">Corporate Policies</a> | 
+      <a href="https://www.nvidia.com/en-us/product-security/" target="_blank" style="color: inherit; text-decoration: none;">Product Security</a> | 
+      <a href="https://www.nvidia.com/en-us/contact/" target="_blank" style="color: inherit; text-decoration: none;">Contact</a>
+    </div>
+    
+    <!-- Copyright -->
+    <div style="font-size: 0.8125rem; color: var(--pst-color-text-muted);">
+      Copyright &copy; 2025, NVIDIA.
+    </div>
+    
+  </div>
+</footer></div>
+      
+    </div>
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

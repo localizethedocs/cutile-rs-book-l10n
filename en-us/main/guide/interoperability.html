@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+
+
+<html lang="en-US" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Interoperability &#8212; cuTile Rust</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/nvidia-sphinx-theme.css?v=933278ad" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=4011299f" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/lightbox.css?v=31fdf494" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../_static/documentation_options.js?v=66d1f95f"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'guide/interoperability';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <script src="../_static/js/lightbox.js?v=17028852"></script>
+    <link rel="canonical" href="https://projects.localizethedocs.org/cutile-rs-book-l10n/guide/interoperability.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Debugging and Profiling" href="debugging-and-profiling.html" />
+    <link rel="prev" title="Bounds-Check Placement" href="bounds-check-placement.html" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en-US"/>
+  <meta name="docsearch:version" content="main" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+<script type="text/javascript" src="../ltd-provenance.js"></script>
+<script type="text/javascript" src="../ltd-current.js"></script>
+<script type="text/javascript" src="../../../ltd-config.js"></script>
+<script type="text/javascript" src="../../../ltd-flyout.js"></script>
+
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" class="logo__image only-light" alt=""/>
+    <img src="../_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cuTile Rust</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item"><div class="github-links">
+  <!--
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/stargazers" target="_blank" rel="noopener">
+    <i class="fa-solid fa-star" aria-hidden="true"></i>
+    <span class="sr-only">Star</span>
+  </a>
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/fork" target="_blank" rel="noopener">
+    <i class="fa-solid fa-code-fork" aria-hidden="true"></i>
+    <span class="sr-only">Fork</span>
+  </a>
+  -->
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/NVIDIA/cuda-rust" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button></div>
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><div class="github-links">
+  <!--
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/stargazers" target="_blank" rel="noopener">
+    <i class="fa-solid fa-star" aria-hidden="true"></i>
+    <span class="sr-only">Star</span>
+  </a>
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/fork" target="_blank" rel="noopener">
+    <i class="fa-solid fa-code-fork" aria-hidden="true"></i>
+    <span class="sr-only">Fork</span>
+  </a>
+  -->
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/NVIDIA/cuda-rust" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button></div>
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><div class="sidebar-tree">
+    <p class="sidebar-tree-title">
+        Table of Contents
+    </p>
+    <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/01-hello-world.html">1. Hello World</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/02-vector-addition.html">2. Vector Addition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/03-saxpy.html">3. SAXPY</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/04-matrix-multiplication.html">4. Matrix Multiplication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/05-fused-softmax.html">5. Fused Softmax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/06-flash-attention.html">6. Fused Multihead Attention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/07-intro-to-async.html">7. Intro to Async Execution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/08-data-parallel-mlp.html">8. Data Parallel MLP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/09-pointer-addition.html">9. Pointer Addition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/10-cuda-graphs.html">10. CUDA Graphs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/11-nvfp4-inference.html">11. Inference with NVFP4/MXFP8</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/12-dgx-spark-inference.html">12. LLM Inference on DGX Spark</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="host-vs-device.html">Host vs. Device Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tensors-and-tiles.html">Tensors and Tiles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jit-compilation.html">Compilation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="device-operations.html">Device Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="performance.html">Performance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autotuning.html">Autotuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bounds-check-placement.html">Bounds-Check Placement</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Interoperability</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debugging-and-profiling.html">Debugging and Profiling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="useful-mental-models.html">Useful Mental Models</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../reference/dsl-api.html">DSL API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/host-api.html">Host API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/compatibility.html">CUDA and Tile IR compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/glossary.html">Glossary</a></li>
+</ul>
+
+</div></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Interoperability</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="interoperability">
+<h1>Interoperability<a class="headerlink" href="#interoperability" title="Link to this heading">#</a></h1>
+<p>cuTile Rust can launch external CUDA kernels and borrow handles from other
+libraries:</p>
+<ul class="simple">
+<li><p><strong>Integrating external PTX or CUBIN kernels</strong> — for CUDA C++ kernels, cuda-oxide-generated PTX, or other CUDA module artifacts that you want to launch alongside cuTile kernels.</p></li>
+<li><p><strong>Borrowing foreign CUDA handles</strong> — wrap a <code class="docutils literal notranslate"><span class="pre">CUcontext</span></code> / <code class="docutils literal notranslate"><span class="pre">CUstream</span></code> from another Rust binding crate (cudarc, Candle, hand-rolled FFI) so cuTile kernels can run on handles you already own.</p></li>
+<li><p><strong>Migrating from other tile DSLs</strong> — conceptual mapping from Triton and cuTile Python.</p></li>
+</ul>
+<p>External CUDA kernels participate in the same <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> execution model as tile kernels — sharing streams, chaining with <code class="docutils literal notranslate"><span class="pre">.then()</span></code>, and avoiding unnecessary synchronization.</p>
+<hr class="docutils" />
+<section id="integrating-external-ptx-or-cubin-kernels">
+<h2>Integrating External PTX or CUBIN Kernels<a class="headerlink" href="#integrating-external-ptx-or-cubin-kernels" title="Link to this heading">#</a></h2>
+<section id="from-cuda-c">
+<h3>From CUDA C++<a class="headerlink" href="#from-cuda-c" title="Link to this heading">#</a></h3>
+<p>Compile your CUDA C++ kernel to PTX (portable) or a <code class="docutils literal notranslate"><span class="pre">.cubin</span></code> (architecture-specific):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># PTX — portable across GPU architectures, JIT-compiled at load time.</span>
+nvcc<span class="w"> </span>-ptx<span class="w"> </span>-arch<span class="o">=</span>compute_80<span class="w"> </span>my_kernel.cu<span class="w"> </span>-o<span class="w"> </span>my_kernel.ptx
+
+<span class="c1"># cubin — pre-compiled for a single architecture, no JIT overhead.</span>
+nvcc<span class="w"> </span>-cubin<span class="w"> </span>-arch<span class="o">=</span>sm_80<span class="w"> </span>my_kernel.cu<span class="w"> </span>-o<span class="w"> </span>my_kernel.cubin
+</pre></div>
+</div>
+<blockquote>
+<div><p><strong>Architecture portability:</strong> A <code class="docutils literal notranslate"><span class="pre">.cubin</span></code> file only runs on the exact SM architecture it was compiled for. Code compiled with <code class="docutils literal notranslate"><span class="pre">-arch=sm_80</span></code> will not load on an <code class="docutils literal notranslate"><span class="pre">sm_100</span></code> GPU. PTX avoids this problem — the CUDA driver JIT-compiles it for the target GPU at load time, at the cost of a one-time compilation delay. Prefer PTX unless you need to eliminate JIT overhead.</p>
+</div></blockquote>
+</section>
+<section id="from-cuda-oxide">
+<h3>From cuda-oxide<a class="headerlink" href="#from-cuda-oxide" title="Link to this heading">#</a></h3>
+<p><a class="reference external" href="https://nvidia.github.io/cuda-rust/cuda-oxide/">cuda-oxide</a> is CUDA Rust’s SIMT kernel programming model; it lives next to cuTile Rust in the <a class="reference external" href="https://github.com/NVIDIA/cuda-rust/tree/main/cuda-oxide">cuda-rust repository</a>. Its documented output path is PTX: build or inspect the generated PTX with <code class="docutils literal notranslate"><span class="pre">cargo</span> <span class="pre">oxide</span> <span class="pre">build</span></code> or <code class="docutils literal notranslate"><span class="pre">cargo</span> <span class="pre">oxide</span> <span class="pre">pipeline</span></code>, then load that PTX with <code class="docutils literal notranslate"><span class="pre">load_module_from_ptx</span></code> and wrap the entry function in an <code class="docutils literal notranslate"><span class="pre">AsyncKernelLaunch</span></code> or typed <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code>.</p>
+<p>If you need a CUBIN, compile the PTX through the normal CUDA toolchain as a separate step.</p>
+</section>
+<section id="loading-and-launching">
+<h3>Loading and Launching<a class="headerlink" href="#loading-and-launching" title="Link to this heading">#</a></h3>
+<p>Load the compiled module and get a handle to the entry function:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">use</span><span class="w"> </span><span class="n">cuda_async</span><span class="p">::</span><span class="n">device_context</span><span class="p">::{</span><span class="n">load_module_from_file</span><span class="p">,</span><span class="w"> </span><span class="n">load_module_from_ptx</span><span class="p">};</span>
+
+<span class="c1">// From cubin:</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">module</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">load_module_from_file</span><span class="p">(</span><span class="s">"my_kernel.cubin"</span><span class="p">,</span><span class="w"> </span><span class="n">device_id</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+
+<span class="c1">// Or from PTX (JIT-compiled at load time):</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">ptx_src</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="fm">include_str!</span><span class="p">(</span><span class="s">"my_kernel.ptx"</span><span class="p">);</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">module</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">load_module_from_ptx</span><span class="p">(</span><span class="n">ptx_src</span><span class="p">,</span><span class="w"> </span><span class="n">device_id</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="n">function</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Arc</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="n">module</span><span class="p">.</span><span class="n">load_function</span><span class="p">(</span><span class="s">"my_kernel_entry"</span><span class="p">)</span><span class="o">?</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Launch the kernel via <code class="docutils literal notranslate"><span class="pre">AsyncKernelLaunch</span></code>, which is a <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> wrapping the CUDA driver’s kernel launch API:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">use</span><span class="w"> </span><span class="n">cuda_async</span><span class="p">::</span><span class="n">launch</span><span class="p">::</span><span class="n">AsyncKernelLaunch</span><span class="p">;</span>
+<span class="k">use</span><span class="w"> </span><span class="n">cuda_core</span><span class="p">::</span><span class="n">LaunchConfig</span><span class="p">;</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">launcher</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">AsyncKernelLaunch</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="n">function</span><span class="p">.</span><span class="n">clone</span><span class="p">());</span>
+<span class="n">launcher</span><span class="p">.</span><span class="n">push_arg</span><span class="p">(</span><span class="n">num_elements</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="kt">u32</span><span class="p">);</span>
+<span class="n">launcher</span><span class="p">.</span><span class="n">push_arg</span><span class="p">(</span><span class="n">scale</span><span class="p">);</span>
+<span class="c1">// SAFETY: input and output are valid device allocations with at least</span>
+<span class="c1">// num_elements f32 elements. output is exclusively written; input is</span>
+<span class="c1">// read-only. Both remain allocated until this operation completes.</span>
+<span class="k">unsafe</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">launcher</span>
+<span class="w">        </span><span class="p">.</span><span class="n">push_device_ptr</span><span class="p">(</span><span class="n">input</span><span class="p">.</span><span class="n">device_pointer</span><span class="p">().</span><span class="n">cu_deviceptr</span><span class="p">())</span>
+<span class="w">        </span><span class="p">.</span><span class="n">push_device_ptr</span><span class="p">(</span><span class="n">output</span><span class="p">.</span><span class="n">device_pointer</span><span class="p">().</span><span class="n">cu_deviceptr</span><span class="p">());</span>
+<span class="p">}</span>
+<span class="n">launcher</span><span class="p">.</span><span class="n">set_launch_config</span><span class="p">(</span><span class="n">LaunchConfig</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">grid_dim</span><span class="p">:</span><span class="w"> </span><span class="p">((</span><span class="n">num_elements</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="kt">u32</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">255</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">256</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">),</span>
+<span class="w">    </span><span class="n">block_dim</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="mi">256</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">),</span>
+<span class="w">    </span><span class="n">shared_mem_bytes</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="p">});</span>
+
+<span class="c1">// Execute as a DeviceOp — integrates with the async model.</span>
+<span class="n">launcher</span><span class="p">.</span><span class="k">await</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Scalar arguments implementing <code class="docutils literal notranslate"><span class="pre">DType</span></code> use the safe <code class="docutils literal notranslate"><span class="pre">push_arg</span></code> method. Device
+pointers require <code class="docutils literal notranslate"><span class="pre">unsafe</span> <span class="pre">{</span> <span class="pre">push_device_ptr()</span> <span class="pre">}</span></code>. The caller must check that
+allocations are valid on the target GPU, large enough for the kernel, and free
+of conflicting accesses. Argument order and types must match the kernel’s
+signature. Rust and the CUDA driver cannot validate these conditions; getting
+them wrong can cause undefined behavior or GPU faults.</p>
+<p>To prevent data races, use stream ordering: operations chained with <code class="docutils literal notranslate"><span class="pre">.then()</span></code> on the same stream execute in order and see each other’s writes. Operations on different streams require explicit synchronization.</p>
+<blockquote>
+<div><p><strong>Why generated cuTile kernels don’t require <code class="docutils literal notranslate"><span class="pre">unsafe</span></code>:</strong> the <code class="docutils literal notranslate"><span class="pre">#[cutile::entry]</span></code> macro generates launchers that call <code class="docutils literal notranslate"><span class="pre">push_device_ptr</span></code> internally, but they do so safely because the framework controls both sides — device pointers come from framework-managed allocations, and the ownership model (<code class="docutils literal notranslate"><span class="pre">Partition</span></code> for exclusive access, <code class="docutils literal notranslate"><span class="pre">Arc&lt;Tensor&gt;</span></code> for shared reads) prevents aliasing at the type level. Custom kernels bypass this: you are pushing pointers the framework didn’t allocate and can’t track, so the safety burden falls on you.</p>
+</div></blockquote>
+</section>
+</section>
+<hr class="docutils" />
+<section id="wrapping-as-a-safe-deviceop">
+<h2>Wrapping as a Safe DeviceOp<a class="headerlink" href="#wrapping-as-a-safe-deviceop" title="Link to this heading">#</a></h2>
+<p>Wrap a custom kernel launch in a struct that implements <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code>. The struct’s typed fields enforce the correct argument signature; <code class="docutils literal notranslate"><span class="pre">unsafe</span></code> is confined to <code class="docutils literal notranslate"><span class="pre">execute</span></code>:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">use</span><span class="w"> </span><span class="n">cuda_async</span><span class="p">::</span><span class="n">device_context</span><span class="p">::</span><span class="n">with_default_device_policy</span><span class="p">;</span>
+<span class="k">use</span><span class="w"> </span><span class="n">cuda_async</span><span class="p">::</span><span class="n">device_future</span><span class="p">::</span><span class="n">DeviceFuture</span><span class="p">;</span>
+<span class="k">use</span><span class="w"> </span><span class="n">cuda_async</span><span class="p">::</span><span class="n">device_operation</span><span class="p">::{</span><span class="n">DeviceOp</span><span class="p">,</span><span class="w"> </span><span class="n">ExecutionContext</span><span class="p">};</span>
+<span class="k">use</span><span class="w"> </span><span class="n">cuda_async</span><span class="p">::</span><span class="n">error</span><span class="p">::</span><span class="n">DeviceError</span><span class="p">;</span>
+<span class="k">use</span><span class="w"> </span><span class="n">cuda_async</span><span class="p">::</span><span class="n">launch</span><span class="p">::</span><span class="n">AsyncKernelLaunch</span><span class="p">;</span>
+<span class="k">use</span><span class="w"> </span><span class="n">cuda_async</span><span class="p">::</span><span class="n">scheduling_policies</span><span class="p">::</span><span class="n">SchedulingPolicy</span><span class="p">;</span>
+<span class="k">use</span><span class="w"> </span><span class="n">cuda_core</span><span class="p">::{</span><span class="n">Function</span><span class="p">,</span><span class="w"> </span><span class="n">LaunchConfig</span><span class="p">};</span>
+<span class="k">use</span><span class="w"> </span><span class="n">std</span><span class="p">::</span><span class="n">future</span><span class="p">::</span><span class="n">IntoFuture</span><span class="p">;</span>
+
+<span class="k">pub</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">ScaleKernel</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">function</span><span class="p">:</span><span class="w"> </span><span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Function</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">n</span><span class="p">:</span><span class="w"> </span><span class="kt">u32</span><span class="p">,</span>
+<span class="w">    </span><span class="n">scale</span><span class="p">:</span><span class="w"> </span><span class="kt">f32</span><span class="p">,</span>
+<span class="w">    </span><span class="n">input</span><span class="p">:</span><span class="w"> </span><span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">output</span><span class="p">:</span><span class="w"> </span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="k">impl</span><span class="w"> </span><span class="n">DeviceOp</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">ScaleKernel</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">type</span><span class="w"> </span><span class="nc">Output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">Arc</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// execute is unsafe because it enqueues async GPU work without</span>
+<span class="w">    </span><span class="c1">// synchronizing — the returned tensors may still be in-flight.</span>
+<span class="w">    </span><span class="k">unsafe</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span>
+<span class="w">        </span><span class="bp">self</span><span class="p">,</span>
+<span class="w">        </span><span class="n">ctx</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">ExecutionContext</span><span class="p">,</span>
+<span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">Result</span><span class="o">&lt;&lt;</span><span class="bp">Self</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">DeviceOp</span><span class="o">&gt;</span><span class="p">::</span><span class="n">Output</span><span class="p">,</span><span class="w"> </span><span class="n">DeviceError</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">launcher</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">AsyncKernelLaunch</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">function</span><span class="p">);</span>
+<span class="w">        </span><span class="n">launcher</span><span class="p">.</span><span class="n">push_arg</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">n</span><span class="p">);</span>
+<span class="w">        </span><span class="n">launcher</span><span class="p">.</span><span class="n">push_arg</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">scale</span><span class="p">);</span>
+<span class="w">        </span><span class="c1">// SAFETY: input and output are framework-managed Tensor allocations.</span>
+<span class="w">        </span><span class="c1">// input is shared (Arc, read-only); output is exclusively written.</span>
+<span class="w">        </span><span class="k">unsafe</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">launcher</span>
+<span class="w">                </span><span class="p">.</span><span class="n">push_device_ptr</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">input</span><span class="p">.</span><span class="n">device_pointer</span><span class="p">().</span><span class="n">cu_deviceptr</span><span class="p">())</span>
+<span class="w">                </span><span class="p">.</span><span class="n">push_device_ptr</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">output</span><span class="p">.</span><span class="n">device_pointer</span><span class="p">().</span><span class="n">cu_deviceptr</span><span class="p">());</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="n">launcher</span><span class="p">.</span><span class="n">set_launch_config</span><span class="p">(</span><span class="n">LaunchConfig</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">grid_dim</span><span class="p">:</span><span class="w"> </span><span class="p">((</span><span class="bp">self</span><span class="p">.</span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">255</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">256</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">),</span>
+<span class="w">            </span><span class="n">block_dim</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="mi">256</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">),</span>
+<span class="w">            </span><span class="n">shared_mem_bytes</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">        </span><span class="p">});</span>
+<span class="w">        </span><span class="k">unsafe</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">launcher</span><span class="p">.</span><span class="n">execute</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span><span class="o">?</span><span class="w"> </span><span class="p">};</span>
+<span class="w">        </span><span class="nb">Ok</span><span class="p">((</span><span class="bp">self</span><span class="p">.</span><span class="n">input</span><span class="p">,</span><span class="w"> </span><span class="bp">self</span><span class="p">.</span><span class="n">output</span><span class="p">))</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// IntoFuture is a supertrait of DeviceOp. Every custom DeviceOp</span>
+<span class="c1">// needs this boilerplate to enable `.await` and `.sync()`.</span>
+<span class="k">impl</span><span class="w"> </span><span class="n">IntoFuture</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">ScaleKernel</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">type</span><span class="w"> </span><span class="nc">Output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">Result</span><span class="o">&lt;</span><span class="p">(</span><span class="n">Arc</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="p">),</span><span class="w"> </span><span class="n">DeviceError</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">type</span><span class="w"> </span><span class="nc">IntoFuture</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DeviceFuture</span><span class="o">&lt;</span><span class="p">(</span><span class="n">Arc</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="p">),</span><span class="w"> </span><span class="n">ScaleKernel</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">into_future</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nc">Self</span><span class="p">::</span><span class="n">IntoFuture</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">match</span><span class="w"> </span><span class="n">with_default_device_policy</span><span class="p">(</span><span class="o">|</span><span class="n">policy</span><span class="o">|</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="kd">let</span><span class="w"> </span><span class="n">stream</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">policy</span><span class="p">.</span><span class="n">next_stream</span><span class="p">()</span><span class="o">?</span><span class="p">;</span>
+<span class="w">            </span><span class="nb">Ok</span><span class="p">(</span><span class="n">DeviceFuture</span><span class="p">::</span><span class="n">scheduled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">ExecutionContext</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="n">stream</span><span class="p">)))</span>
+<span class="w">        </span><span class="p">})</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nb">Ok</span><span class="p">(</span><span class="nb">Ok</span><span class="p">(</span><span class="n">future</span><span class="p">))</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">future</span><span class="p">,</span>
+<span class="w">            </span><span class="nb">Ok</span><span class="p">(</span><span class="nb">Err</span><span class="p">(</span><span class="n">e</span><span class="p">))</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nb">Err</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">DeviceFuture</span><span class="p">::</span><span class="n">failed</span><span class="p">(</span><span class="n">e</span><span class="p">),</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This is the same pattern the <code class="docutils literal notranslate"><span class="pre">#[cutile::entry]</span></code> macro uses to generate safe launchers for tile kernels — no <code class="docutils literal notranslate"><span class="pre">unsafe</span></code> at the call site. Once wrapped, the custom kernel composes with tile kernels through the usual <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> combinators. This pipeline runs a tile add (<code class="docutils literal notranslate"><span class="pre">z</span> <span class="pre">=</span> <span class="pre">x</span> <span class="pre">+</span> <span class="pre">y</span></code>), then the wrapped scale kernel (<code class="docutils literal notranslate"><span class="pre">w</span> <span class="pre">=</span> <span class="pre">scale</span> <span class="pre">*</span> <span class="pre">z</span></code>):</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="p">(</span><span class="n">z_part</span><span class="p">,</span><span class="w"> </span><span class="n">_x</span><span class="p">,</span><span class="w"> </span><span class="n">_y</span><span class="p">)</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">tile_add</span><span class="p">::</span><span class="n">add</span><span class="p">(</span><span class="n">z</span><span class="p">.</span><span class="n">partition</span><span class="p">([</span><span class="n">tile_size</span><span class="p">]),</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="n">clone</span><span class="p">(),</span><span class="w"> </span><span class="n">y</span><span class="p">.</span><span class="n">clone</span><span class="p">()).</span><span class="k">await</span><span class="o">?</span><span class="p">;</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">z</span><span class="p">:</span><span class="w"> </span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">z_part</span><span class="p">.</span><span class="n">unpartition</span><span class="p">();</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="n">w</span><span class="p">:</span><span class="w"> </span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">zeros</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="n">num_elements</span><span class="p">]).</span><span class="k">await</span><span class="o">?</span><span class="p">;</span>
+<span class="kd">let</span><span class="w"> </span><span class="p">(</span><span class="n">_z</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ScaleKernel</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">function</span><span class="p">:</span><span class="w"> </span><span class="nc">scale_function</span><span class="p">,</span>
+<span class="w">    </span><span class="n">n</span><span class="p">:</span><span class="w"> </span><span class="nc">num_elements</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="kt">u32</span><span class="p">,</span>
+<span class="w">    </span><span class="n">scale</span><span class="p">,</span>
+<span class="w">    </span><span class="n">input</span><span class="p">:</span><span class="w"> </span><span class="nc">Arc</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="n">z</span><span class="p">),</span>
+<span class="w">    </span><span class="n">output</span><span class="p">:</span><span class="w"> </span><span class="nc">w</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="p">.</span><span class="k">await</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>See <a class="reference external" href="https://github.com/NVIDIA/cuda-rust/blob/main/cutile-rs/cutile-examples/examples/interop.rs"><code class="docutils literal notranslate"><span class="pre">interop.rs</span></code></a> for a complete, runnable version.</p>
+</section>
+<hr class="docutils" />
+<section id="low-level-driver-access">
+<h2>Low-Level Driver Access<a class="headerlink" href="#low-level-driver-access" title="Link to this heading">#</a></h2>
+<p>For more direct control, use <code class="docutils literal notranslate"><span class="pre">with_context</span></code> to access the CUDA stream and issue driver API calls directly:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">use</span><span class="w"> </span><span class="n">cuda_async</span><span class="p">::</span><span class="n">device_operation</span><span class="p">::{</span><span class="n">with_context</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="n">DeviceOp</span><span class="p">};</span>
+<span class="k">use</span><span class="w"> </span><span class="n">cuda_async</span><span class="p">::</span><span class="n">device_operation</span><span class="p">::</span><span class="n">ExecutionContext</span><span class="p">;</span>
+<span class="k">use</span><span class="w"> </span><span class="n">cuda_core</span><span class="p">::{</span><span class="n">malloc_async</span><span class="p">,</span><span class="w"> </span><span class="n">memcpy_htod_async</span><span class="p">,</span><span class="w"> </span><span class="n">free_async</span><span class="p">};</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="n">host_data</span><span class="p">:</span><span class="w"> </span><span class="nb">Vec</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="fm">vec!</span><span class="p">[</span><span class="mf">1.0</span><span class="p">;</span><span class="w"> </span><span class="n">num_elements</span><span class="p">];</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">num_bytes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">num_elements</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">std</span><span class="p">::</span><span class="n">mem</span><span class="p">::</span><span class="n">size_of</span><span class="p">::</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="p">();</span>
+
+<span class="c1">// host_data is captured by reference — it must outlive the await so that</span>
+<span class="c1">// the async memcpy can read from it until the stream synchronizes.</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">op</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">with_context</span><span class="p">(</span><span class="o">|</span><span class="n">ctx</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">ExecutionContext</span><span class="o">|</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">stream</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">get_cuda_stream</span><span class="p">();</span>
+
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">dptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">unsafe</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">dptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">malloc_async</span><span class="p">(</span><span class="n">num_bytes</span><span class="p">,</span><span class="w"> </span><span class="n">stream</span><span class="p">).</span><span class="n">expect</span><span class="p">(</span><span class="s">"device allocation"</span><span class="p">);</span>
+<span class="w">        </span><span class="n">memcpy_htod_async</span><span class="p">(</span><span class="n">dptr</span><span class="p">,</span><span class="w"> </span><span class="n">host_data</span><span class="p">.</span><span class="n">as_ptr</span><span class="p">(),</span><span class="w"> </span><span class="n">num_elements</span><span class="p">,</span><span class="w"> </span><span class="n">stream</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="n">expect</span><span class="p">(</span><span class="s">"host-to-device copy"</span><span class="p">);</span>
+<span class="w">        </span><span class="n">dptr</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="n">value</span><span class="p">(</span><span class="n">dptr</span><span class="p">)</span>
+<span class="p">});</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="n">dptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">op</span><span class="p">.</span><span class="k">await</span><span class="o">?</span><span class="p">;</span>
+
+<span class="c1">// Clean up: free the device memory on a stream.</span>
+<span class="n">with_context</span><span class="p">(</span><span class="k">move</span><span class="w"> </span><span class="o">|</span><span class="n">ctx</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">ExecutionContext</span><span class="o">|</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">unsafe</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">free_async</span><span class="p">(</span><span class="n">dptr</span><span class="p">,</span><span class="w"> </span><span class="n">ctx</span><span class="p">.</span><span class="n">get_cuda_stream</span><span class="p">())</span><span class="w"> </span><span class="p">}.</span><span class="n">expect</span><span class="p">(</span><span class="s">"device free"</span><span class="p">);</span>
+<span class="w">    </span><span class="n">value</span><span class="p">(())</span>
+<span class="p">})</span>
+<span class="p">.</span><span class="k">await</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Driver calls inside the <code class="docutils literal notranslate"><span class="pre">unsafe</span></code> block must satisfy the CUDA API’s safety
+requirements.</p>
+</section>
+<hr class="docutils" />
+<section id="borrowing-foreign-cuda-handles">
+<h2>Borrowing Foreign CUDA Handles<a class="headerlink" href="#borrowing-foreign-cuda-handles" title="Link to this heading">#</a></h2>
+<p>If your application already owns CUDA handles through another Rust binding crate — cudarc, Candle, or a hand-rolled <code class="docutils literal notranslate"><span class="pre">bindgen</span></code> wrapper — wrap them into a cuTile <code class="docutils literal notranslate"><span class="pre">Device</span></code>, <code class="docutils literal notranslate"><span class="pre">Stream</span></code>, <code class="docutils literal notranslate"><span class="pre">Module</span></code>, or <code class="docutils literal notranslate"><span class="pre">Function</span></code> without transferring ownership.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">borrow_raw</span></code> constructors take raw C primitives (<code class="docutils literal notranslate"><span class="pre">*mut</span> <span class="pre">c_void</span></code> for opaque handles, <code class="docutils literal notranslate"><span class="pre">c_int</span></code> for <code class="docutils literal notranslate"><span class="pre">CUdevice</span></code>) rather than <code class="docutils literal notranslate"><span class="pre">cuda_bindings</span></code> typedefs, so no nominal-type mismatch between binding crates gets in the way:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">use</span><span class="w"> </span><span class="n">core</span><span class="p">::</span><span class="n">ffi</span><span class="p">::{</span><span class="n">c_int</span><span class="p">,</span><span class="w"> </span><span class="n">c_void</span><span class="p">};</span>
+<span class="k">use</span><span class="w"> </span><span class="n">cuda_core</span><span class="p">::{</span><span class="n">Device</span><span class="p">,</span><span class="w"> </span><span class="n">Stream</span><span class="p">};</span>
+
+<span class="c1">// `foreign` is a handle bundle from another Rust binding crate (cudarc,</span>
+<span class="c1">// Candle, a bindgen wrapper, …). Its `CUcontext` / `CUstream` typedefs are</span>
+<span class="c1">// nominally distinct from cuTile's, but the underlying C ABI is identical —</span>
+<span class="c1">// cast at the boundary and the handles flow through unchanged.</span>
+
+<span class="c1">// Safety: the caller guarantees the handles are valid, outlive the returned</span>
+<span class="c1">// wrappers, and are not concurrently destroyed.</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">unsafe</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Device</span><span class="p">::</span><span class="n">borrow_raw</span><span class="p">(</span>
+<span class="w">        </span><span class="n">foreign</span><span class="p">.</span><span class="n">cu_ctx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="o">*</span><span class="k">mut</span><span class="w"> </span><span class="n">c_void</span><span class="p">,</span>
+<span class="w">        </span><span class="n">foreign</span><span class="p">.</span><span class="n">cu_device</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">c_int</span><span class="p">,</span>
+<span class="w">        </span><span class="n">foreign</span><span class="p">.</span><span class="n">ordinal</span><span class="p">,</span>
+<span class="w">    </span><span class="p">)</span>
+<span class="p">};</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">stream</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">unsafe</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">Stream</span><span class="p">::</span><span class="n">borrow_raw</span><span class="p">(</span><span class="n">foreign</span><span class="p">.</span><span class="n">cu_stream</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="o">*</span><span class="k">mut</span><span class="w"> </span><span class="n">c_void</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">device</span><span class="p">)</span><span class="w"> </span><span class="p">};</span>
+
+<span class="c1">// cuTile kernels now run on the borrowed stream.</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">my_kernel</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Borrowed wrappers skip destruction on drop: <code class="docutils literal notranslate"><span class="pre">Stream</span></code> does not call <code class="docutils literal notranslate"><span class="pre">cuStreamDestroy</span></code>, <code class="docutils literal notranslate"><span class="pre">Module</span></code> does not unload, and <code class="docutils literal notranslate"><span class="pre">Device</span></code> does not release the primary context. The source framework retains full control over handle lifetimes.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Module::borrow_raw</span></code> and <code class="docutils literal notranslate"><span class="pre">Function::borrow_raw</span></code> follow the same pattern for pre-compiled modules and already-resolved functions. See the <code class="docutils literal notranslate"><span class="pre">cudarc_interop</span></code> example in <code class="docutils literal notranslate"><span class="pre">cutile-examples/examples/</span></code> for an end-to-end walkthrough.</p>
+</section>
+<hr class="docutils" />
+<section id="migrating-from-other-dsls">
+<h2>Migrating from Other DSLs<a class="headerlink" href="#migrating-from-other-dsls" title="Link to this heading">#</a></h2>
+<p><strong>From Triton.</strong> <a class="reference external" href="https://triton-lang.org/">Triton</a> and cuTile Rust both let you write kernels in terms of tile-level operations. Many patterns that require explicit warp specialization in Triton are handled implicitly by the cuTile Rust compiler:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Triton (manual)</p></th>
+<th class="head"><p>cuTile Rust (automatic)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Assign producer warps to prefetch tiles from global → shared memory</p></td>
+<td><p>Compiler generates shared memory staging for <code class="docutils literal notranslate"><span class="pre">load_tile</span></code> operations</p></td>
+</tr>
+<tr class="row-odd"><td><p>Assign consumer warps to compute on shared memory tiles</p></td>
+<td><p>Compiler maps tile arithmetic to Tensor Cores and registers</p></td>
+</tr>
+<tr class="row-even"><td><p>Software pipeline with <code class="docutils literal notranslate"><span class="pre">warp_specialize</span></code> in <code class="docutils literal notranslate"><span class="pre">tl.range</span></code></p></td>
+<td><p>Compiler uses Tensor Memory Accelerator (TMA) instructions for hardware-assisted pipelining on supported architectures</p></td>
+</tr>
+<tr class="row-odd"><td><p>Manual <code class="docutils literal notranslate"><span class="pre">tl.dot</span></code> placement across warps</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mma()</span></code> maps directly to Tensor Core instructions; thread/warp assignment is compiler-managed</p></td>
+</tr>
+<tr class="row-even"><td><p>Tune <code class="docutils literal notranslate"><span class="pre">num_warps</span></code> and <code class="docutils literal notranslate"><span class="pre">num_stages</span></code> for occupancy</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">occupancy</span></code> and <code class="docutils literal notranslate"><span class="pre">num_cta_in_cga</span></code> optimization hints guide the compiler</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>For patterns that don’t map to the tile model, compile the kernel with Triton and integrate it via <code class="docutils literal notranslate"><span class="pre">AsyncKernelLaunch</span></code> as described above. Since Triton outputs PTX, load it directly:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">module</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">load_module_from_ptx</span><span class="p">(</span><span class="n">triton_generated_ptx</span><span class="p">,</span><span class="w"> </span><span class="n">device_id</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">function</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Arc</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="n">module</span><span class="p">.</span><span class="n">load_function</span><span class="p">(</span><span class="s">"gemm_kernel"</span><span class="p">)</span><span class="o">?</span><span class="p">);</span>
+</pre></div>
+</div>
+<p><strong>From cuTile Python.</strong> If you’re familiar with <a class="reference external" href="https://docs.nvidia.com/cuda/cutile-python/">cuTile Python</a>, the kernel-side concepts map directly:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>cuTile Python</p></th>
+<th class="head"><p>cuTile Rust</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&#64;ct.kernel</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">#[cutile::entry()]</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ct.load()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">x.load_like(z)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ct.store()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">tensor.store()</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ct.bid(0)</span></code></p></td>
+<td><p>Implicit via partition</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ct.launch()</span></code></p></td>
+<td><p>Async operation + <code class="docutils literal notranslate"><span class="pre">.await</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Both front-ends use the same underlying Tile IR compilation pipeline and generate equivalent GPU code; the difference is the host language and its type system.</p>
+<hr class="docutils" />
+<p>Continue to <a class="reference internal" href="debugging-and-profiling.html"><span class="std std-doc">Debugging and Profiling</span></a> for troubleshooting. Interop kernels use the <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> model described in <a class="reference internal" href="device-operations.html"><span class="std std-doc">Device Operations</span></a>.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="bounds-check-placement.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Bounds-Check Placement</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="debugging-and-profiling.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Debugging and Profiling</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#integrating-external-ptx-or-cubin-kernels">Integrating External PTX or CUBIN Kernels</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#from-cuda-c">From CUDA C++</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#from-cuda-oxide">From cuda-oxide</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-and-launching">Loading and Launching</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#wrapping-as-a-safe-deviceop">Wrapping as a Safe DeviceOp</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#low-level-driver-access">Low-Level Driver Access</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#borrowing-foreign-cuda-handles">Borrowing Foreign CUDA Handles</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#migrating-from-other-dsls">Migrating from Other DSLs</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+  
+    <div class="footer-items__center">
+      
+        <div class="footer-item"><footer class="bd-footer-content">
+  <div class="footer-container" style="padding: 1rem 0 2rem 0; border-top: 1px solid var(--pst-color-border); text-align: left;">
+    
+    <!-- NVIDIA Logo -->
+    <div style="margin-bottom: 1rem;">
+      <img src="../_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" 
+           alt="NVIDIA" 
+           style="height: 3.5rem; filter: brightness(0);"
+           class="only-light">
+      <img src="../_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" 
+           alt="NVIDIA" 
+           style="height: 3.5rem;"
+           class="only-dark pst-js-only">
+    </div>
+    
+    <!-- Footer Links - single line, left aligned -->
+    <div style="font-size: 0.8125rem; margin-bottom: 0.5rem; color: var(--pst-color-text-muted);">
+      <a href="https://www.nvidia.com/en-us/about-nvidia/privacy-policy/" target="_blank" style="color: inherit; text-decoration: none;">Privacy Policy</a> | 
+      <a href="https://www.nvidia.com/en-us/preferences/email-preferences/" target="_blank" style="color: inherit; text-decoration: none;">Your Privacy Choices</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/terms-of-service/" target="_blank" style="color: inherit; text-decoration: none;">Terms of Service</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/accessibility/" target="_blank" style="color: inherit; text-decoration: none;">Accessibility</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/company-policies/" target="_blank" style="color: inherit; text-decoration: none;">Corporate Policies</a> | 
+      <a href="https://www.nvidia.com/en-us/product-security/" target="_blank" style="color: inherit; text-decoration: none;">Product Security</a> | 
+      <a href="https://www.nvidia.com/en-us/contact/" target="_blank" style="color: inherit; text-decoration: none;">Contact</a>
+    </div>
+    
+    <!-- Copyright -->
+    <div style="font-size: 0.8125rem; color: var(--pst-color-text-muted);">
+      Copyright &copy; 2025, NVIDIA.
+    </div>
+    
+  </div>
+</footer></div>
+      
+    </div>
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

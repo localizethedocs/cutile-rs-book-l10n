@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-TW" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Glossary &#8212; cuTile Rust</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/nvidia-sphinx-theme.css?v=933278ad" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=4011299f" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/lightbox.css?v=31fdf494" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../_static/documentation_options.js?v=a7999bab"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/translations.js?v=cbf116e0"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/glossary';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <script src="../_static/js/lightbox.js?v=17028852"></script>
+    <link rel="canonical" href="https://projects.localizethedocs.org/cutile-rs-book-l10n/reference/glossary.html" />
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜尋" href="../search.html" />
+    <link rel="prev" title="CUDA and Tile IR compatibility" href="compatibility.html" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="zh-TW"/>
+  <meta name="docsearch:version" content="main" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+<script type="text/javascript" src="../ltd-provenance.js"></script>
+<script type="text/javascript" src="../ltd-current.js"></script>
+<script type="text/javascript" src="../../../ltd-config.js"></script>
+<script type="text/javascript" src="../../../ltd-flyout.js"></script>
+
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">跳转至主要内容</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>回到顶部</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="版本警告"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="网页导航">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" class="logo__image only-light" alt=""/>
+    <img src="../_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cuTile Rust</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item"><div class="github-links">
+  <!--
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/stargazers" target="_blank" rel="noopener">
+    <i class="fa-solid fa-star" aria-hidden="true"></i>
+    <span class="sr-only">Star</span>
+  </a>
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/fork" target="_blank" rel="noopener">
+    <i class="fa-solid fa-code-fork" aria-hidden="true"></i>
+    <span class="sr-only">Fork</span>
+  </a>
+  -->
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/NVIDIA/cuda-rust" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="搜尋" aria-label="搜尋" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button></div>
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="亮色"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="暗色"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>亮色</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>暗色</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="当前页面">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><div class="github-links">
+  <!--
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/stargazers" target="_blank" rel="noopener">
+    <i class="fa-solid fa-star" aria-hidden="true"></i>
+    <span class="sr-only">Star</span>
+  </a>
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/fork" target="_blank" rel="noopener">
+    <i class="fa-solid fa-code-fork" aria-hidden="true"></i>
+    <span class="sr-only">Fork</span>
+  </a>
+  -->
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/NVIDIA/cuda-rust" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="搜尋" aria-label="搜尋" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button></div>
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="亮色"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="暗色"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>亮色</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>暗色</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><div class="sidebar-tree">
+    <p class="sidebar-tree-title">
+        Table of Contents
+    </p>
+    <p aria-level="2" class="caption" role="heading"><span class="caption-text">教學課程</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/01-hello-world.html">1. Hello World</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/02-vector-addition.html">2. Vector Addition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/03-saxpy.html">3. SAXPY</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/04-matrix-multiplication.html">4. Matrix Multiplication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/05-fused-softmax.html">5. Fused Softmax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/06-flash-attention.html">6. Fused Multihead Attention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/07-intro-to-async.html">7. Intro to Async Execution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/08-data-parallel-mlp.html">8. Data Parallel MLP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/09-pointer-addition.html">9. Pointer Addition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/10-cuda-graphs.html">10. CUDA Graphs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/11-nvfp4-inference.html">11. Inference with NVFP4/MXFP8</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/12-dgx-spark-inference.html">12. LLM Inference on DGX Spark</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">使用者指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guide/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/host-vs-device.html">Host vs. Device Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/tensors-and-tiles.html">Tensors and Tiles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/jit-compilation.html">Compilation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/device-operations.html">Device Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/performance.html">Performance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/autotuning.html">Autotuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/bounds-check-placement.html">Bounds-Check Placement</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/interoperability.html">Interoperability</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/debugging-and-profiling.html">Debugging and Profiling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/useful-mental-models.html">Useful Mental Models</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">參考</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="dsl-api.html">DSL API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="host-api.html">Host API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compatibility.html">CUDA and Tile IR compatibility</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Glossary</a></li>
+</ul>
+
+</div></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="初始页面">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Glossary</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="glossary">
+<h1>Glossary<a class="headerlink" href="#glossary" title="連結到這個標頭">#</a></h1>
+<p>This glossary defines key terms as they are used throughout the cuTile Rust book.</p>
+<hr class="docutils" />
+<section id="tile">
+<h2>Tile<a class="headerlink" href="#tile" title="連結到這個標頭">#</a></h2>
+<p>A multi-dimensional array fragment that lives in GPU <strong>registers</strong> during kernel execution. Tiles are the fundamental unit of computation in cuTile Rust: you load data from tensors into tiles, compute on tiles, and store the results back. Tiles have compile-time static shapes and are represented by the type <code class="docutils literal notranslate"><span class="pre">Tile&lt;E,</span> <span class="pre">S&gt;</span></code>, where <code class="docutils literal notranslate"><span class="pre">E</span></code> is the element type and <code class="docutils literal notranslate"><span class="pre">S</span></code> is the shape (e.g., <code class="docutils literal notranslate"><span class="pre">Tile&lt;f32,</span> <span class="pre">{[16,</span> <span class="pre">16]}&gt;</span></code>).</p>
+</section>
+<section id="tensor">
+<h2>Tensor<a class="headerlink" href="#tensor" title="連結到這個標頭">#</a></h2>
+<p>A multi-dimensional array stored in GPU <strong>global memory</strong> (HBM). Tensors are passed as kernel arguments — <code class="docutils literal notranslate"><span class="pre">&amp;Tensor&lt;E,</span> <span class="pre">S&gt;</span></code> for read-only inputs and <code class="docutils literal notranslate"><span class="pre">&amp;mut</span> <span class="pre">Tensor&lt;E,</span> <span class="pre">S&gt;</span></code> for writable outputs. Tensors do not support direct arithmetic; data must first be loaded into tiles.</p>
+</section>
+<section id="partition">
+<h2>Partition<a class="headerlink" href="#partition" title="連結到這個標頭">#</a></h2>
+<p>A logical division of a tensor into a grid of equally sized sub-regions, each of which is processed by one tile block. The term &quot;partition&quot; appears on both the host side and the device side, but refers to different things.</p>
+<p><strong>Host-side partition (mutable tensors only).</strong> Calling <code class="docutils literal notranslate"><span class="pre">.partition([M,</span> <span class="pre">N])</span></code> on a <code class="docutils literal notranslate"><span class="pre">Tensor&lt;T&gt;</span></code> produces a <code class="docutils literal notranslate"><span class="pre">Partition&lt;Tensor&lt;T&gt;&gt;</span></code>. This is a host-side wrapper that records the <code class="docutils literal notranslate"><span class="pre">partition_shape</span></code> (the tile dimensions) alongside the original tensor. A host-side <code class="docutils literal notranslate"><span class="pre">Partition&lt;Tensor&lt;T&gt;&gt;</span></code> is what you pass to a kernel launcher in the position of a <code class="docutils literal notranslate"><span class="pre">&amp;mut</span> <span class="pre">Tensor&lt;E,</span> <span class="pre">S&gt;</span></code> parameter. The <code class="docutils literal notranslate"><span class="pre">partition_shape</span></code> stored in the host-side <code class="docutils literal notranslate"><span class="pre">Partition</span></code> determines the static shape <code class="docutils literal notranslate"><span class="pre">S</span></code> that the kernel sees — for example, passing a <code class="docutils literal notranslate"><span class="pre">Partition</span></code> with <code class="docutils literal notranslate"><span class="pre">partition_shape</span> <span class="pre">=</span> <span class="pre">[32,</span> <span class="pre">64]</span></code> means the kernel receives a <code class="docutils literal notranslate"><span class="pre">&amp;mut</span> <span class="pre">Tensor&lt;T,</span> <span class="pre">{[32,</span> <span class="pre">64]}&gt;</span></code>.</p>
+<p>Only mutable tensors must be partitioned on the host side. This is because each <code class="docutils literal notranslate"><span class="pre">&amp;mut</span> <span class="pre">Tensor</span></code> sub-region is written to by exactly one tile block, satisfying Rust's exclusive access requirement for mutable memory: at most one writer may access a given region at a time. By partitioning before launch, the system guarantees that no two tile blocks write to overlapping memory.</p>
+<p><strong>Shared tensor references (no host-side partition required).</strong> Read-only inputs are passed as <code class="docutils literal notranslate"><span class="pre">&amp;Tensor&lt;T&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">Tensor&lt;T&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">Arc&lt;Tensor&lt;T&gt;&gt;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&amp;TensorView&lt;T&gt;</span></code> on the host side, corresponding to <code class="docutils literal notranslate"><span class="pre">&amp;Tensor&lt;E,</span> <span class="pre">S&gt;</span></code> in the kernel signature. These do <em>not</em> need to be partitioned on the host side — multiple tile blocks may safely read from the same tensor or overlapping regions simultaneously, so there is no exclusive-access constraint to enforce. Instead, shared tensors are partitioned on the device side for greater flexibility in how they are accessed.</p>
+<p><strong>Device-side partition.</strong> Inside a kernel, calling <code class="docutils literal notranslate"><span class="pre">.partition(shape![M,</span> <span class="pre">N])</span></code> on a <code class="docutils literal notranslate"><span class="pre">&amp;Tensor</span></code> creates a read-only <code class="docutils literal notranslate"><span class="pre">Partition</span></code> view that can be indexed to load individual tiles (e.g., <code class="docutils literal notranslate"><span class="pre">part.load([i,</span> <span class="pre">j])</span></code>). This is how shared tensor references are divided into tiles for loading. Because the partitioning happens on the device side, the same <code class="docutils literal notranslate"><span class="pre">&amp;Tensor</span></code> can be partitioned in different ways — or accessed with different indexing patterns — within the same kernel. For example, in GEMM the input matrices <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> are each partitioned with a different shape inside the kernel body (<code class="docutils literal notranslate"><span class="pre">shape![BM,</span> <span class="pre">BK]</span></code> and <code class="docutils literal notranslate"><span class="pre">shape![BK,</span> <span class="pre">BN]</span></code> respectively), even though both were passed unpartitioned from the host.</p>
+<p>The generated launcher code accepts <code class="docutils literal notranslate"><span class="pre">Partition&lt;Tensor&lt;T&gt;&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">Partition&lt;&amp;mut</span> <span class="pre">Tensor&lt;T&gt;&gt;</span></code>, or a mapped partition for every <code class="docutils literal notranslate"><span class="pre">&amp;mut</span> <span class="pre">Tensor</span></code> parameter, and <code class="docutils literal notranslate"><span class="pre">&amp;Tensor&lt;T&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">Tensor&lt;T&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">Arc&lt;Tensor&lt;T&gt;&gt;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&amp;TensorView&lt;T&gt;</span></code> for every <code class="docutils literal notranslate"><span class="pre">&amp;Tensor</span></code> parameter.</p>
+<p><strong>Grid dimensions.</strong> A host-side partition's grid is computed by dividing the tensor's shape by the partition shape, rounding up: <code class="docutils literal notranslate"><span class="pre">grid[i]</span> <span class="pre">=</span> <span class="pre">ceil(tensor_shape[i]</span> <span class="pre">/</span> <span class="pre">partition_shape[i])</span></code>. The result is mapped to a 3D tuple <code class="docutils literal notranslate"><span class="pre">(x,</span> <span class="pre">y,</span> <span class="pre">z)</span></code>, with trailing dimensions set to 1 for tensors of rank less than 3. For example, a <code class="docutils literal notranslate"><span class="pre">[128,</span> <span class="pre">256]</span></code> tensor partitioned with <code class="docutils literal notranslate"><span class="pre">[32,</span> <span class="pre">64]</span></code> produces a grid of <code class="docutils literal notranslate"><span class="pre">(4,</span> <span class="pre">4,</span> <span class="pre">1)</span></code>.</p>
+<p><strong>Launch grid inference.</strong> At kernel launch time, the launcher calls <code class="docutils literal notranslate"><span class="pre">.grid()</span></code> on each mutable output argument's host-side wrapper and collects the resulting grids. For ordinary <code class="docutils literal notranslate"><span class="pre">&amp;mut</span> <span class="pre">Tensor</span></code> parameters, this is the host-side <code class="docutils literal notranslate"><span class="pre">Partition</span></code> grid. For <code class="docutils literal notranslate"><span class="pre">MappedPartitionMut</span></code> parameters, this is the mapped physical tile-block grid. If no explicit grid is specified via <code class="docutils literal notranslate"><span class="pre">.grid()</span></code> or <code class="docutils literal notranslate"><span class="pre">.const_grid()</span></code>, the launch grid is <strong>inferred</strong> from these grids. When multiple mutable output parameters are present, all inferred grids must match or the launch will fail with an error. This is how partitioning a tensor on the host side determines how many tile blocks the kernel runs.</p>
+</section>
+<section id="tile-program">
+<h2>Tile Program<a class="headerlink" href="#tile-program" title="連結到這個標頭">#</a></h2>
+<p>The basic unit of concurrent execution on the GPU — one instance of the kernel function, running once as a single logical thread of execution and operating on one partition of the data. This is the entity you write: a tile program has no visible internal threads; it loads tiles, computes on them, and stores results. Each tile program is identified by its per-axis grid index, <code class="docutils literal notranslate"><span class="pre">program_id(axis)</span></code>, with grid extents from <code class="docutils literal notranslate"><span class="pre">num_programs(axis)</span></code> (following Triton's <code class="docutils literal notranslate"><span class="pre">tl.program_id</span></code> / <code class="docutils literal notranslate"><span class="pre">tl.num_programs</span></code>); the tuple forms <code class="docutils literal notranslate"><span class="pre">get_tile_block_id()</span></code> and <code class="docutils literal notranslate"><span class="pre">get_num_tile_blocks()</span></code> return all three axes at once. Also called a <em>tile block</em> (emphasizing its place in the launch grid and its mapping onto hardware) or a <em>tile thread</em> (emphasizing the single-threaded programming model).</p>
+</section>
+<section id="tile-block">
+<h2>Tile Block<a class="headerlink" href="#tile-block" title="連結到這個標頭">#</a></h2>
+<p>The same unit as a <a class="reference internal" href="#tile-program">Tile Program</a>, viewed from the launch-grid and hardware side: the launch grid is a 3-dimensional arrangement of tile blocks, and the cuTile Rust compiler maps each one to one or more underlying CUDA execution units (thread blocks, clusters, or warps) depending on the target architecture. From the programmer's perspective, a tile block remains a single-threaded context that processes one tile of data.</p>
+</section>
+<section id="tile-thread">
+<h2>Tile Thread<a class="headerlink" href="#tile-thread" title="連結到這個標頭">#</a></h2>
+<p>An alias for <a class="reference internal" href="#tile-program">Tile Program</a>, emphasizing the single-threaded programming model: each tile thread executes the kernel function once as a single logical thread of execution.</p>
+</section>
+<section id="concurrent-execution">
+<h2>Concurrent Execution<a class="headerlink" href="#concurrent-execution" title="連結到這個標頭">#</a></h2>
+<p>Multiple tile blocks making progress independently. The GPU scheduler assigns
+blocks to Streaming Multiprocessors (SMs) as resources become available. Some
+blocks run at the same time while others wait; their relative execution order
+is unspecified.</p>
+<p>On the host side, concurrency also arises through CUDA streams and async/await: multiple <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code>s submitted to different streams can overlap in time, and the async runtime schedules them without requiring the programmer to specify an exact execution order.</p>
+</section>
+<section id="parallel-execution">
+<h2>Parallel Execution<a class="headerlink" href="#parallel-execution" title="連結到這個標頭">#</a></h2>
+<p>Multiple tile blocks executing at the same time on different SMs. A kernel
+launch has both parallel and concurrent execution: blocks that fit on available
+SMs run in parallel, while the rest wait to be scheduled. See
+<a class="reference external" href="https://doc.rust-lang.org/book/ch17-00-async-await.html#parallelism-and-concurrency">The Rust Programming Language, Ch. 17</a>
+for the same distinction in host programming.</p>
+</section>
+<section id="streaming-multiprocessor-sm">
+<h2>Streaming Multiprocessor (SM)<a class="headerlink" href="#streaming-multiprocessor-sm" title="連結到這個標頭">#</a></h2>
+<p>The primary processing unit on an NVIDIA GPU. Each SM has its own registers, shared memory, and execution pipelines including Tensor Cores. Tile blocks are scheduled onto SMs by the GPU's hardware scheduler. A single SM can run multiple tile blocks concurrently if it has sufficient resources (registers, shared memory, thread slots). For architecture-specific details on SM resources, see the <a class="reference external" href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/">CUDA C++ Programming Guide</a>.</p>
+</section>
+<section id="tensor-cores">
+<h2>Tensor Cores<a class="headerlink" href="#tensor-cores" title="連結到這個標頭">#</a></h2>
+<p>Specialized hardware units (available on Volta architecture and later) that perform small matrix multiply-accumulate operations in a single instruction. The <code class="docutils literal notranslate"><span class="pre">mma()</span></code> intrinsic in cuTile Rust maps to Tensor Core instructions. Tensor Cores impose alignment requirements on tile dimensions (e.g., dimensions must typically be multiples of 8 or 16 depending on the element type).</p>
+</section>
+<section id="block-scaling">
+<h2>Block Scaling<a class="headerlink" href="#block-scaling" title="連結到這個標頭">#</a></h2>
+<p>A low-precision matrix multiply layout where one scale value is shared by a
+fixed-size group of input values, usually along the K dimension. In the NVFP4
+E4M3-scale layout used in this book, that ratio is one FP8 scale value per 16
+logical FP4 values. cuTile Rust's <code class="docutils literal notranslate"><span class="pre">mmaf_scaled()</span></code> operation consumes logical
+low-precision operand tiles plus their scale tiles, then accumulates into <code class="docutils literal notranslate"><span class="pre">f32</span></code>.</p>
+</section>
+<section id="fp4-e2m1fn">
+<h2>FP4 E2M1FN<a class="headerlink" href="#fp4-e2m1fn" title="連結到這個標頭">#</a></h2>
+<p>The 4-bit floating-point encoding named <code class="docutils literal notranslate"><span class="pre">f4e2m1fn</span></code> in cuTile Rust and
+<code class="docutils literal notranslate"><span class="pre">f4E2M1FN</span></code> in Tile IR. The four bits encode one sign bit, two exponent bits,
+and one mantissa bit. This is the logical FP4 operand type used by
+<code class="docutils literal notranslate"><span class="pre">mmaf_scaled()</span></code>.</p>
+</section>
+<section id="packed-fp4-pair">
+<h2>Packed FP4 Pair<a class="headerlink" href="#packed-fp4-pair" title="連結到這個標頭">#</a></h2>
+<p>The byte-addressable storage representation for two <code class="docutils literal notranslate"><span class="pre">f4e2m1fn</span></code> values. In
+cuTile Rust this is <code class="docutils literal notranslate"><span class="pre">f4e2m1fnx2</span></code>; kernels unpack it to logical <code class="docutils literal notranslate"><span class="pre">f4e2m1fn</span></code>
+tiles before calling <code class="docutils literal notranslate"><span class="pre">mmaf_scaled()</span></code>.</p>
+</section>
+<section id="nibble">
+<h2>Nibble<a class="headerlink" href="#nibble" title="連結到這個標頭">#</a></h2>
+<p>A 4-bit half-byte. Packed FP4 storage uses two nibbles per byte: cuTile Rust's
+<code class="docutils literal notranslate"><span class="pre">f4e2m1fnx2</span></code> stores the first logical FP4 value in the low nibble and the second
+logical FP4 value in the high nibble.</p>
+</section>
+<section id="nvfp4">
+<h2>NVFP4<a class="headerlink" href="#nvfp4" title="連結到這個標頭">#</a></h2>
+<p>An NVIDIA FP4 inference format based on 4-bit E2M1 values plus block scale
+tensors. The FP4 payload is commonly exchanged as byte-addressable data with two
+values per byte. In cuTile Rust, that storage is represented by <code class="docutils literal notranslate"><span class="pre">f4e2m1fnx2</span></code>;
+kernels unpack it to logical <code class="docutils literal notranslate"><span class="pre">f4e2m1fn</span></code> tiles before using block-scaled MMA.</p>
+</section>
+<section id="global-memory-hbm">
+<h2>Global Memory (HBM)<a class="headerlink" href="#global-memory-hbm" title="連結到這個標頭">#</a></h2>
+<p>The GPU's main memory — High Bandwidth Memory. Global memory has the highest capacity but is slower than shared memory and registers. <code class="docutils literal notranslate"><span class="pre">Tensor</span></code> data resides in global memory.</p>
+</section>
+<section id="registers-rmem">
+<h2>Registers (RMEM)<a class="headerlink" href="#registers-rmem" title="連結到這個標頭">#</a></h2>
+<p>The fastest storage on the GPU, private to each thread within a tile block. <code class="docutils literal notranslate"><span class="pre">Tile</span></code> data lives in registers during computation. Each SM has a fixed register file, so larger tiles consume more registers, potentially reducing occupancy.</p>
+</section>
+<section id="shared-memory-smem">
+<h2>Shared Memory (SMEM)<a class="headerlink" href="#shared-memory-smem" title="連結到這個標頭">#</a></h2>
+<p>On-chip memory shared among threads within a tile block. It is slower than
+registers but faster than global memory. The
+<a class="reference external" href="https://docs.nvidia.com/cuda/tile-ir/latest/">Tile IR</a> compiler manages shared
+memory for tile kernels. For capacity and latency details, see the
+<a class="reference external" href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/">CUDA C++ Programming Guide</a>.</p>
+</section>
+<section id="const-generics">
+<h2>Const Generics<a class="headerlink" href="#const-generics" title="連結到這個標頭">#</a></h2>
+<p>Compile-time constant parameters on kernel functions, such as <code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">BM:</span> <span class="pre">i32</span></code>. Const generics enable the compiler to optimize register allocation, unroll loops, and generate architecture-specific code. Changing a const generic value creates a new compiled variant. See also <a class="reference internal" href="#const-generic-arrays">Const Generic Arrays</a>.</p>
+</section>
+<section id="const-generic-arrays">
+<h2>Const Generic Arrays<a class="headerlink" href="#const-generic-arrays" title="連結到這個標頭">#</a></h2>
+<p>An <strong>extension to the Rust programming language</strong> that allows const generic parameters to have array types — for example, <code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">S:</span> <span class="pre">[i32;</span> <span class="pre">2]</span></code>. Standard Rust only supports scalar const generics (integers, <code class="docutils literal notranslate"><span class="pre">bool</span></code>, <code class="docutils literal notranslate"><span class="pre">char</span></code>), so this syntax is not valid in ordinary Rust code. The cuTile Rust compiler recognizes array const generics and uses them to propagate tile shapes through the type system at compile time.</p>
+<p>Const generic arrays are the idiomatic way to parameterize a kernel over its tile shape:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="cp">#[cutile::entry()]</span>
+<span class="k">fn</span><span class="w"> </span><span class="nf">add</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">S</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="kt">i32</span><span class="p">;</span><span class="w"> </span><span class="mi">2</span><span class="p">]</span><span class="o">&gt;</span><span class="p">(</span>
+<span class="w">    </span><span class="n">z</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">mut</span><span class="w"> </span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="n">S</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="p">{[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">]}</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">y</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="p">{[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">]}</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">..</span><span class="p">.</span><span class="w"> </span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Here <code class="docutils literal notranslate"><span class="pre">S</span></code> is inferred from the host-side partition shape passed at launch time. Because <code class="docutils literal notranslate"><span class="pre">S</span></code> is a compile-time constant, the compiler can specialize the generated code for each distinct shape. A new value of <code class="docutils literal notranslate"><span class="pre">S</span></code> creates a new compiled variant, just like scalar const generics.</p>
+</section>
+<section id="dynamic-dimensions">
+<h2>Dynamic Dimensions<a class="headerlink" href="#dynamic-dimensions" title="連結到這個標頭">#</a></h2>
+<p>Tensor shape dimensions specified as <code class="docutils literal notranslate"><span class="pre">-1</span></code> in the kernel signature (e.g., <code class="docutils literal notranslate"><span class="pre">Tensor&lt;f32,</span> <span class="pre">{[-1,</span> <span class="pre">-1]}&gt;</span></code>). Dynamic dimensions can vary across kernel launches without creating a new compiled variant. They carry no compile-time optimization benefit but provide flexibility for problem sizes that change often.</p>
+</section>
+<section id="jit-compilation">
+<h2>JIT Compilation<a class="headerlink" href="#jit-compilation" title="連結到這個標頭">#</a></h2>
+<p>cuTile Rust normally compiles a kernel entry function at first launch through a multi-stage pipeline: Rust AST → Tile IR bytecode → cubin. The generated launcher caches compiled kernels in memory using the active device and resolved kernel specialization. The specialization includes the entry function identity, type and const generics, compile options, optional constant grid, and tensor or scalar specialization hints. See <a class="reference internal" href="../guide/jit-compilation.html"><span class="std std-doc">Compilation</span></a> for the full cache behavior and the compile-only API.</p>
+</section>
+<section id="deviceop">
+<h2>DeviceOp<a class="headerlink" href="#deviceop" title="連結到這個標頭">#</a></h2>
+<p>A lazy description of GPU work — allocation, kernel launch, or data transfer — that is not executed until either <code class="docutils literal notranslate"><span class="pre">.sync_on(&amp;stream)</span></code>, <code class="docutils literal notranslate"><span class="pre">.sync()</span></code>, or <code class="docutils literal notranslate"><span class="pre">.await</span></code> is invoked. <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code>s can be composed with <code class="docutils literal notranslate"><span class="pre">zip!</span></code>, <code class="docutils literal notranslate"><span class="pre">.then()</span></code>, <code class="docutils literal notranslate"><span class="pre">.map()</span></code>, <code class="docutils literal notranslate"><span class="pre">.shared()</span></code>, and <code class="docutils literal notranslate"><span class="pre">.first()</span></code>/<code class="docutils literal notranslate"><span class="pre">.last()</span></code> to build dataflow graphs before submitting GPU work. Kernel launchers accept <code class="docutils literal notranslate"><span class="pre">Tensor&lt;T&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">Arc&lt;Tensor&lt;T&gt;&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&amp;Tensor&lt;T&gt;</span></code>, scalars, and <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> arguments directly via <code class="docutils literal notranslate"><span class="pre">IntoDeviceOp</span></code> and <code class="docutils literal notranslate"><span class="pre">KernelInput</span></code>. The return type matches the input type — you get back what you put in.</p>
+</section>
+<section id="devicefuture">
+<h2>DeviceFuture<a class="headerlink" href="#devicefuture" title="連結到這個標頭">#</a></h2>
+<p>A <code class="docutils literal notranslate"><span class="pre">DeviceFuture</span></code> is a future that has been assigned resources — specifically, a device stream on which to execute — but has not yet started GPU work. A <code class="docutils literal notranslate"><span class="pre">DeviceFuture</span></code> is created when a <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> is scheduled (e.g., via <code class="docutils literal notranslate"><span class="pre">into_future()</span></code>), at which point the scheduling policy selects a stream. The actual GPU work is not submitted until the <code class="docutils literal notranslate"><span class="pre">DeviceFuture</span></code> is polled for the first time, which happens when you <code class="docutils literal notranslate"><span class="pre">.await</span></code> it or <code class="docutils literal notranslate"><span class="pre">tokio::spawn</span></code> it.</p>
+</section>
+<section id="broadcasting">
+<h2>Broadcasting<a class="headerlink" href="#broadcasting" title="連結到這個標頭">#</a></h2>
+<p>Replicating a smaller tile (or scalar) to match the shape of a larger tile. Broadcasting is a compile-time transformation — no extra memory is allocated. For example, <code class="docutils literal notranslate"><span class="pre">a.broadcast(y.shape())</span></code> expands a scalar into a tile matching <code class="docutils literal notranslate"><span class="pre">y</span></code>'s partition shape.</p>
+</section>
+<section id="kernel-fusion">
+<h2>Kernel Fusion<a class="headerlink" href="#kernel-fusion" title="連結到這個標頭">#</a></h2>
+<p>Combining multiple logical operations into a single kernel so that intermediate results stay in registers rather than being written to and read back from global memory. Fused softmax is a canonical example: find-max, subtract, exponentiate, sum, and divide are all performed in one kernel launch.</p>
+</section>
+<section id="arithmetic-intensity">
+<h2>Arithmetic Intensity<a class="headerlink" href="#arithmetic-intensity" title="連結到這個標頭">#</a></h2>
+<p>The ratio of compute operations (FLOPs) to memory operations (bytes transferred). Higher arithmetic intensity means better GPU utilization. A kernel with low arithmetic intensity (e.g., element-wise addition) is <strong>memory-bound</strong>; a kernel with high arithmetic intensity (e.g., matrix multiplication) is <strong>compute-bound</strong>.</p>
+</section>
+<section id="cuda-stream">
+<h2>CUDA Stream<a class="headerlink" href="#cuda-stream" title="連結到這個標頭">#</a></h2>
+<p>An ordered queue of GPU operations. Operations on the same stream execute in submission order; operations on different streams may execute concurrently. cuTile Rust's default async scheduling policy distributes work across a pool of four streams in round-robin fashion.</p>
+</section>
+<section id="occupancy">
+<h2>Occupancy<a class="headerlink" href="#occupancy" title="連結到這個標頭">#</a></h2>
+<p>The ratio of active warps to the maximum number of warps an SM can support. Higher occupancy generally improves the GPU's ability to hide memory latency by switching between warps. Occupancy is affected by register usage, shared memory usage, and thread block size.</p>
+</section>
+<section id="warp">
+<h2>Warp<a class="headerlink" href="#warp" title="連結到這個標頭">#</a></h2>
+<p>A group of 32 GPU threads that execute instructions in lockstep. Warps are the smallest scheduling unit on an SM. Tile sizes that are multiples of 32 align well with warp-level execution.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="compatibility.html"
+       title="上一页">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">上一頁</p>
+        <p class="prev-next-title">CUDA and Tile IR compatibility</p>
+      </div>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> 当前页面
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tile">Tile</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tensor">Tensor</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#partition">Partition</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tile-program">Tile Program</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tile-block">Tile Block</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tile-thread">Tile Thread</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#concurrent-execution">Concurrent Execution</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parallel-execution">Parallel Execution</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#streaming-multiprocessor-sm">Streaming Multiprocessor (SM)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tensor-cores">Tensor Cores</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#block-scaling">Block Scaling</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fp4-e2m1fn">FP4 E2M1FN</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#packed-fp4-pair">Packed FP4 Pair</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nibble">Nibble</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nvfp4">NVFP4</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#global-memory-hbm">Global Memory (HBM)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#registers-rmem">Registers (RMEM)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#shared-memory-smem">Shared Memory (SMEM)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#const-generics">Const Generics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#const-generic-arrays">Const Generic Arrays</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dynamic-dimensions">Dynamic Dimensions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#jit-compilation">JIT Compilation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#deviceop">DeviceOp</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#devicefuture">DeviceFuture</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#broadcasting">Broadcasting</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#kernel-fusion">Kernel Fusion</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#arithmetic-intensity">Arithmetic Intensity</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cuda-stream">CUDA Stream</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#occupancy">Occupancy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#warp">Warp</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+  
+    <div class="footer-items__center">
+      
+        <div class="footer-item"><footer class="bd-footer-content">
+  <div class="footer-container" style="padding: 1rem 0 2rem 0; border-top: 1px solid var(--pst-color-border); text-align: left;">
+    
+    <!-- NVIDIA Logo -->
+    <div style="margin-bottom: 1rem;">
+      <img src="../_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" 
+           alt="NVIDIA" 
+           style="height: 3.5rem; filter: brightness(0);"
+           class="only-light">
+      <img src="../_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" 
+           alt="NVIDIA" 
+           style="height: 3.5rem;"
+           class="only-dark pst-js-only">
+    </div>
+    
+    <!-- Footer Links - single line, left aligned -->
+    <div style="font-size: 0.8125rem; margin-bottom: 0.5rem; color: var(--pst-color-text-muted);">
+      <a href="https://www.nvidia.com/en-us/about-nvidia/privacy-policy/" target="_blank" style="color: inherit; text-decoration: none;">Privacy Policy</a> | 
+      <a href="https://www.nvidia.com/en-us/preferences/email-preferences/" target="_blank" style="color: inherit; text-decoration: none;">Your Privacy Choices</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/terms-of-service/" target="_blank" style="color: inherit; text-decoration: none;">Terms of Service</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/accessibility/" target="_blank" style="color: inherit; text-decoration: none;">Accessibility</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/company-policies/" target="_blank" style="color: inherit; text-decoration: none;">Corporate Policies</a> | 
+      <a href="https://www.nvidia.com/en-us/product-security/" target="_blank" style="color: inherit; text-decoration: none;">Product Security</a> | 
+      <a href="https://www.nvidia.com/en-us/contact/" target="_blank" style="color: inherit; text-decoration: none;">Contact</a>
+    </div>
+    
+    <!-- Copyright -->
+    <div style="font-size: 0.8125rem; color: var(--pst-color-text-muted);">
+      Copyright &copy; 2025, NVIDIA.
+    </div>
+    
+  </div>
+</footer></div>
+      
+    </div>
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>
