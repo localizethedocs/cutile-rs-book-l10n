@@ -19,27 +19,27 @@ msgstr ""
 
 #: ../../../index.md:73
 msgid "Tutorials"
-msgstr ""
+msgstr "教學課程"
 
 #: ../../../index.md:92
 msgid "User Guide"
-msgstr ""
+msgstr "使用者指南"
 
 #: ../../../index.md:110
 msgid "Reference"
-msgstr ""
+msgstr "參考"
 
 #: ../../../index.md:1
 msgid "cuTile Rust"
-msgstr ""
+msgstr "cuTile Rust"
 
 #: ../../../index.md:3
 msgid "**cuTile Rust** compiles Rust tile programs into CUDA kernels."
-msgstr ""
+msgstr "**cuTile Rust** 會將 Rust tile 程式編譯到 CUDA 內核。"
 
 #: ../../../index.md:7
 msgid "Project Status"
-msgstr ""
+msgstr "專案狀態"
 
 #: ../../../index.md:9
 msgid ""
@@ -81,6 +81,32 @@ msgid ""
 "    Ok(())\n"
 "}\n"
 msgstr ""
+"use cutile::prelude::*;\n"
+"\n"
+"#[cutile::module]\n"
+"mod kernel {\n"
+"    use cutile::core::*;\n"
+"\n"
+"    #[cutile::entry()]\n"
+"    fn add<const B: i32>(\n"
+"        z: &mut Tensor<f32, { [B] }>,\n"
+"        x: &Tensor<f32, { [-1] }>,\n"
+"        y: &Tensor<f32, { [-1] }>,\n"
+"    ) {\n"
+"        let tx = x.load_like(z);\n"
+"        let ty = y.load_like(z);\n"
+"        z.store(tx + ty);\n"
+"    }\n"
+"}\n"
+"\n"
+"fn main() -> Result<(), Error> {\n"
+"    let x = api::ones::<f32>(&[1024]);\n"
+"    let y = api::ones::<f32>(&[1024]);\n"
+"    let z = api::zeros::<f32>(&[1024]).partition([128]);\n"
+"\n"
+"    let (_z, _x, _y) = kernel::add(z, x, y).sync()?;\n"
+"    Ok(())\n"
+"}\n"
 
 #: ../../../index.md:46
 msgid ""
@@ -113,7 +139,7 @@ msgstr ""
 
 #: ../../../index.md:64
 msgid "Tile programs"
-msgstr ""
+msgstr "Tile 程式"
 
 #: ../../../index.md:65
 msgid ""
@@ -124,7 +150,7 @@ msgstr ""
 
 #: ../../../index.md:68
 msgid "CUDA Tile IR compilation"
-msgstr ""
+msgstr "CUDA Tile IR 編譯"
 
 #: ../../../index.md:69
 msgid ""

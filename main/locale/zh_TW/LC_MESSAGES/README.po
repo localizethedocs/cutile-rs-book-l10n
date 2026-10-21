@@ -19,7 +19,7 @@ msgstr ""
 
 #: ../../../README.md:5
 msgid "The cuTile Rust Book"
-msgstr ""
+msgstr "cuTile Rust 書冊"
 
 #: ../../../README.md:7
 msgid "Source for the cuTile Rust Book. To build and serve it locally:"
@@ -42,7 +42,7 @@ msgstr ""
 
 #: ../../../README.md:19
 msgid "make livehtml\n"
-msgstr ""
+msgstr "make livehtml\n"
 
 #: ../../../README.md:23
 msgid "or, from the repository root:"
@@ -50,7 +50,7 @@ msgstr ""
 
 #: ../../../README.md:25
 msgid "scripts/run_book.sh serve\n"
-msgstr ""
+msgstr "scripts/run_book.sh serve\n"
 
 #: ../../../README.md:29
 msgid ""
@@ -60,7 +60,7 @@ msgstr ""
 
 #: ../../../README.md:32
 msgid "scripts/build_versioned_book.sh\n"
-msgstr ""
+msgstr "scripts/build_versioned_book.sh\n"
 
 #: ../../../README.md:36
 msgid "The generated GitHub Pages site is written to `_site/`."
@@ -68,7 +68,7 @@ msgstr ""
 
 #: ../../../README.md:38
 msgid "Related Documentation"
-msgstr ""
+msgstr "相關文件"
 
 #: ../../../README.md:40
 msgid "**API Docs**: Run `cargo doc --open` from the project root"
