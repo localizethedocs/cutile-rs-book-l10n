@@ -1,0 +1,501 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2025-2026, NVIDIA Corporation
+# This file is distributed under the same license as the cuTile Rust package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: cuTile Rust main\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-21 16:36+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../tutorials/07-intro-to-async.md:1
+msgid "7. Intro to Async Execution"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:3
+msgid ""
+"Note: These examples use `tokio`, but cuTile works with other async runtimes."
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:5
+msgid "The sync API blocks the CPU until the GPU finishes:"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:7
+msgid ""
+"let launcher = hello_world_kernel();\n"
+"launcher.grid((2, 2, 1)).sync_on(&stream)?;  // CPU waits here!\n"
+"// CPU blocked until GPU finishes\n"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:13
+msgid ""
+"![Timeline showing sync execution (CPU waits) vs async execution (CPU works "
+"in parallel)](../_static/images/async-execution-timeline.svg)"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:13
+msgid ""
+"Timeline showing sync execution (CPU waits) vs async execution (CPU works in "
+"parallel)"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:15
+msgid "With async, the CPU can do other work while the GPU computes:"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:17
+msgid "Preparing the next batch while the current one computes."
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:18
+msgid "Pipelining multiple operations."
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:19
+msgid "Overlapping data transfer with computation."
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:20
+msgid "Multi-GPU coordination."
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:24
+msgid "DeviceOp"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:26
+msgid ""
+"`DeviceOp` describes GPU work without executing it. `.await` or `."
+"sync_on(.)` executes the operation; `tokio::spawn` can run the future "
+"produced by `into_future()` or `.schedule(...)`."
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:30
+msgid ""
+"// This creates a DeviceOp, but doesn't execute yet!\n"
+"let tensor_op = api::ones(&[1024, 1024]);  // Returns impl DeviceOp\n"
+"\n"
+"// Nothing has happened on the GPU yet...\n"
+"\n"
+"// NOW it executes:\n"
+"let tensor: Tensor<f32> = tensor_op.sync_on(&stream)?;  // Sync API\n"
+"// or\n"
+"let tensor: Tensor<f32> = tensor_op.await?;             // Async API\n"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:44
+msgid "Sync vs Async APIs"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:46
+msgid ""
+"In cutile, a `DeviceOp` can be executed with either sync or async APIs. "
+"Given a particular operation `op`:"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:0
+msgid "API"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:0
+msgid "Description"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:0
+msgid "`op.sync()`"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:0
+msgid ""
+"Immediately executes `op` on the default GPU device (device 0). Blocking. "
+"Callable outside of async context."
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:0
+msgid "`op.sync_on(&stream)`"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:0
+msgid ""
+"Immediately executes `op` on `stream`. Blocking. Callable outside of async "
+"context."
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:0
+msgid "`op.await`"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:0
+msgid ""
+"Immediately executes `op` as part of the async context from which it is "
+"invoked. Blocks the enclosing async context but frees the executing thread, "
+"allowing the runtime to schedule other tasks on it. Can only be called from "
+"within an async context."
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:0
+msgid "`tokio::spawn(op.into_future())`"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:0
+msgid ""
+"Submits the operation's future to the async runtime, returning a handle that "
+"can later be awaited. Non-blocking. Can only be called from within an async "
+"context."
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:55
+msgid ""
+"Note: An async context is any code appearing in a block defined with the "
+"`async` keyword, e.g. `async fn ...`, `async { ... }`, `async || { ... }`."
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:59
+msgid "Async Vector Addition"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:61
+msgid ""
+"use cutile::api::{ones, zeros};\n"
+"use cutile::tensor::{Tensor, ToHostVec, Unpartition};\n"
+"use cutile::tile_kernel::{PartitionOp, TileKernel, ToHostVecOp};\n"
+"use cuda_async::device_operation::*;\n"
+"use cuda_async::error::DeviceError;\n"
+"use std::sync::Arc;\n"
+"\n"
+"#[cutile::module]\n"
+"mod async_add_module {\n"
+"    use cutile::core::*;\n"
+"\n"
+"    #[cutile::entry()]\n"
+"    fn add<const S: [i32; 2]>(\n"
+"        z: &mut Tensor<f32, S>,\n"
+"        x: &Tensor<f32, {[-1, -1]}>,\n"
+"        y: &Tensor<f32, {[-1, -1]}>\n"
+"    ) {\n"
+"        let tile_x = x.load_like(z);\n"
+"        let tile_y = y.load_like(z);\n"
+"        z.store(tile_x + tile_y);\n"
+"    }\n"
+"}\n"
+"\n"
+"use async_add_module::add;\n"
+"\n"
+"#[tokio::main]\n"
+"async fn main() -> Result<(), DeviceError> {\n"
+"    let x: Arc<Tensor<f32>> = ones(&[32, 32]).map(Into::into).await?;\n"
+"    let y: Arc<Tensor<f32>> = ones(&[32, 32]).map(Into::into).await?;\n"
+"\n"
+"    // Unified launcher: pass output partition and inputs directly.\n"
+"    let z_host: Vec<f32> = add(\n"
+"        zeros(&[32, 32]).partition([4, 4]),  // Output, partitioned into "
+"tiles\n"
+"        x,                                    // Input x (Arc<Tensor> via "
+"IntoDeviceOp)\n"
+"        y,                                    // Input y\n"
+"    )\n"
+"    .first()\n"
+"    .unpartition()\n"
+"    .to_host_vec()\n"
+"    .await?;\n"
+"    println!(\"z[0] = {} (expected 2.0)\", z_host[0]);\n"
+"    Ok(())\n"
+"}\n"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:107
+msgid "**Output:**"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:109
+msgid "z[0] = 2 (expected 2.0)\n"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:115
+msgid "Overlapping Work with Spawn"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:117
+msgid ""
+"`.await` suspends the current task until the operation completes, freeing "
+"its thread to run other tasks. `tokio::spawn` starts a separate task and "
+"returns a handle immediately. Await that handle when you need the result."
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:121
+msgid ""
+"#[tokio::main]\n"
+"async fn main() -> Result<(), DeviceError> {\n"
+"    let batch1_op = prepare_batch(1);  // Returns DeviceOp\n"
+"    let batch2_op = prepare_batch(2);  // Returns DeviceOp\n"
+"\n"
+"    let batch1 = batch1_op.await?;\n"
+"\n"
+"    let result1_op = process_kernel(batch1);\n"
+"    let result1_handle = tokio::spawn(result1_op.into_future());  // Non-"
+"blocking\n"
+"\n"
+"    // batch 2 data can be prepared while batch 1's kernel runs\n"
+"    let batch2 = batch2_op.await?;\n"
+"\n"
+"    let result2 = process_kernel(batch2).await?;\n"
+"\n"
+"    let result1 = result1_handle.await.expect(\"task panicked\")?;\n"
+"    Ok(())\n"
+"}\n"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:144
+msgid "Composing DeviceOps"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:146
+msgid "Unified Kernel Launcher"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:148
+msgid ""
+"The kernel launcher accepts both `DeviceOp` and plain values directly — no "
+"`zip!` needed:"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:150
+msgid ""
+"// Pass output partition and inputs directly.\n"
+"let result = kernel(output_op.partition([4, 4]), input1, input2)\n"
+"    .first()           // Extract the output\n"
+"    .unpartition()\n"
+"    .await?;\n"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:158
+msgid "`zip!` — Combine Operations Manually"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:160
+msgid ""
+"For cases where you need explicit control, `zip!` combines multiple "
+"DeviceOps into a tuple:"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:162
+msgid ""
+"use cuda_async::device_operation::*;\n"
+"\n"
+"let combined = zip!(op_a, op_b, op_c);\n"
+"let (a, b, c) = combined.await?;\n"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:171
+msgid "Choosing between sync and async"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:0
+msgid "Scenario"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:0
+msgid "Use Sync"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:0
+msgid "Use Async"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:0
+msgid "Simple scripts"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:0
+msgid "✓"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:0
+msgid "Interactive exploration"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:0
+msgid "Production pipelines"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:0
+msgid "Multi-batch processing"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:0
+msgid "Multi-GPU workloads"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:0
+msgid "Overlapping compute/transfer"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:182
+msgid "Start with sync. Use async when you have work to overlap."
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:186
+msgid "Borrowed Inputs and Spawn Safety"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:188
+msgid ""
+"Kernel `&Tensor` params accept three input forms: `Tensor<T>`, "
+"`Arc<Tensor<T>>`, and `&Tensor<T>`. Borrowed inputs (`&Tensor<T>`) work with "
+"`.sync_on()` and `.await`, but the compiler rejects them with `tokio::spawn`:"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:192
+msgid ""
+"let weights: Tensor<f32> = api::ones(&[1024]).sync_on(&stream)?;\n"
+"\n"
+"// OK — borrow is contained in the sync call.\n"
+"let result = my_kernel(out, &weights).sync_on(&stream)?;\n"
+"\n"
+"// OK — borrow checker ensures weights outlives the await.\n"
+"let result = my_kernel(out, &weights).await?;\n"
+"\n"
+"// COMPILE ERROR — &weights is not 'static, so the future can't be spawned.\n"
+"let handle = tokio::spawn(my_kernel(out, &weights).into_future());\n"
+"//                                       ^^^^^^^^ borrowed value does not "
+"live long enough\n"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:206
+msgid ""
+"This is enforced at compile time by Rust's lifetime system. If you need to "
+"spawn, use `Arc<Tensor<T>>` instead:"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:209
+msgid ""
+"let weights: Arc<Tensor<f32>> = api::ones(&[1024]).sync_on(&stream)?."
+"into();\n"
+"let handle = tokio::spawn(my_kernel(out, weights).into_future());  // OK — "
+"Arc is 'static\n"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:216
+msgid "Key Takeaways"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:0
+msgid "Concept"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:0
+msgid "What It Means"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:0
+msgid "**DeviceOp**"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:0
+msgid "A description of GPU work, not yet executed"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:0
+msgid "**.await**"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:0
+msgid "Execute the operation and get the result"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:0
+msgid "**Async enables overlap**"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:0
+msgid "CPU can do work while GPU computes"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:0
+msgid "**Unified launcher**"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:0
+msgid "Kernel functions accept DeviceOps and plain values directly"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:0
+msgid "**zip!**"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:0
+msgid "Combine multiple operations into a tuple"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:0
+msgid "**.then()**"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:0
+msgid "Chain follow-up work on the same stream"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:229
+msgid "Exercise 1: Async SAXPY"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:231
+msgid "Convert the SAXPY kernel to use the async API."
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:233
+msgid "Exercise 2: Parallel Tensor Creation"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:235
+msgid "Use `zip!` to create 4 tensors in parallel."
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:0
+msgid "Answer"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:238
+msgid ""
+"let (a, b, c, d) = zip!(\n"
+"    ones(&[100, 100]).map(Into::into),\n"
+"    zeros(&[100, 100]).map(Into::into),\n"
+"    randn(0.0, 1.0, [100, 100], None).map(Into::into),\n"
+"    arange(10000).map(Into::into)\n"
+").await?;\n"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:248
+msgid "Exercise 3: Measure the Difference"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:250
+msgid ""
+"Time a sync version vs. an async version with overlapped work. Use `std::"
+"time::Instant` to measure."
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:254
+msgid "See also"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:256
+msgid ""
+"[Device Operations](../guide/device-operations.md) — full treatment of "
+"`DeviceOp`, streams, and scheduling"
+msgstr ""
+
+#: ../../../tutorials/07-intro-to-async.md:257
+msgid ""
+"[Host API](../reference/host-api.md) — combinator signatures (`.then()`, `."
+"shared()`, `unzip`, `zip!`) and the full host-side API"
+msgstr ""

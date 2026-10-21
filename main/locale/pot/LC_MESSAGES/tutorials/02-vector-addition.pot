@@ -1,0 +1,501 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2025-2026, NVIDIA Corporation
+# This file is distributed under the same license as the cuTile Rust package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: cuTile Rust main\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-21 16:36+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../tutorials/02-vector-addition.md:1
+msgid "2. Vector Addition"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:3
+msgid ""
+"In cutile, tile programs run concurrently and each program knows its grid "
+"coordinates via `program_id(axis)`. To make programs process different "
+"pieces of data, we use **partitioning** — dividing the output tensor into "
+"sub-tensors so that each tile program reads from and writes to a distinct "
+"region."
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:5
+msgid ""
+"![Partitioning divides data among tile threads](../_static/images/vector-"
+"addition-partitioning.svg)"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:5
+msgid "Partitioning divides data among tile threads"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:9
+msgid ""
+"use cuda_async::device_operation::DeviceOp;\n"
+"use cuda_core::Device;\n"
+"use std::sync::Arc;\n"
+"use cutile;\n"
+"use cutile::api::{ones, zeros};\n"
+"use cutile::error::Error;\n"
+"use cutile::tensor::{IntoPartition, Tensor, ToHostVec, Unpartition};\n"
+"use cutile::tile_kernel::TileKernel;\n"
+"\n"
+"#[cutile::module]\n"
+"mod my_module {\n"
+"    use cutile::core::*;\n"
+"\n"
+"    #[cutile::entry()]\n"
+"    fn add<const S: [i32; 2]>(\n"
+"        z: &mut Tensor<f32, S>,          // Output: has static shape S (the "
+"tile shape)\n"
+"        x: &Tensor<f32, {[-1, -1]}>,     // Input: dynamic shape (full "
+"tensor)\n"
+"        y: &Tensor<f32, {[-1, -1]}>      // Input: dynamic shape (full "
+"tensor)\n"
+"    ) {\n"
+"        let tile_x = x.load_like(z);  // Load a tile from x using z's "
+"partitioning\n"
+"        let tile_y = y.load_like(z);  // Load a tile from y using z's "
+"partitioning\n"
+"        z.store(tile_x + tile_y);              // Add and store result\n"
+"    }\n"
+"}\n"
+"\n"
+"use my_module::add;\n"
+"\n"
+"fn main() -> Result<(), Error> {\n"
+"    let device = Device::new(0)?;\n"
+"    let stream = device.new_stream()?;\n"
+"    \n"
+"    // Create input tensors: 32×32 matrices filled with 1.0\n"
+"    let x: Arc<Tensor<f32>> = ones(&[32, 32]).sync_on(&stream)?.into();\n"
+"    let y: Arc<Tensor<f32>> = ones(&[32, 32]).sync_on(&stream)?.into();\n"
+"    \n"
+"    // Create output tensor, PARTITIONED into 4×4 sub-tensors.\n"
+"    let z = zeros(&[32, 32]).sync_on(&stream)?.partition([4, 4]);\n"
+"    \n"
+"    // Run the kernel — one tile thread per sub-tensor, for a total of 64 "
+"threads.\n"
+"    let (z, _x, _y) = add(z, x, y).sync_on(&stream)?;\n"
+"    \n"
+"    // Verify results.\n"
+"    let z_host: Vec<f32> = z.unpartition().to_host_vec().sync_on(&stream)?;\n"
+"    println!(\"z[0] = {} (expected 2.0)\", z_host[0]);\n"
+"    \n"
+"    Ok(())\n"
+"}\n"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:59
+msgid "**Output:**"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:61
+msgid "z[0] = 2 (expected 2.0)\n"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:67
+msgid "Partitioning"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:69
+msgid ""
+"Partitioning divides a tensor into a grid of sub-regions, each processed by "
+"one tile block. In cuTile Rust, partitioning works differently for mutable "
+"outputs (`&mut Tensor`) and read-only inputs (`&Tensor`)."
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:71
+msgid "Host-Side Partitioning (Required for `&mut Tensor`)"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:73
+msgid "let z = zeros(&[32, 32]).sync_on(&stream)?.partition([4, 4]);\n"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:77
+msgid "Creates a 32×32 output tensor initialized to zeros."
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:78
+msgid "Divides it into 4×4 sub-tensors."
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:79
+msgid "Creates an 8×8 grid of sub-tensors (32÷4 = 8 in each dimension)."
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:81
+msgid ""
+"![How partitioning creates the tile grid](../_static/images/vector-addition-"
+"grid.svg)"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:81
+msgid "How partitioning creates the tile grid"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:83
+msgid ""
+"Mutable tensors **must** be partitioned on the host side before kernel "
+"launch. This guarantees that each tile block writes to a disjoint sub-region "
+"— satisfying Rust's exclusive access requirement for mutable memory. The "
+"host-side `Partition` also determines the launch grid: cutile automatically "
+"infers that an 8×8 partition means 64 tile blocks."
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:85
+msgid ""
+"On the host side, the generated launcher expects a partition for every `&mut "
+"Tensor` parameter — `Partition<Tensor<T>>` from `tensor.partition(...)`, "
+"`Partition<&mut Tensor<T>>` from `(&mut tensor).partition(...)`, or a mapped "
+"partition — so you always call `.partition(...)` before passing the tensor."
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:87
+msgid "Device-Side Partitioning (Available for `&Tensor`)"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:89
+msgid ""
+"Read-only inputs are passed as `&Tensor<T>`, `Tensor<T>`, `Arc<Tensor<T>>`, "
+"or `&TensorView<T>` on the host side — no host-side partitioning required. "
+"Multiple tile blocks can safely read from the same or overlapping regions, "
+"so there is no exclusive-access constraint to enforce."
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:91
+msgid ""
+"Instead, read-only tensors can be partitioned **inside the kernel** using `."
+"partition(shape![M, N])`:"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:93
+msgid ""
+"// Device-side: partition a read-only tensor inside the kernel.\n"
+"let part_x = x.partition(shape![BM, BK]);\n"
+"let tile = part_x.load([i, j]);\n"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:99
+msgid ""
+"The same `&Tensor` can use different partition shapes within one kernel. "
+"GEMM, for example, uses different shapes for `x` and `y`."
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:102
+msgid ""
+"In this tutorial, we use `x.load_like(z)` instead of explicit device-side "
+"partitioning. This convenience function partitions `x` using the same shape "
+"and coordinates as `z`, which is the common case for element-wise "
+"operations. Later tutorials (starting with [matrix multiplication](./04-"
+"matrix-multiplication.md)) use explicit device-side partitioning when inputs "
+"need different access patterns."
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:104
+msgid "<a id=\"putting-it-together\"></a>"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:104
+msgid "<a id=\"putting-it-together\">"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:104
+msgid "</a>"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:105
+msgid "Launch grid"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:107
+msgid ""
+"Calling `add(z, x, y)` launches an 8×8×1 grid from `z`'s host-side "
+"partition. Each of the 64 tile blocks processes a 4×4 chunk."
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:112
+msgid "The Kernel"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:114
+msgid ""
+"fn add<const S: [i32; 2]>(\n"
+"    z: &mut Tensor<f32, S>,       // Output sub-tensor (4×4)\n"
+"    x: &Tensor<f32, {[-1, -1]}>,  // Full input tensor\n"
+"    y: &Tensor<f32, {[-1, -1]}>   // Full input tensor\n"
+") {\n"
+"    let tile_x = x.load_like(z);\n"
+"    let tile_y = y.load_like(z);\n"
+"    z.store(tile_x + tile_y);\n"
+"}\n"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:126
+msgid ""
+"`x.load_like(z)` loads a tile from `x` using the same tile shape (`S`=4×4) "
+"and coordinates (tile thread id) as `z`."
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:128
+msgid ""
+"![How load_tile_like calculates which region to load](../_static/images/"
+"vector-addition-load-tile.svg)"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:128
+msgid "How load_tile_like calculates which region to load"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:130
+msgid "Compare to CUDA C++:"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:0
+msgid "Task"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:0
+msgid "CUDA C++"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:0
+msgid "cuTile Rust"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:0
+msgid "Calculate thread index"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:0
+msgid "`int i = blockIdx.x * blockDim.x + threadIdx.x;`"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:0
+msgid "Not needed"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:0
+msgid "Calculate global offset"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:0
+msgid "Manual pointer arithmetic"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:0
+msgid "`x.load_like(z)`"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:0
+msgid "Bounds checking"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:0
+msgid "`if (i < n) { ... }`"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:0
+msgid "Built-in"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:0
+msgid "Coalesced memory access"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:0
+msgid "Manual, error-prone"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:0
+msgid "Automatic"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:141
+msgid "The Load/Store Pattern"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:143
+msgid "Almost every kernel follows this pattern:"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:145
+msgid ""
+"fn my_kernel(...) {\n"
+"    // 1. LOAD: Global memory → tiles (registers).\n"
+"    let tile_a = load_something(...);\n"
+"    let tile_b = load_something_else(...);\n"
+"    \n"
+"    // 2. COMPUTE: Operate on tiles in registers.\n"
+"    let result = tile_a + tile_b;\n"
+"    \n"
+"    // 3. STORE: Tiles (registers) → global memory.\n"
+"    output.store(result);\n"
+"}\n"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:161
+msgid "Key Takeaways"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:0
+msgid "Concept"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:0
+msgid "What It Means"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:0
+msgid "**Host-side partitioning**"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:0
+msgid ""
+"`.partition([M, N])` on the host — required for `&mut Tensor` to ensure "
+"exclusive write access and determine the launch grid"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:0
+msgid "**Device-side partitioning**"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:0
+msgid ""
+"`.partition(shape![M, N])` inside the kernel — available for `&Tensor`, "
+"flexible access patterns"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:0
+msgid "**Static shape `S`**"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:0
+msgid "The tile shape carried in the compiled variant"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:0
+msgid "**Dynamic shape `[-1, -1]`**"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:0
+msgid ""
+"Dynamic tensor shape; does not create a new compiled variant when tensor "
+"shape changes"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:0
+msgid "**load_like**"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:0
+msgid ""
+"Convenience for element-wise ops: loads from the input using the same "
+"partitioning and mapping as the output (also available as the free function "
+"`load_tile_like`). The input must have the same shape as the whole output "
+"tensor — the tensor the host partitioned, not the per-program sub-tensor — "
+"and the output must be a partitioned mutable tensor"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:0
+msgid "**Load/Store pattern**"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:0
+msgid "Load → Compute → Store is the GPU kernel idiom"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:174
+msgid "Exercise 1: Change Tile Shape"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:176
+msgid "Modify the partition to `[8, 8]`:"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:178
+msgid "let z = zeros(&[32, 32]).sync_on(&stream)?.partition([8, 8]);\n"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:182
+msgid "How many tile threads are launched?"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:183
+msgid "How many elements does each tile thread process?"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:0
+msgid "Answer"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:186
+msgid "32÷8 = 4 tiles per dimension → 4×4 = 16 tiles total."
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:187
+msgid "Each tile thread processes 8×8 = 64 elements."
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:190
+msgid "Exercise 2: Three-Way Addition"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:192
+msgid "Modify the kernel to add three tensors: `z = x + y + w`."
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:0
+msgid "Hint"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:195
+msgid "Add a third input parameter and load three tiles:"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:196
+msgid ""
+"let tile_w = w.load_like(z);\n"
+"z.store(tile_x + tile_y + tile_w);\n"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:202
+msgid "Exercise 3: Non-Square Partitions"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:204
+msgid "Try `partition([4, 8])` — rectangular tiles. Does it still work?"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:208
+msgid "See also"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:210
+msgid ""
+"[Tensors and Tiles](../guide/tensors-and-tiles.md) — partitioning, load/"
+"store, and tile arithmetic"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:211
+msgid ""
+"[Useful Mental Models](../guide/useful-mental-models.md) — tile blocks and "
+"grid geometry"
+msgstr ""
+
+#: ../../../tutorials/02-vector-addition.md:212
+msgid ""
+"[DSL API](../reference/dsl-api.md) — full signatures for `load_like`, "
+"`store`, and the arithmetic operators used here"
+msgstr ""

@@ -1,0 +1,394 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2025-2026, NVIDIA Corporation
+# This file is distributed under the same license as the cuTile Rust package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: cuTile Rust main\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-21 16:36+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../guide/host-vs-device.md:1
+msgid "Host vs. Device Code"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:3
+msgid ""
+"cuTile Rust programs have two parts. Host code runs on the CPU and owns "
+"normal Rust control flow, tensor allocation, stream selection, kernel "
+"launch, and result readback. Device code runs on the GPU and describes the "
+"work performed by each tile block."
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:5
+msgid ""
+"use cutile::prelude::*;\n"
+"use kernels::scale;\n"
+"\n"
+"fn main() -> Result<(), cuda_async::error::DeviceError> {\n"
+"    let device = cuda_core::Device::new(0)?;\n"
+"    let stream = device.new_stream()?;\n"
+"\n"
+"    let x = api::ones::<f32>(&[32, 32]).sync_on(&stream)?;\n"
+"    let mut z = api::zeros::<f32>(&[32, 32]).sync_on(&stream)?;\n"
+"\n"
+"    let _ = scale((&mut z).partition([4, 4]), &x, 2.0f32)."
+"sync_on(&stream)?;\n"
+"    Ok(())\n"
+"}\n"
+"\n"
+"#[cutile::module]\n"
+"mod kernels {\n"
+"    use cutile::core::*;\n"
+"\n"
+"    #[cutile::entry()]\n"
+"    fn scale<const S: [i32; 2]>(\n"
+"        z: &mut Tensor<f32, S>,\n"
+"        x: &Tensor<f32, { [-1, -1] }>,\n"
+"        alpha: f32,\n"
+"    ) {\n"
+"        let tile_x = x.load_like(z);\n"
+"        z.store(tile_x * alpha);\n"
+"    }\n"
+"}\n"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:36
+msgid ""
+"`main` is host code. It constructs tensors, partitions the writable output, "
+"and synchronizes the returned `DeviceOp`. `scale` is device code. It runs "
+"once per tile block and sees one mutable output partition at a time."
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:38
+msgid "Modules and Entry Points"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:40
+msgid ""
+"`#[cutile::module]` marks a Rust module whose functions can be compiled for "
+"the GPU. `#[cutile::entry()]` marks a function as a kernel entry point. "
+"Entry points are callable from host code through generated launcher APIs."
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:42
+msgid "Entry points follow four rules:"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:44
+msgid "They must be inside a `#[cutile::module]`."
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:45
+msgid ""
+"Writable tensor parameters use static tile shapes, such as `Tensor<f32, S>` "
+"or `Tensor<f32, { [BM, BN] }>`."
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:46
+msgid ""
+"Read-only tensor parameters may use dynamic dimensions, such as `Tensor<f32, "
+"{ [-1, -1] }>`."
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:47
+msgid ""
+"Kernels write results into tensor parameters instead of returning values."
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:49
+msgid ""
+"Unmarked functions inside a `#[cutile::module]` are device functions. They "
+"can be called from entry points or other device functions and are inlined "
+"during compilation, but they cannot be launched directly."
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:51
+msgid "Kernel Launchers"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:53
+msgid ""
+"The generated launcher accepts host-side values that correspond to the "
+"device-side kernel signature:"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid "Kernel parameter"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid "Host input"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid "Device view"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid "`&Tensor<T, S>`"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid "`&Tensor<T>`, `Arc<Tensor<T>>`, or `Tensor<T>`"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid "Read-only tensor"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid "`&mut Tensor<T, S>`"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid "`Partition<&mut Tensor<T>>` or `Partition<Tensor<T>>`"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid "Writable partition"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid "Scalar (`f32`, `i32`, etc.)"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid "Same scalar"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:61
+msgid ""
+"Mutable tensors are partitioned before launch so each tile block writes a "
+"disjoint region:"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:63
+msgid ""
+"let mut z = api::zeros::<f32>(&[32, 32]).sync_on(&stream)?;\n"
+"let _ = scale((&mut z).partition([4, 4]), &x, 2.0f32).sync_on(&stream)?;\n"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:68
+msgid ""
+"Read-only tensors can be borrowed, moved, or shared with `Arc`. Multiple "
+"tile blocks may read the same tensor concurrently."
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:70
+msgid "Host and Device Types"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:72
+msgid ""
+"The same names appear on both sides, but host and device types carry "
+"different information:"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid "Type"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid "Side"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid "Parameterized by"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid "Use"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid "`Tensor<T>`"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid "Host"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid "Element type"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid "GPU allocation managed from CPU code"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid "`Partition<Tensor<T>>`"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid "Owned writable launch partition"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid "`Partition<&mut Tensor<T>>`"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid "Borrowed writable launch partition"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid "`Arc<Tensor<T>>`"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid "Shared read-only input"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid "`Tensor<E, S>`"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid "Device"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid "Element type and shape"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid "Kernel tensor parameter"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid "`Partition<E, S>`"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid "Device-side tiled view of a read-only tensor"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid "`MappedPartitionMut<E, S, M>`"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid "Element type, tile shape, and map shape"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid ""
+"Advanced writable output that lets one tile block process multiple logical "
+"output tiles"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid "`Tile<E, S>`"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid "Element type and static shape"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:0
+msgid "Register-resident compute value"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:85
+msgid ""
+"Host tensors use runtime shapes because allocation sizes are ordinary "
+"runtime data. Device tensors and tiles carry shape information in the type "
+"system so the compiler can check operations and specialize generated code."
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:87
+msgid ""
+"`MappedPartitionMut` is used by kernels that need a custom traversal over "
+"the output grid, such as persistent GEMM. The host creates one by mapping a "
+"mutable partition:"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:89
+msgid "let z = z.partition([BM, BN]).map([4, 1], num_tile_blocks);\n"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:93
+msgid "The device entry point takes it by value:"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:95
+msgid ""
+"fn kernel<const MAP_SHAPE: [i32; 2]>(\n"
+"    mut z: MappedPartitionMut<f32, { [BM, BN] }, MAP_SHAPE>,\n"
+") {\n"
+"    for out_idx in z.iter_indices() {\n"
+"        // Compute one logical output tile.\n"
+"        z.store(tile, out_idx);\n"
+"    }\n"
+"}\n"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:106
+msgid "DeviceOp Basics"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:108
+msgid ""
+"Tensor constructors, kernel launchers, host readbacks, and composition "
+"helpers return `DeviceOp`s. A `DeviceOp` is a lazy description of GPU work. "
+"Nothing runs until it is synchronized, awaited, or captured into a CUDA "
+"graph."
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:110
+msgid ""
+"let z = api::zeros::<f32>(&[32, 32]); // No allocation has run yet.\n"
+"let z = z.sync_on(&stream)?;          // The operation runs here.\n"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:115
+msgid "Kernel launchers are `DeviceOp`s too:"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:117
+msgid ""
+"let op = scale((&mut z).partition([4, 4]), &x, 2.0f32);\n"
+"let _ = op.sync_on(&stream)?;\n"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:122
+msgid ""
+"The full host-side execution model is described in [Device Operations]"
+"(device-operations.md)."
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:124
+msgid "First-Use Compilation"
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:126
+msgid ""
+"Calling a generated launcher may compile the device code before it launches. "
+"A specialization is one compiled kernel variant for a particular entry "
+"function, target GPU, and set of compile-time inputs. The first launch of a "
+"specialization compiles the captured Rust AST to Tile IR bytecode and then "
+"to a cubin. Later launches with the same specialization reuse the cached "
+"binary."
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:128
+msgid ""
+"Specialization depends on element types, const generic values, compile "
+"options, and other compile-time parameters. Dynamic tensor dimensions can "
+"vary across launches without creating a new specialization. [Compilation]"
+"(jit-compilation.md) covers the cache and specialization rules in detail."
+msgstr ""
+
+#: ../../../guide/host-vs-device.md:132
+msgid "Continue to [Tensors and Tiles](tensors-and-tiles.md)."
+msgstr ""

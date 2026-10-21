@@ -1,0 +1,564 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2025-2026, NVIDIA Corporation
+# This file is distributed under the same license as the cuTile Rust package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: cuTile Rust main\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-21 16:36+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../guide/interoperability.md:1
+msgid "Interoperability"
+msgstr ""
+
+#: ../../../guide/interoperability.md:3
+msgid ""
+"cuTile Rust can launch external CUDA kernels and borrow handles from other "
+"libraries:"
+msgstr ""
+
+#: ../../../guide/interoperability.md:6
+msgid ""
+"**Integrating external PTX or CUBIN kernels** — for CUDA C++ kernels, cuda-"
+"oxide-generated PTX, or other CUDA module artifacts that you want to launch "
+"alongside cuTile kernels."
+msgstr ""
+
+#: ../../../guide/interoperability.md:7
+msgid ""
+"**Borrowing foreign CUDA handles** — wrap a `CUcontext` / `CUstream` from "
+"another Rust binding crate (cudarc, Candle, hand-rolled FFI) so cuTile "
+"kernels can run on handles you already own."
+msgstr ""
+
+#: ../../../guide/interoperability.md:8
+msgid ""
+"**Migrating from other tile DSLs** — conceptual mapping from Triton and "
+"cuTile Python."
+msgstr ""
+
+#: ../../../guide/interoperability.md:10
+msgid ""
+"External CUDA kernels participate in the same `DeviceOp` execution model as "
+"tile kernels — sharing streams, chaining with `.then()`, and avoiding "
+"unnecessary synchronization."
+msgstr ""
+
+#: ../../../guide/interoperability.md:14
+msgid "Integrating External PTX or CUBIN Kernels"
+msgstr ""
+
+#: ../../../guide/interoperability.md:16
+msgid "From CUDA C++"
+msgstr ""
+
+#: ../../../guide/interoperability.md:18
+msgid ""
+"Compile your CUDA C++ kernel to PTX (portable) or a `.cubin` (architecture-"
+"specific):"
+msgstr ""
+
+#: ../../../guide/interoperability.md:20
+msgid ""
+"# PTX — portable across GPU architectures, JIT-compiled at load time.\n"
+"nvcc -ptx -arch=compute_80 my_kernel.cu -o my_kernel.ptx\n"
+"\n"
+"# cubin — pre-compiled for a single architecture, no JIT overhead.\n"
+"nvcc -cubin -arch=sm_80 my_kernel.cu -o my_kernel.cubin\n"
+msgstr ""
+
+#: ../../../guide/interoperability.md:28
+msgid ""
+"**Architecture portability:** A `.cubin` file only runs on the exact SM "
+"architecture it was compiled for. Code compiled with `-arch=sm_80` will not "
+"load on an `sm_100` GPU. PTX avoids this problem — the CUDA driver JIT-"
+"compiles it for the target GPU at load time, at the cost of a one-time "
+"compilation delay. Prefer PTX unless you need to eliminate JIT overhead."
+msgstr ""
+
+#: ../../../guide/interoperability.md:30
+msgid "From cuda-oxide"
+msgstr ""
+
+#: ../../../guide/interoperability.md:32
+msgid ""
+"[cuda-oxide](https://nvidia.github.io/cuda-rust/cuda-oxide/) is CUDA Rust's "
+"SIMT kernel programming model; it lives next to cuTile Rust in the [cuda-"
+"rust repository](https://github.com/NVIDIA/cuda-rust/tree/main/cuda-oxide). "
+"Its documented output path is PTX: build or inspect the generated PTX with "
+"`cargo oxide build` or `cargo oxide pipeline`, then load that PTX with "
+"`load_module_from_ptx` and wrap the entry function in an `AsyncKernelLaunch` "
+"or typed `DeviceOp`."
+msgstr ""
+
+#: ../../../guide/interoperability.md:34
+msgid ""
+"If you need a CUBIN, compile the PTX through the normal CUDA toolchain as a "
+"separate step."
+msgstr ""
+
+#: ../../../guide/interoperability.md:36
+msgid "Loading and Launching"
+msgstr ""
+
+#: ../../../guide/interoperability.md:38
+msgid "Load the compiled module and get a handle to the entry function:"
+msgstr ""
+
+#: ../../../guide/interoperability.md:40
+msgid ""
+"use cuda_async::device_context::{load_module_from_file, "
+"load_module_from_ptx};\n"
+"\n"
+"// From cubin:\n"
+"let module = load_module_from_file(\"my_kernel.cubin\", device_id)?;\n"
+"\n"
+"// Or from PTX (JIT-compiled at load time):\n"
+"let ptx_src = include_str!(\"my_kernel.ptx\");\n"
+"let module = load_module_from_ptx(ptx_src, device_id)?;\n"
+"\n"
+"let function = Arc::new(module.load_function(\"my_kernel_entry\")?);\n"
+msgstr ""
+
+#: ../../../guide/interoperability.md:53
+msgid ""
+"Launch the kernel via `AsyncKernelLaunch`, which is a `DeviceOp` wrapping "
+"the CUDA driver's kernel launch API:"
+msgstr ""
+
+#: ../../../guide/interoperability.md:55
+msgid ""
+"use cuda_async::launch::AsyncKernelLaunch;\n"
+"use cuda_core::LaunchConfig;\n"
+"\n"
+"let mut launcher = AsyncKernelLaunch::new(function.clone());\n"
+"launcher.push_arg(num_elements as u32);\n"
+"launcher.push_arg(scale);\n"
+"// SAFETY: input and output are valid device allocations with at least\n"
+"// num_elements f32 elements. output is exclusively written; input is\n"
+"// read-only. Both remain allocated until this operation completes.\n"
+"unsafe {\n"
+"    launcher\n"
+"        .push_device_ptr(input.device_pointer().cu_deviceptr())\n"
+"        .push_device_ptr(output.device_pointer().cu_deviceptr());\n"
+"}\n"
+"launcher.set_launch_config(LaunchConfig {\n"
+"    grid_dim: ((num_elements as u32 + 255) / 256, 1, 1),\n"
+"    block_dim: (256, 1, 1),\n"
+"    shared_mem_bytes: 0,\n"
+"});\n"
+"\n"
+"// Execute as a DeviceOp — integrates with the async model.\n"
+"launcher.await?;\n"
+msgstr ""
+
+#: ../../../guide/interoperability.md:80
+msgid ""
+"Scalar arguments implementing `DType` use the safe `push_arg` method. Device "
+"pointers require `unsafe { push_device_ptr() }`. The caller must check that "
+"allocations are valid on the target GPU, large enough for the kernel, and "
+"free of conflicting accesses. Argument order and types must match the "
+"kernel's signature. Rust and the CUDA driver cannot validate these "
+"conditions; getting them wrong can cause undefined behavior or GPU faults."
+msgstr ""
+
+#: ../../../guide/interoperability.md:87
+msgid ""
+"To prevent data races, use stream ordering: operations chained with `."
+"then()` on the same stream execute in order and see each other's writes. "
+"Operations on different streams require explicit synchronization."
+msgstr ""
+
+#: ../../../guide/interoperability.md:89
+msgid ""
+"**Why generated cuTile kernels don't require `unsafe`:** the `#[cutile::"
+"entry]` macro generates launchers that call `push_device_ptr` internally, "
+"but they do so safely because the framework controls both sides — device "
+"pointers come from framework-managed allocations, and the ownership model "
+"(`Partition` for exclusive access, `Arc<Tensor>` for shared reads) prevents "
+"aliasing at the type level. Custom kernels bypass this: you are pushing "
+"pointers the framework didn't allocate and can't track, so the safety burden "
+"falls on you."
+msgstr ""
+
+#: ../../../guide/interoperability.md:93
+msgid "Wrapping as a Safe DeviceOp"
+msgstr ""
+
+#: ../../../guide/interoperability.md:95
+msgid ""
+"Wrap a custom kernel launch in a struct that implements `DeviceOp`. The "
+"struct's typed fields enforce the correct argument signature; `unsafe` is "
+"confined to `execute`:"
+msgstr ""
+
+#: ../../../guide/interoperability.md:97
+msgid ""
+"use cuda_async::device_context::with_default_device_policy;\n"
+"use cuda_async::device_future::DeviceFuture;\n"
+"use cuda_async::device_operation::{DeviceOp, ExecutionContext};\n"
+"use cuda_async::error::DeviceError;\n"
+"use cuda_async::launch::AsyncKernelLaunch;\n"
+"use cuda_async::scheduling_policies::SchedulingPolicy;\n"
+"use cuda_core::{Function, LaunchConfig};\n"
+"use std::future::IntoFuture;\n"
+"\n"
+"pub struct ScaleKernel {\n"
+"    function: Arc<Function>,\n"
+"    n: u32,\n"
+"    scale: f32,\n"
+"    input: Arc<Tensor<f32>>,\n"
+"    output: Tensor<f32>,\n"
+"}\n"
+"\n"
+"impl DeviceOp for ScaleKernel {\n"
+"    type Output = (Arc<Tensor<f32>>, Tensor<f32>);\n"
+"\n"
+"    // execute is unsafe because it enqueues async GPU work without\n"
+"    // synchronizing — the returned tensors may still be in-flight.\n"
+"    unsafe fn execute(\n"
+"        self,\n"
+"        ctx: &ExecutionContext,\n"
+"    ) -> Result<<Self as DeviceOp>::Output, DeviceError> {\n"
+"        let mut launcher = AsyncKernelLaunch::new(self.function);\n"
+"        launcher.push_arg(self.n);\n"
+"        launcher.push_arg(self.scale);\n"
+"        // SAFETY: input and output are framework-managed Tensor "
+"allocations.\n"
+"        // input is shared (Arc, read-only); output is exclusively written.\n"
+"        unsafe {\n"
+"            launcher\n"
+"                .push_device_ptr(self.input.device_pointer()."
+"cu_deviceptr())\n"
+"                .push_device_ptr(self.output.device_pointer()."
+"cu_deviceptr());\n"
+"        }\n"
+"        launcher.set_launch_config(LaunchConfig {\n"
+"            grid_dim: ((self.n + 255) / 256, 1, 1),\n"
+"            block_dim: (256, 1, 1),\n"
+"            shared_mem_bytes: 0,\n"
+"        });\n"
+"        unsafe { launcher.execute(ctx)? };\n"
+"        Ok((self.input, self.output))\n"
+"    }\n"
+"}\n"
+"\n"
+"// IntoFuture is a supertrait of DeviceOp. Every custom DeviceOp\n"
+"// needs this boilerplate to enable `.await` and `.sync()`.\n"
+"impl IntoFuture for ScaleKernel {\n"
+"    type Output = Result<(Arc<Tensor<f32>>, Tensor<f32>), DeviceError>;\n"
+"    type IntoFuture = DeviceFuture<(Arc<Tensor<f32>>, Tensor<f32>), "
+"ScaleKernel>;\n"
+"    fn into_future(self) -> Self::IntoFuture {\n"
+"        match with_default_device_policy(|policy| {\n"
+"            let stream = policy.next_stream()?;\n"
+"            Ok(DeviceFuture::scheduled(self, ExecutionContext::"
+"new(stream)))\n"
+"        }) {\n"
+"            Ok(Ok(future)) => future,\n"
+"            Ok(Err(e)) | Err(e) => DeviceFuture::failed(e),\n"
+"        }\n"
+"    }\n"
+"}\n"
+msgstr ""
+
+#: ../../../guide/interoperability.md:161
+msgid ""
+"This is the same pattern the `#[cutile::entry]` macro uses to generate safe "
+"launchers for tile kernels — no `unsafe` at the call site. Once wrapped, the "
+"custom kernel composes with tile kernels through the usual `DeviceOp` "
+"combinators. This pipeline runs a tile add (`z = x + y`), then the wrapped "
+"scale kernel (`w = scale * z`):"
+msgstr ""
+
+#: ../../../guide/interoperability.md:163
+msgid ""
+"let (z_part, _x, _y) =\n"
+"    tile_add::add(z.partition([tile_size]), x.clone(), y.clone()).await?;\n"
+"let z: Tensor<f32> = z_part.unpartition();\n"
+"\n"
+"let w: Tensor<f32> = zeros(&[num_elements]).await?;\n"
+"let (_z, w) = ScaleKernel {\n"
+"    function: scale_function,\n"
+"    n: num_elements as u32,\n"
+"    scale,\n"
+"    input: Arc::new(z),\n"
+"    output: w,\n"
+"}\n"
+".await?;\n"
+msgstr ""
+
+#: ../../../guide/interoperability.md:179
+msgid ""
+"See [`interop.rs`](https://github.com/NVIDIA/cuda-rust/blob/main/cutile-rs/"
+"cutile-examples/examples/interop.rs) for a complete, runnable version."
+msgstr ""
+
+#: ../../../guide/interoperability.md:183
+msgid "Low-Level Driver Access"
+msgstr ""
+
+#: ../../../guide/interoperability.md:185
+msgid ""
+"For more direct control, use `with_context` to access the CUDA stream and "
+"issue driver API calls directly:"
+msgstr ""
+
+#: ../../../guide/interoperability.md:187
+msgid ""
+"use cuda_async::device_operation::{with_context, value, DeviceOp};\n"
+"use cuda_async::device_operation::ExecutionContext;\n"
+"use cuda_core::{malloc_async, memcpy_htod_async, free_async};\n"
+"\n"
+"let host_data: Vec<f32> = vec![1.0; num_elements];\n"
+"let num_bytes = num_elements * std::mem::size_of::<f32>();\n"
+"\n"
+"// host_data is captured by reference — it must outlive the await so that\n"
+"// the async memcpy can read from it until the stream synchronizes.\n"
+"let op = with_context(|ctx: &ExecutionContext| {\n"
+"    let stream = ctx.get_cuda_stream();\n"
+"\n"
+"    let dptr = unsafe {\n"
+"        let dptr = malloc_async(num_bytes, stream).expect(\"device "
+"allocation\");\n"
+"        memcpy_htod_async(dptr, host_data.as_ptr(), num_elements, stream)\n"
+"            .expect(\"host-to-device copy\");\n"
+"        dptr\n"
+"    };\n"
+"\n"
+"    value(dptr)\n"
+"});\n"
+"\n"
+"let dptr = op.await?;\n"
+"\n"
+"// Clean up: free the device memory on a stream.\n"
+"with_context(move |ctx: &ExecutionContext| {\n"
+"    unsafe { free_async(dptr, ctx.get_cuda_stream()) }.expect(\"device "
+"free\");\n"
+"    value(())\n"
+"})\n"
+".await?;\n"
+msgstr ""
+
+#: ../../../guide/interoperability.md:220
+msgid ""
+"Driver calls inside the `unsafe` block must satisfy the CUDA API's safety "
+"requirements."
+msgstr ""
+
+#: ../../../guide/interoperability.md:225
+msgid "Borrowing Foreign CUDA Handles"
+msgstr ""
+
+#: ../../../guide/interoperability.md:227
+msgid ""
+"If your application already owns CUDA handles through another Rust binding "
+"crate — cudarc, Candle, or a hand-rolled `bindgen` wrapper — wrap them into "
+"a cuTile `Device`, `Stream`, `Module`, or `Function` without transferring "
+"ownership."
+msgstr ""
+
+#: ../../../guide/interoperability.md:229
+msgid ""
+"The `borrow_raw` constructors take raw C primitives (`*mut c_void` for "
+"opaque handles, `c_int` for `CUdevice`) rather than `cuda_bindings` "
+"typedefs, so no nominal-type mismatch between binding crates gets in the way:"
+msgstr ""
+
+#: ../../../guide/interoperability.md:231
+msgid ""
+"use core::ffi::{c_int, c_void};\n"
+"use cuda_core::{Device, Stream};\n"
+"\n"
+"// `foreign` is a handle bundle from another Rust binding crate (cudarc,\n"
+"// Candle, a bindgen wrapper, …). Its `CUcontext` / `CUstream` typedefs are\n"
+"// nominally distinct from cuTile's, but the underlying C ABI is identical "
+"—\n"
+"// cast at the boundary and the handles flow through unchanged.\n"
+"\n"
+"// Safety: the caller guarantees the handles are valid, outlive the "
+"returned\n"
+"// wrappers, and are not concurrently destroyed.\n"
+"let device = unsafe {\n"
+"    Device::borrow_raw(\n"
+"        foreign.cu_ctx as *mut c_void,\n"
+"        foreign.cu_device as c_int,\n"
+"        foreign.ordinal,\n"
+"    )\n"
+"};\n"
+"let stream = unsafe { Stream::borrow_raw(foreign.cu_stream as *mut c_void, "
+"&device) };\n"
+"\n"
+"// cuTile kernels now run on the borrowed stream.\n"
+"let result = my_kernel(out, x).sync_on(&stream)?;\n"
+msgstr ""
+
+#: ../../../guide/interoperability.md:255
+msgid ""
+"Borrowed wrappers skip destruction on drop: `Stream` does not call "
+"`cuStreamDestroy`, `Module` does not unload, and `Device` does not release "
+"the primary context. The source framework retains full control over handle "
+"lifetimes."
+msgstr ""
+
+#: ../../../guide/interoperability.md:257
+msgid ""
+"`Module::borrow_raw` and `Function::borrow_raw` follow the same pattern for "
+"pre-compiled modules and already-resolved functions. See the "
+"`cudarc_interop` example in `cutile-examples/examples/` for an end-to-end "
+"walkthrough."
+msgstr ""
+
+#: ../../../guide/interoperability.md:261
+msgid "Migrating from Other DSLs"
+msgstr ""
+
+#: ../../../guide/interoperability.md:263
+msgid ""
+"**From Triton.** [Triton](https://triton-lang.org/) and cuTile Rust both let "
+"you write kernels in terms of tile-level operations. Many patterns that "
+"require explicit warp specialization in Triton are handled implicitly by the "
+"cuTile Rust compiler:"
+msgstr ""
+
+#: ../../../guide/interoperability.md:0
+msgid "Triton (manual)"
+msgstr ""
+
+#: ../../../guide/interoperability.md:0
+msgid "cuTile Rust (automatic)"
+msgstr ""
+
+#: ../../../guide/interoperability.md:0
+msgid "Assign producer warps to prefetch tiles from global → shared memory"
+msgstr ""
+
+#: ../../../guide/interoperability.md:0
+msgid "Compiler generates shared memory staging for `load_tile` operations"
+msgstr ""
+
+#: ../../../guide/interoperability.md:0
+msgid "Assign consumer warps to compute on shared memory tiles"
+msgstr ""
+
+#: ../../../guide/interoperability.md:0
+msgid "Compiler maps tile arithmetic to Tensor Cores and registers"
+msgstr ""
+
+#: ../../../guide/interoperability.md:0
+msgid "Software pipeline with `warp_specialize` in `tl.range`"
+msgstr ""
+
+#: ../../../guide/interoperability.md:0
+msgid ""
+"Compiler uses Tensor Memory Accelerator (TMA) instructions for hardware-"
+"assisted pipelining on supported architectures"
+msgstr ""
+
+#: ../../../guide/interoperability.md:0
+msgid "Manual `tl.dot` placement across warps"
+msgstr ""
+
+#: ../../../guide/interoperability.md:0
+msgid ""
+"`mma()` maps directly to Tensor Core instructions; thread/warp assignment is "
+"compiler-managed"
+msgstr ""
+
+#: ../../../guide/interoperability.md:0
+msgid "Tune `num_warps` and `num_stages` for occupancy"
+msgstr ""
+
+#: ../../../guide/interoperability.md:0
+msgid "`occupancy` and `num_cta_in_cga` optimization hints guide the compiler"
+msgstr ""
+
+#: ../../../guide/interoperability.md:273
+msgid ""
+"For patterns that don't map to the tile model, compile the kernel with "
+"Triton and integrate it via `AsyncKernelLaunch` as described above. Since "
+"Triton outputs PTX, load it directly:"
+msgstr ""
+
+#: ../../../guide/interoperability.md:275
+msgid ""
+"let module = load_module_from_ptx(triton_generated_ptx, device_id)?;\n"
+"let function = Arc::new(module.load_function(\"gemm_kernel\")?);\n"
+msgstr ""
+
+#: ../../../guide/interoperability.md:280
+msgid ""
+"**From cuTile Python.** If you're familiar with [cuTile Python](https://docs."
+"nvidia.com/cuda/cutile-python/), the kernel-side concepts map directly:"
+msgstr ""
+
+#: ../../../guide/interoperability.md:0
+msgid "cuTile Python"
+msgstr ""
+
+#: ../../../guide/interoperability.md:0
+msgid "cuTile Rust"
+msgstr ""
+
+#: ../../../guide/interoperability.md:0
+msgid "`@ct.kernel`"
+msgstr ""
+
+#: ../../../guide/interoperability.md:0
+msgid "`#[cutile::entry()]`"
+msgstr ""
+
+#: ../../../guide/interoperability.md:0
+msgid "`ct.load()`"
+msgstr ""
+
+#: ../../../guide/interoperability.md:0
+msgid "`x.load_like(z)`"
+msgstr ""
+
+#: ../../../guide/interoperability.md:0
+msgid "`ct.store()`"
+msgstr ""
+
+#: ../../../guide/interoperability.md:0
+msgid "`tensor.store()`"
+msgstr ""
+
+#: ../../../guide/interoperability.md:0
+msgid "`ct.bid(0)`"
+msgstr ""
+
+#: ../../../guide/interoperability.md:0
+msgid "Implicit via partition"
+msgstr ""
+
+#: ../../../guide/interoperability.md:0
+msgid "`ct.launch()`"
+msgstr ""
+
+#: ../../../guide/interoperability.md:0
+msgid "Async operation + `.await`"
+msgstr ""
+
+#: ../../../guide/interoperability.md:290
+msgid ""
+"Both front-ends use the same underlying Tile IR compilation pipeline and "
+"generate equivalent GPU code; the difference is the host language and its "
+"type system."
+msgstr ""
+
+#: ../../../guide/interoperability.md:294
+msgid ""
+"Continue to [Debugging and Profiling](debugging-and-profiling.md) for "
+"troubleshooting. Interop kernels use the `DeviceOp` model described in "
+"[Device Operations](device-operations.md)."
+msgstr ""
