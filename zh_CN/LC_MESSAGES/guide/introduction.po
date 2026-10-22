@@ -1,0 +1,309 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2025-2026, NVIDIA Corporation
+# This file is distributed under the same license as the cuTile Rust package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: cuTile Rust main\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-21 16:36+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../guide/introduction.md:1
+msgid "Introduction"
+msgstr ""
+
+#: ../../../guide/introduction.md:3
+msgid ""
+"**cuTile Rust** is a safe tile-based parallel programming model for Rust. "
+"Kernels map onto Tensor Cores, Tensor Memory Accelerator (TMA) instructions, "
+"and other architecture-specific units automatically, so the same source runs "
+"across NVIDIA GPU architectures."
+msgstr ""
+
+#: ../../../guide/introduction.md:5
+msgid ""
+"On the host side, the API handles device tensor allocation, partitioning "
+"mutable tensors for safe parallel access, and `Arc`-wrapped sharing for read-"
+"only tensors. Kernel launchers are generated from `#[cutile::entry]` "
+"functions and JIT-compiled at first use; subsequent launches reuse the "
+"cached binary. Execution is asynchronous and expressed through `DeviceOp`, a "
+"lazy host-side description of GPU work."
+msgstr ""
+
+#: ../../../guide/introduction.md:9
+msgid "A First Kernel"
+msgstr ""
+
+#: ../../../guide/introduction.md:11
+msgid ""
+"cuTile Rust kernels are GPU programs that execute concurrently across a "
+"logical grid of tile blocks. The `#[cutile::entry()]` attribute marks a Rust "
+"function as an *entry point*: a function you can call from your Rust program "
+"that executes on the GPU."
+msgstr ""
+
+#: ../../../guide/introduction.md:13
+msgid ""
+"use cutile::prelude::*;\n"
+"use my_module::add;\n"
+"\n"
+"#[cutile::module]\n"
+"mod my_module {\n"
+"    use cutile::core::*;\n"
+"\n"
+"    #[cutile::entry()]\n"
+"    fn add<const S: [i32; 2]>(\n"
+"        z: &mut Tensor<f32, S>,\n"
+"        x: &Tensor<f32, { [-1, -1] }>,\n"
+"        y: &Tensor<f32, { [-1, -1] }>,\n"
+"    ) {\n"
+"        let tile_x = x.load_like(z);\n"
+"        let tile_y = y.load_like(z);\n"
+"        z.store(tile_x + tile_y);\n"
+"    }\n"
+"}\n"
+"\n"
+"fn main() -> Result<(), cuda_async::error::DeviceError> {\n"
+"    let device = cuda_core::Device::new(0)?;\n"
+"    let stream = device.new_stream()?;\n"
+"\n"
+"    let x = api::ones::<f32>(&[32, 32]).sync_on(&stream)?;\n"
+"    let y = api::ones::<f32>(&[32, 32]).sync_on(&stream)?;\n"
+"    let mut z = api::zeros::<f32>(&[32, 32]).sync_on(&stream)?;\n"
+"\n"
+"    let _ = add((&mut z).partition([4, 4]), &x, &y).sync_on(&stream)?;\n"
+"    Ok(())\n"
+"}\n"
+msgstr ""
+
+#: ../../../guide/introduction.md:46
+msgid ""
+"`main` runs on the CPU and launches `add` on the GPU. The `#[cutile::"
+"module]` macro generates the host-side launcher for `add`, whose `#[cutile::"
+"entry()]` attribute marks it as a kernel entry point."
+msgstr ""
+
+#: ../../../guide/introduction.md:50
+msgid ""
+"At first call, the entry function is compiled through Rust AST -> Tile IR "
+"bytecode -> cubin. Subsequent calls with the same compiled variant reuse the "
+"cached binary."
+msgstr ""
+
+#: ../../../guide/introduction.md:54
+msgid "Kernel Arguments and Launching"
+msgstr ""
+
+#: ../../../guide/introduction.md:56
+msgid ""
+"On the host side, the generated launcher accepts several forms for each "
+"kernel parameter:"
+msgstr ""
+
+#: ../../../guide/introduction.md:0
+msgid "Kernel param"
+msgstr ""
+
+#: ../../../guide/introduction.md:0
+msgid "Host input"
+msgstr ""
+
+#: ../../../guide/introduction.md:0
+msgid "What the kernel sees"
+msgstr ""
+
+#: ../../../guide/introduction.md:0
+msgid "`&Tensor<T, S>`"
+msgstr ""
+
+#: ../../../guide/introduction.md:0
+msgid "`&Tensor<T>`, `Arc<Tensor<T>>`, or `Tensor<T>`"
+msgstr ""
+
+#: ../../../guide/introduction.md:0
+msgid "`&Tensor<T, S>` (read-only)"
+msgstr ""
+
+#: ../../../guide/introduction.md:0
+msgid "`&mut Tensor<T, S>`"
+msgstr ""
+
+#: ../../../guide/introduction.md:0
+msgid "`Partition<&mut Tensor<T>>` or `Partition<Tensor<T>>`"
+msgstr ""
+
+#: ../../../guide/introduction.md:0
+msgid "`&mut Tensor<T, S>` (one tile-shaped region)"
+msgstr ""
+
+#: ../../../guide/introduction.md:0
+msgid "Scalar (`f32`, etc.)"
+msgstr ""
+
+#: ../../../guide/introduction.md:0
+msgid "Same scalar"
+msgstr ""
+
+#: ../../../guide/introduction.md:64
+msgid ""
+"Partitioning splits a tensor into disjoint regions with a fixed tile shape, "
+"such as `partition([4, 4])` for a 2D tensor. Each tile block receives one "
+"partition element, which is how cuTile Rust gives the kernel mutable access "
+"to one region at a time while keeping writes non-overlapping."
+msgstr ""
+
+#: ../../../guide/introduction.md:66
+msgid ""
+"The borrow-based form (`&Tensor`, `Partition<&mut Tensor>`) lets you pass "
+"tensors without moving them. The kernel writes through the borrow — no "
+"`unpartition()` or return capture needed."
+msgstr ""
+
+#: ../../../guide/introduction.md:68
+msgid "The simplest launch pattern borrows everything:"
+msgstr ""
+
+#: ../../../guide/introduction.md:70
+msgid ""
+"let x = api::ones::<f32>(&[32, 32]).sync_on(&stream)?;\n"
+"let y = api::ones::<f32>(&[32, 32]).sync_on(&stream)?;\n"
+"let mut z = api::zeros::<f32>(&[32, 32]).sync_on(&stream)?;\n"
+"\n"
+"// Borrow-based: z is written in place.\n"
+"let _ = add((&mut z).partition([4, 4]), &x, &y).sync_on(&stream)?;\n"
+msgstr ""
+
+#: ../../../guide/introduction.md:79
+msgid ""
+"The launcher also accepts lazy `DeviceOp` arguments — everything stays lazy "
+"until `.sync()` or `.await`:"
+msgstr ""
+
+#: ../../../guide/introduction.md:81
+msgid ""
+"let z = api::zeros(&[32, 32]).partition([4, 4]);\n"
+"let x = api::ones::<f32>(&[32, 32]);\n"
+"let y = api::ones::<f32>(&[32, 32]);\n"
+"\n"
+"let (_z, _x, _y) = add(z, x, y).sync()?;\n"
+msgstr ""
+
+#: ../../../guide/introduction.md:89
+msgid "For chaining, use `.then()` to compose operations on the same stream:"
+msgstr ""
+
+#: ../../../guide/introduction.md:91
+msgid ""
+"let result = allocate()\n"
+"    .then(|buf| fill_kernel(buf))\n"
+"    .then(|buf| process_kernel(buf))\n"
+"    .sync()?;\n"
+msgstr ""
+
+#: ../../../guide/introduction.md:100
+msgid "Tensors and Tiles"
+msgstr ""
+
+#: ../../../guide/introduction.md:102
+msgid ""
+"Kernels move data between **tensors** and **tiles**. Tensors are multi-"
+"dimensional arrays in GPU global memory. Tiles are immutable multi-"
+"dimensional fragments in registers. A kernel usually follows the same "
+"pattern:"
+msgstr ""
+
+#: ../../../guide/introduction.md:104
+msgid ""
+"![Data flow: Load from Tensor to Tile, Compute in registers, Store back to "
+"Tensor](../_static/images/data-flow.svg)"
+msgstr ""
+
+#: ../../../guide/introduction.md:104
+msgid ""
+"Data flow: Load from Tensor to Tile, Compute in registers, Store back to "
+"Tensor"
+msgstr ""
+
+#: ../../../guide/introduction.md:106
+msgid "Load tensor data into tiles."
+msgstr ""
+
+#: ../../../guide/introduction.md:107
+msgid "Compute on tiles."
+msgstr ""
+
+#: ../../../guide/introduction.md:108
+msgid "Store tile results back to tensors."
+msgstr ""
+
+#: ../../../guide/introduction.md:110
+msgid ""
+"Tile shapes are part of the type system, so many shape and dtype errors are "
+"caught before the kernel runs."
+msgstr ""
+
+#: ../../../guide/introduction.md:114
+msgid "Use cases"
+msgstr ""
+
+#: ../../../guide/introduction.md:116
+msgid "**Use cuTile Rust when:**"
+msgstr ""
+
+#: ../../../guide/introduction.md:117
+msgid "You need custom GPU kernels not available in libraries"
+msgstr ""
+
+#: ../../../guide/introduction.md:118
+msgid "You want to fuse multiple operations for performance"
+msgstr ""
+
+#: ../../../guide/introduction.md:119
+msgid "You're building performance-critical ML infrastructure"
+msgstr ""
+
+#: ../../../guide/introduction.md:120
+msgid "You need Rust's safety guarantees on GPU code"
+msgstr ""
+
+#: ../../../guide/introduction.md:122
+msgid "**Don't use cuTile Rust when:**"
+msgstr ""
+
+#: ../../../guide/introduction.md:123
+msgid "Standard library operations (cuBLAS, cuDNN) suffice"
+msgstr ""
+
+#: ../../../guide/introduction.md:124
+msgid "You need maximum portability across GPU *vendors*"
+msgstr ""
+
+#: ../../../guide/introduction.md:125
+msgid ""
+"You need tile programming support in Python or C++; use [cuTile Python]"
+"(https://docs.nvidia.com/cuda/cutile-python/) or [CUDA Tile C++](https://"
+"docs.nvidia.com/cuda/cuda-tile-cpp-api-reference/) instead"
+msgstr ""
+
+#: ../../../guide/introduction.md:127
+msgid ""
+"**Note**: For algorithms requiring warp-level primitives, explicit "
+"pipelining, manual memory management, or custom CUDA C++ kernels, see "
+"[Interoperability](interoperability.md); custom kernels can participate in "
+"the same `DeviceOp` execution model as your tile kernels."
+msgstr ""
+
+#: ../../../guide/introduction.md:131
+msgid ""
+"Continue to [Host vs. Device Code](host-vs-device.md), or jump straight to "
+"the [Tutorials](../tutorials/01-hello-world.md)."
+msgstr ""

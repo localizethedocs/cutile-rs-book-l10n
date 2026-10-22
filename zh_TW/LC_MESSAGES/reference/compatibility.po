@@ -1,0 +1,362 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2025-2026, NVIDIA Corporation
+# This file is distributed under the same license as the cuTile Rust package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: cuTile Rust main\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-21 16:36+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: zh_TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../reference/compatibility.md:1
+msgid "CUDA and Tile IR compatibility"
+msgstr ""
+
+#: ../../../reference/compatibility.md:3
+msgid ""
+"A kernel needs both a supported Tile IR version and a compatible target GPU. "
+"The tables below come from the same requirements registry used by the "
+"compiler, bytecode writer, launch guard, and example/test prerequisites."
+msgstr ""
+
+#: ../../../reference/compatibility.md:7
+msgid ""
+"The version is the **emitted Tile IR version**, not the version reported by "
+"`cuDriverGetVersion`. We ask the selected `tileiras` which formats it "
+"accepts and choose the newest one our writer also supports. Older assemblers "
+"without `--list-versions` are checked by compiling a small representative "
+"kernel. An explicit `CUTILE_BYTECODE_VERSION` must be supported; we do not "
+"downgrade it."
+msgstr ""
+
+#: ../../../reference/compatibility.md:13
+msgid ""
+"`CUTILE_TILEIRAS_PATH` takes precedence over the toolkit directory. A newer "
+"driver does not make an older assembler understand newer bytecode."
+msgstr ""
+
+#: ../../../reference/compatibility.md:16
+msgid "<!-- BEGIN TILE IR REQUIREMENTS -->\n"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "Feature"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "13.2"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "13.3"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "13.4"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "Target requirement"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "baseline Tile IR"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "Yes"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "`sm_80+`"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "alloca"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "—"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "Any supported target"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "pack/unpack"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "block-scaled MMA"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "`sm_100+`"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "gather_scatter_view"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "strided_view"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "atomic_red_view_tko"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "insert"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "fpowi"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "GDC tokens"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "memory_fence_alias_tko"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "i4"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "f8E4M3FN/f8E5M2"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "`sm_90+`"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "f8E8M0FNU"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "f4E2M1FN"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "f8E5M3FNU"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "`sm_107+`"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "cuda_tile.mmaf_scaled with f8E5M3FNU scales"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "`sm_107` only"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "ptr_attr"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "rounding_mode=nearest_away"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "ftof additional rounding modes (type-dependent)"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "ftoi.saturating"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "inbounds=true"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "mmaf.fast_acc"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "exp.rounding_mode (non-approximate)"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "module.producer"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "global.constant"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "global.symbol_visibility"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "num_worker_warps_per_cta"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "num_cta_in_cga greater than 1"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "num_worker_warps_per_cta restricted to 4 or 8"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "bf16 atomic add"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "return inside loop"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "target sm_90"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "`sm_90` only"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "target sm_107"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "programmatic dependent launch"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "Target"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "Minimum emitted Tile IR version"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "`sm_80`"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "`sm_86`"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "`sm_87`"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "`sm_88`"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "`sm_89`"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "`sm_90`"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "`sm_100`"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "`sm_103`"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "`sm_107`"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "`sm_110`"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "`sm_120`"
+msgstr ""
+
+#: ../../../reference/compatibility.md:0
+msgid "`sm_121`"
+msgstr ""
+
+#: ../../../reference/compatibility.md:69
+msgid "<!-- END TILE IR REQUIREMENTS -->\n"
+msgstr ""
+
+#: ../../../reference/compatibility.md:71
+msgid ""
+"Requirements combine. For example, FP4 packing needs both the `pack/unpack` "
+"operations and the FP4 element type. A Hopper target requires Tile IR 13.3 "
+"even when the operations themselves were available earlier."
+msgstr ""
+
+#: ../../../reference/compatibility.md:75
+msgid ""
+"Architecture numbers are not a feature hierarchy: `sm_120` supports NVFP4, "
+"but not scaled MMA using `f8E5M3FNU` scales. Operand types, shapes and "
+"attribute values still have to satisfy the operation's verifier. In "
+"particular, `num_worker_warps_per_cta` accepts 1, 2, 4, 8, 16 or 32 in 13.3, "
+"and only 4 or 8 in 13.4."
+msgstr ""
+
+#: ../../../reference/compatibility.md:81
+msgid ""
+"PDL additionally needs the driver's `cuLaunchKernelEx` entry point. Optional "
+"host APIs are resolved at runtime; their availability is separate from the "
+"device IR requirements. See the [PDL launch contract](host-api."
+"md#programmatic-dependent-launch)."
+msgstr ""
+
+#: ../../../reference/compatibility.md:85
+msgid ""
+"The driver/toolkit combination must meet [NVIDIA's CUDA compatibility rules]"
+"(https://docs.nvidia.com/deploy/cuda-compatibility/minor-version-"
+"compatibility.html). We do not impose a blanket driver-version-at-least-"
+"toolkit-version check."
+msgstr ""
+
+#: ../../../reference/compatibility.md:89
+msgid "Keeping the tables current"
+msgstr ""
+
+#: ../../../reference/compatibility.md:91
+msgid ""
+"Requirements live in `cutile-ir/src/requirements.rs`, based on the "
+"[versioned Tile IR specification](https://docs.nvidia.com/cuda/tile-ir/13.4/"
+"sections/stability.html). When changing them, print the README and reference "
+"tables with:"
+msgstr ""
+
+#: ../../../reference/compatibility.md:95
+msgid "cargo run -p cutile-ir --example feature_matrix\n"
+msgstr ""
+
+#: ../../../reference/compatibility.md:99
+msgid ""
+"The `documented_matrices_match_the_registry` test checks both checked-in "
+"tables. CPU tests exercise the requirements without a driver; assembler CI "
+"covers 13.2 and 13.3, with a 13.4 lane enabled when its image is configured. "
+"Examples report unsupported prerequisites as `SKIP`; discovery, compilation, "
+"and execution errors remain failures."
+msgstr ""

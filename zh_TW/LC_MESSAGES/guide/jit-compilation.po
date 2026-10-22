@@ -1,0 +1,1175 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2025-2026, NVIDIA Corporation
+# This file is distributed under the same license as the cuTile Rust package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: cuTile Rust main\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-21 16:36+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: zh_TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../guide/jit-compilation.md:1
+msgid "Compilation"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:3
+msgid ""
+"cuTile Rust supports launch-time JIT compilation for normal kernel launches "
+"and compile-only APIs for tooling and pre-compilation pipelines. In both "
+"paths, the compiler resolves a kernel specialization, lowers it to Tile IR "
+"bytecode, and invokes the CUDA Tile IR assembler to produce code for the "
+"target GPU. A specialization is the concrete compiled variant for one entry "
+"function, target architecture, and set of values that affect generated GPU "
+"code."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:5
+msgid ""
+"![The cuTile Rust compilation pipeline from Rust to GPU execution](../"
+"_static/images/compilation-pipeline.svg)"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:5
+msgid "The cuTile Rust compilation pipeline from Rust to GPU execution"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:7
+msgid "Rust AST -> Tile IR bytecode -> cubin\n"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:11
+msgid ""
+"For launch-time JIT, the compiled kernel is cached in the host process. "
+"Launching the same specialization again reuses the cached cubin."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:13
+msgid "Launch-Time JIT"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:15
+msgid ""
+"For generated `#[cutile::entry]` launchers, compilation happens at first "
+"launch, not when the Rust crate itself is built:"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:17
+msgid ""
+"let op = add((&mut z).partition([16, 16]), &x, &y); // Builds a DeviceOp.\n"
+"let _ = op.sync_on(&stream)?;                       // May compile, then "
+"launch.\n"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:22
+msgid ""
+"If the cache already contains a matching specialization, launch proceeds "
+"without recompilation. Restarting the process clears the in-memory cache."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:24
+msgid "What Gets Specialized"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:26
+msgid ""
+"Specialization works like Rust monomorphization: a generic function such as "
+"`fn f<T, const N: usize>(...)` is compiled for each concrete `T` and `N`. "
+"cuTile includes the entry function's type and const generic arguments in the "
+"kernel cache key. Changing them produces a new GPU specialization."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:31
+msgid "Common Recompilation Triggers"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:33
+msgid ""
+"**Entry-function arguments.** Type and const generic arguments in the "
+"`#[cutile::entry]` signature specialize the generated GPU code. Those values "
+"are not always written next to `.generics(...)`; they can also be inferred "
+"from host-side values passed to the launcher:"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:35
+msgid ""
+"`z.partition([BM, BN])` can bind the tile shape for `&mut Tensor<T, { [BM, "
+"BN] }>`."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:36
+msgid ""
+"`z.partition([BM, BN]).map([MAP_M, MAP_N], num_tile_blocks)` can bind the "
+"output tile shape and the `MAP_SHAPE` for `MappedPartitionMut<T, { [BM, "
+"BN] }, MAP_SHAPE>`."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:37
+msgid ""
+"Passing a tensor to a parameter with static or generic dimensions, such as "
+"`&Tensor<T, { [K, -1] }>`, can bind those static dimensions from the tensor "
+"shape. Use `-1` for dimensions that should vary without recompilation."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:39
+msgid ""
+"For mapped partitions, `MAP_SHAPE` affects JIT because it is part of the "
+"device-side type. `num_tile_blocks` is different: it controls launch-grid "
+"inference for how many physical tile blocks traverse the mapped partition. "
+"By itself, it does not create a new cache entry."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:41
+msgid ""
+"Runtime tensor data and runtime scalar values can change without "
+"recompilation. Dynamic tensor dimensions (`-1`) are passed at runtime; the "
+"exact dimension values are not entry-function generics."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:43
+msgid ""
+"**Target architecture.** A cubin is generated for one target GPU "
+"architecture. Running the same entry function on a different SM target "
+"requires a different compiled artifact."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:45
+msgid "Explicit Compile-Time Inputs"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:47
+msgid ""
+"The remaining user-controlled recompilation triggers are explicit. Use these "
+"APIs only when the compiler should specialize on the value:"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:49
+msgid ""
+"`.const_grid((x, y, z))` embeds the launch grid as a compile-time value. "
+"Changing it creates a separate specialization. Use `.grid(...)` when the "
+"launch grid should remain runtime-only."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:50
+msgid ""
+"`.compile_options(opts)` embeds tuning choices such as occupancy, "
+"architecture-specific scheduling settings, and divisibility hints. Different "
+"options produce separate cache entries."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:52
+msgid ""
+"Runtime inputs such as `.grid(...)`, scalar values, tensor contents, dynamic "
+"dimensions (`-1`), and `MappedPartitionMut`'s `num_tile_blocks` do not "
+"create cache entries by themselves."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:57
+msgid ""
+"cuTile may also cache separate optimized variants for tensor specialization "
+"hints derived from shape and stride metadata. This is a performance "
+"tradeoff: the compiler can generate better code when it knows facts such as "
+"power-of-two divisibility for shape dimensions and strides, or that a stride "
+"is exactly `1`. Those facts can enable simpler indexing, stronger alignment "
+"assumptions, and more efficient memory access. The hints affect cache reuse, "
+"but they are not separate values passed to the kernel entry function."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:60
+msgid ""
+"#[cutile::entry()]\n"
+"fn add<const S: [i32; 2]>(\n"
+"    z: &mut Tensor<f32, S>,\n"
+"    x: &Tensor<f32, { [-1, -1] }>,\n"
+") {\n"
+"    z.store(x.load_like(z));\n"
+"}\n"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:70
+msgid ""
+"Changing `S` from `[16, 16]` to `[32, 32]` creates a new specialization. "
+"Changing the runtime shape of `x` from `[1024, 1024]` to `[2048, 1024]` does "
+"not change the entry-function generics because both dimensions are dynamic "
+"in the kernel signature."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:72
+msgid "Designing for Cache Reuse"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:74
+msgid ""
+"Treat the entry function signature as the specialization boundary. Put "
+"values in type or const generics only when changing those values should "
+"produce different GPU code. Keep varying problem sizes as dynamic tensor "
+"dimensions when the same compiled kernel should handle them."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:76
+msgid ""
+"Tile shape dimensions are the main exception to the \"keep sizes dynamic\" "
+"rule. Tile IR requires tile shapes to be compile-time constants, and cuTile "
+"Rust exposes that through APIs such as `Tile<T, S>` and `tensor."
+"partition(S)`. Dimensions such as `BM`, `BN`, and `BK` are often const "
+"generics because changing them changes the tile type the compiler lowers to "
+"Tile IR."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:78
+msgid ""
+"Tile shape dimensions and full tensor dimensions play different roles. For "
+"mutable outputs, a signature such as `&mut Tensor<f32, { [BM, BN] }>` "
+"usually receives a host-side `z.partition([BM, BN])`; the generic shape is "
+"the output tile shape exposed to the kernel, not the full output tensor "
+"shape. This is expected and does not create a specialization for every "
+"problem size. For read-only tensors, generic shape dimensions describe the "
+"tensor shape visible to the kernel. Use `-1` for input dimensions that are "
+"expected to vary, and use generic/static input dimensions only when those "
+"dimensions should be part of the specialization."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:80
+msgid ""
+"#[cutile::entry()]\n"
+"fn normalize<const BM: i32, const BN: i32>(\n"
+"    z: &mut Tensor<f32, { [BM, BN] }>,\n"
+"    x: &Tensor<f32, { [-1, -1] }>,\n"
+") {\n"
+"    let tile = x.load_like(z);\n"
+"    let row_max = reduce_max(tile, 1i32);\n"
+"    z.store(tile - row_max.reshape(shape![BM, 1]).broadcast(z.shape()));\n"
+"}\n"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:92
+msgid ""
+"Changing `BM` or `BN` produces a new specialization because they appear in "
+"the entry function signature. Changing the full shape of `x` can reuse the "
+"same entry-function specialization because both dimensions are `-1` in the "
+"signature; shape validation still runs at launch."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:94
+msgid ""
+"Keep the set of tile shapes, element types, target architectures, const "
+"grids, and compile options small in hot paths. Excessive specialization "
+"increases first-launch latency and memory use."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:96
+msgid ""
+"Tensor and scalar specialization hints are bucketed by power-of-two "
+"divisibility. By default, auto-inferred hints are capped at `16`: dimensions "
+"such as `16`, `32`, `64`, and `1024` all record the same `divisor = 16`, so "
+"changing a dynamic dimension among values divisible by `16` does not create "
+"a new cache entry through that dimension's divisibility hint. Changing from "
+"a value divisible by `8` to one divisible by `16` can create a different "
+"specialization hint and therefore a different cache entry."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:98
+msgid ""
+"`max_divisibility` controls the strongest divisibility assumption the "
+"compiler emits from these hints. It is a ceiling, not a request to invent "
+"stronger facts. For example, `max_divisibility = 4` makes a value known to "
+"be divisible by `16` compile with a `div_by<4>` assumption. Changing "
+"`max_divisibility` is itself a compile option change, so it creates a "
+"separate cache entry. Values above `16` do not strengthen auto-inferred "
+"hints today because inference is already capped at `16`."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:100
+msgid "Compile Options and Hints"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:102
+msgid ""
+"Entry-level optimization hints are written on the `#[cutile::entry]` "
+"attribute:"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:104
+msgid ""
+"#[cutile::entry(\n"
+"    optimization_hints = (\n"
+"        sm_120 = (\n"
+"            num_cta_in_cga = 2,\n"
+"            occupancy = 2,\n"
+"            max_divisibility = 16,\n"
+"            num_worker_warps_per_cta = 4, // Bytecode 13.3+; valid values: "
+"1, 2, 4, 8, 16, 32.\n"
+"        ),\n"
+"        sm_90 = (\n"
+"            num_cta_in_cga = 1,\n"
+"        ),\n"
+"    )\n"
+")]\n"
+"fn optimized_kernel<const S: [i32; 2]>(...) { ... }\n"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:121
+msgid ""
+"The host can override these values with `CompileOptions`, which is useful "
+"for autotuning:"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:123
+msgid ""
+"use cutile::tile_kernel::CompileOptions;\n"
+"\n"
+"let opts = CompileOptions::default()\n"
+"    .occupancy(4)\n"
+"    .num_cta_in_cga(2)\n"
+"    .num_worker_warps_per_cta(4); // Bytecode 13.3+; valid values: 1, 2, 4, "
+"8, 16, 32.\n"
+"\n"
+"let _ = optimized_kernel(args)\n"
+"    .compile_options(opts)\n"
+"    .sync_on(&stream)?;\n"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:136
+msgid ""
+"`num_worker_warps_per_cta` requires bytecode version 13.3 or newer. It must "
+"be a power of two in the inclusive range `[1, 32]` (`1`, `2`, `4`, `8`, "
+"`16`, or `32`)."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:138
+msgid "Different `CompileOptions` values produce separate JIT cache entries."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:140
+msgid ""
+"Per-operation hints are available on lower-level memory APIs when a specific "
+"load or store needs a latency hint or a Tensor Memory Accelerator (TMA) hint:"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:142
+msgid ""
+"let tile = load_view_tko(\n"
+"    &partition,\n"
+"    idx,\n"
+"    ordering::Weak,\n"
+"    scope::TileBlock,\n"
+"    Some(4),\n"
+"    tma::Enabled,\n"
+");\n"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:153
+msgid ""
+"Use hints to guide the compiler after measuring. The default compiler "
+"choices are the right starting point for most kernels."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:155
+msgid "Kernel Cache Key"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:157
+msgid ""
+"At launch time, cuTile looks for a cached compiled kernel using the active "
+"device and the kernel specialization. The pattern below uses the internal "
+"field names that define that lookup:"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:159
+msgid ""
+"match TileFunctionKey {\n"
+"    module_name,\n"
+"    function_name,\n"
+"    function_generics,\n"
+"    stride_args,\n"
+"    spec_args: [\n"
+"        (tensor_param, SpecializationBits {\n"
+"            shape_div,\n"
+"            stride_div,\n"
+"            stride_one,\n"
+"            base_ptr_div,\n"
+"            elements_disjoint,\n"
+"        }),\n"
+"        ...\n"
+"    ],\n"
+"    scalar_hints: [\n"
+"        (integer_or_pointer_param, DivHint { divisor, max }),\n"
+"        ...\n"
+"    ],\n"
+"    grid,\n"
+"    compile_options,\n"
+"    source_hash,\n"
+"    device_id,\n"
+"    gpu_name,\n"
+"    compiler_version,\n"
+"    tileiras_fingerprint,\n"
+"} {\n"
+"    cached => reuse_compiled_kernel(),\n"
+"    missing => compile_and_insert_into_cache(),\n"
+"}\n"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "Field"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "What Changes It"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "`module_name`, `function_name`"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid ""
+"The `#[cutile::module]` module and `#[cutile::entry]` function being "
+"launched."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "`function_generics`"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid ""
+"Type and const generic arguments for the entry function, including tile "
+"shapes such as `BM`, `BN`, and `BK` when they are part of the signature."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "`stride_args`"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "The stride-one pattern recorded for tensor arguments."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "`spec_args`"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid ""
+"Tensor specialization hints. Today this includes per-dimension shape "
+"divisibility, per-dimension stride divisibility, whether each stride is "
+"exactly `1`, base-pointer divisibility, and a stride-derived non-overlap bit."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "`scalar_hints`"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid ""
+"`DivHint` values derived from integer scalar parameters and raw pointer "
+"parameters. Integer hints are based on value divisibility; pointer hints are "
+"based on pointer alignment."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "`grid`"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid ""
+"`Some((x, y, z))` only when `.const_grid(...)` is used. Runtime `.grid(...)` "
+"leaves this as `None`."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "`compile_options`"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid ""
+"Per-launch compile options such as occupancy, architecture-specific "
+"scheduling settings, and divisibility limits."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "`source_hash`"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid ""
+"A hash of the module's source text, generated by `#[cutile::module]`. "
+"Editing any kernel or device function in the module (and rebuilding) changes "
+"it, so a stale compiled kernel is never reused across a source change."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "`device_id`"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "The active CUDA device. The compiled artifact is loaded per device."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "`gpu_name`"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid ""
+"The target architecture (`sm_90`, `sm_120`, ...), inferred from the device "
+"for normal launches. A cubin is generated for one architecture."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "`compiler_version`"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "The `cutile-compiler` crate version that produced the entry."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "`tileiras_fingerprint`"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid ""
+"The output of `tileiras --version` for the resolved assembler binary "
+"(falling back to its path, size, and mtime). Upgrading the toolkit, or "
+"pointing `CUTILE_TILEIRAS_PATH` at a different binary, changes it."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:207
+msgid ""
+"Values outside this pattern are ordinary launch or data inputs. Tensor "
+"contents, floating-point scalar values, and runtime grid values passed with "
+"`.grid(...)` do not create cache entries by themselves."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:209
+msgid "Persistent Disk Cache"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:211
+msgid ""
+"The kernel cache above lives in process memory and dies with the process. "
+"cuTile can additionally persist compiled cubins to disk, so a fresh process "
+"skips the `tileiras` backend for kernels any earlier process already "
+"compiled."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:213
+msgid ""
+"Disk persistence is **off by default, and no environment variable can turn "
+"it on**. A program opts in explicitly:"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:215
+msgid ""
+"// ~/.cache/cutile/kernels ($XDG_CACHE_HOME respected), 2 GiB LRU target:\n"
+"cutile::jit_cache::enable_default()?;\n"
+"\n"
+"// or a custom location and capacity:\n"
+"use cutile::jit_cache::FileSystemJitStore;\n"
+"let store = FileSystemJitStore::builder(\"/data/kernel-cache\")\n"
+"    .capacity_bytes(512 << 20)\n"
+"    .open()?;\n"
+"cutile::jit_cache::enable(std::sync::Arc::new(store));\n"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:227
+msgid ""
+"`cutile::jit_cache::disable()` stops all disk reads and writes; kernels "
+"already in the in-memory cache are unaffected. The `JitStore` trait behind "
+"`enable` is a plain byte-oriented get/put interface, so a custom backend (an "
+"object store, a network cache) can replace the filesystem implementation."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:229
+msgid ""
+"A disk hit skips `tileiras`. The compiler frontend still runs on every in-"
+"memory miss to validate the launch parameters."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:232
+msgid "The persistent key is a SHA-256 hash of the full `tileiras` input:"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:234
+msgid ""
+"Bytecode version (`major.minor` and `tag`; see [Bytecode Version](#bytecode-"
+"version))."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:235
+msgid "Serialized Tile IR bytecode, including inlined dependency modules."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:236
+msgid "Target architecture."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:237
+msgid ""
+"Optimization level and the stage-2 flags (`device_debug`, `lineinfo`, "
+"`sanitize_memcheck`)."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:238
+msgid "Resolved `tileiras` binary's fingerprint."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:240
+msgid ""
+"Changes to these inputs invalidate old entries. Different assembler binaries "
+"that report the same version are not distinguished."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:243
+msgid ""
+"Each entry has a checksummed header, validated on every hit. Incomplete, "
+"corrupted, or mismatched entries are recompiled. The checksum does not "
+"authenticate code: anyone with write access can create a valid entry "
+"containing arbitrary device code. Restrict writes to custom and shared "
+"stores to trusted users."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:248
+msgid ""
+"Cache I/O errors are counted but do not fail a launch; compilation continues "
+"without the disk cache. To inspect cache use:"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:251
+msgid ""
+"`cutile::jit_cache::stats()` — hits, misses, entries written, bytes written, "
+"soft I/O errors."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:252
+msgid ""
+"`cutile::jit_cache::jit_backend_compile_count()` / `jit_disk_hit_count()` — "
+"with `jit_compile_count()`, these satisfy `compiles == backend + disk_hits` "
+"absent failures."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:253
+msgid ""
+"`CUTILE_JIT_TIMING=1` — the per-kernel timing line includes "
+"`stage2_source=disk|tileiras`."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:255
+msgid ""
+"The eviction policy is LRU by file mtime with a high/low watermark pair "
+"(defaults: collect above capacity, delete oldest entries down to 80%). The "
+"configured capacity is a soft target, not a hard cap: eviction is "
+"probabilistically triggered and uses a non-blocking lock, so transient "
+"overshoot is possible. Multiple processes can share one cache directory; "
+"writes are atomic and eviction is coordinated through a lock file."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:257
+msgid ""
+"Concurrent processes may each compile the same missing entry. Warm the "
+"shared cache in one process before starting parallel workers to avoid "
+"duplicate work."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:260
+msgid ""
+"See `cutile-examples/examples/jit_disk_cache.rs`; run it twice to watch the "
+"second process hit the disk. For implementing a custom backend (an object "
+"store, a database), see `cutile-examples/examples/jit_custom_store.rs`."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:262
+msgid "Computing Cache Keys"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:264
+msgid ""
+"Use a generated launcher to derive the exact keys that a normal launch would "
+"use:"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "Need"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "API"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "Only the in-memory L1 key"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "`launcher.l1_cache_key()?`"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "Only the persistent L2 key"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "`launcher.l2_cache_key()?`"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "Both keys for one resolved launch specialization"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "`launcher.specialize()?`"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "An L2 key for a compile-only specialization"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "`KernelCompiler::l2_cache_key()?`"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:273
+msgid "Getting One Key Directly"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:275
+msgid "When only one key is needed, call the corresponding launcher helper:"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:277
+msgid ""
+"let l1_key = my_kernels::copy(\n"
+"    cutile::api::meta::<f32>(&[1024]).partition([128]),\n"
+"    cutile::api::meta::<f32>(&[1024]),\n"
+")\n"
+".generics(vec![\"f32\".into(), \"128\".into()])\n"
+".l1_cache_key()?;\n"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:286
+msgid "Or derive the L2 key directly:"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:288
+msgid ""
+"let l2_key = my_kernels::copy(\n"
+"    cutile::api::meta::<f32>(&[1024]).partition([128]),\n"
+"    cutile::api::meta::<f32>(&[1024]),\n"
+")\n"
+".generics(vec![\"f32\".into(), \"128\".into()])\n"
+".l2_cache_key()?;\n"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:297
+msgid ""
+"`l1_cache_key()` returns the complete structured `TileFunctionKey`, not the "
+"shortened `display_hash()` debug label. `l2_cache_key()` returns the 64-"
+"character lowercase SHA-256 used by the persistent cache."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:299
+msgid ""
+"Each terminal consumes its launcher. If both keys are needed, resolve the "
+"launch specialization once instead of constructing the launcher twice."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:301
+msgid "Getting Both Keys"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:303
+msgid ""
+"`specialize()` resolves the specialization identity for this launch without "
+"compiling or launching the kernel. It materializes the launch inputs and "
+"returns a `Specialization` containing the complete L1 key and a lazy module "
+"AST provider:"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:305
+msgid ""
+"let specialization = my_kernels::copy(\n"
+"    cutile::api::meta::<f32>(&[1024]).partition([128]),\n"
+"    cutile::api::meta::<f32>(&[1024]),\n"
+")\n"
+".generics(vec![\"f32\".into(), \"128\".into()])\n"
+".specialize()?;\n"
+"\n"
+"let l1_key = specialization.l1_cache_key().clone();\n"
+"let l2_key = specialization.l2_cache_key()?;\n"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:317
+msgid ""
+"`Specialization::l1_cache_key()` only borrows an already resolved key, so it "
+"returns `&TileFunctionKey` rather than `Result`. `specialize()` may fail "
+"while materializing launch inputs, and `l2_cache_key()` may fail while "
+"running the compiler frontend or serializing bytecode, so those calls use `?"
+"`."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:319
+msgid "Matching the Real L2 Lookup"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:321
+msgid ""
+"L2 derivation runs the compiler frontend and serializes Tile IR because the "
+"persistent key hashes the frontend output. The helper and the real disk-"
+"cache lookup share the same bytecode-to-key function:"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:323
+msgid ""
+"launcher.l2_cache_key()\n"
+"    ↓\n"
+"Specialization::l2_cache_key()\n"
+"    ↓\n"
+"KernelCompiler::l2_cache_key()\n"
+"    ├── compiler frontend\n"
+"    ├── Tile IR bytecode serialization\n"
+"    ▼\n"
+"current_l2_key_for_bytecode()\n"
+"    ▼\n"
+"l2_key(...)\n"
+"\n"
+"compile_bytecode_cached()\n"
+"    ▼\n"
+"current_l2_key_for_bytecode()\n"
+"    ▼\n"
+"l2_key(...)\n"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:343
+msgid ""
+"The bytecode version comes from the serializer. Launcher helpers resolve the "
+"target from the launch device; compile-only callers configure it on "
+"`KernelCompiler`. The default optimization level and current `tileiras` "
+"fingerprint are resolved internally. This makes the helper return the exact "
+"L2 key that the JIT would query."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:345
+msgid "Work Performed by the Helpers"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:347
+msgid ""
+"Both launcher helpers materialize upstream `DeviceOp` inputs to derive "
+"strides and specialization hints. An arbitrary upstream operation may "
+"perform device work during that step; cache tooling can use `api::meta` "
+"inputs to provide tensor metadata without allocating device storage."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:349
+msgid "After input materialization:"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:351
+msgid ""
+"L1 derivation does not construct the module AST or run the compiler frontend."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:352
+msgid ""
+"L2 derivation constructs the AST, runs the frontend, and serializes bytecode."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:353
+msgid ""
+"Neither helper reads or writes a `JitStore`, runs the target-kernel "
+"`tileiras` backend, loads a CUDA module, or populates the L1 cache."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:355
+msgid ""
+"The `_on` variants (`specialize_on`, `l1_cache_key_on`, and "
+"`l2_cache_key_on`) select the device from an explicit stream instead of the "
+"default device policy. All of these APIs derive keys only; callers remain "
+"responsible for `JitStore::contains`, `delete`, cache seeding, and prewarm "
+"orchestration."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:357
+msgid "Compile-Only API"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:359
+msgid ""
+"Most users compile kernels by launching a generated `#[cutile::entry]` "
+"launcher. cuTile also exposes `cutile::compile_api::KernelCompiler` for pre-"
+"compilation and other compile-only workflows that need Tile IR text or "
+"bytecode without launching a kernel."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:361
+msgid ""
+"use cutile::compile_api::KernelCompiler;\n"
+"\n"
+"let artifacts = KernelCompiler::new(my_kernels::__module_ast_self, "
+"\"my_kernels\", \"tile_math\")\n"
+"    .generics(vec![\"32\".into()])\n"
+"    .strides(&[(\"output\", &[1])])\n"
+"    .target(\"sm_80\")\n"
+"    .compile()?;\n"
+"\n"
+"let ir_text = artifacts.ir_text();\n"
+"let bytecode = artifacts.bytecode()?;\n"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:374
+msgid ""
+"For cache tooling that only needs the persistent key, use the same builder "
+"with `l2_cache_key()`:"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:376
+msgid ""
+"let l2_key = KernelCompiler::new(my_kernels::__module_ast_self, "
+"\"my_kernels\", \"tile_math\")\n"
+"    .generics(vec![\"32\".into()])\n"
+"    .strides(&[(\"output\", &[1])])\n"
+"    .target(\"sm_80\")\n"
+"    .l2_cache_key()?;\n"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:384
+msgid ""
+"This runs the frontend and the canonical bytecode serializer but does not "
+"compile a cubin or access the configured `JitStore`. The target comes from `."
+"target(...)`; the bytecode version, default optimization level, and current "
+"`tileiras` fingerprint are selected internally. Advanced tools that "
+"intentionally model another toolchain can continue to call the lower-level "
+"`jit_cache::l2_key(...)` with explicit inputs."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:386
+msgid ""
+"`KernelCompiler` takes the same specialization information that a launcher "
+"normally infers from its arguments: entry-function generics, tensor stride "
+"and specialization hints, scalar hints, target architecture, optional "
+"constant grid, and compile options. Use it for pre-compilation pipelines, "
+"tooling, tests, and CPU-only validation of generated IR or bytecode. The `."
+"target(\"sm_...\")` value supplies the target architecture explicitly "
+"because there is no active CUDA device in compile-only mode."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:388
+msgid ""
+"Compile-only pre-compilation is separate from the launch-time JIT cache. "
+"`KernelCompiler` returns artifacts for the specialization you describe; it "
+"does not allocate tensors, launch CUDA work, insert a compiled function into "
+"the process-local JIT cache, or produce a host-side result value. A later "
+"call through the generated launcher still performs the normal cache lookup "
+"and may compile on first launch unless that launch path is taught to consume "
+"the precompiled artifacts."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:390
+msgid "Inspecting Compiler Output"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:392
+msgid ""
+"Two entry attributes are honored for inspection. `print_ir = true` prints "
+"the generated entry wrapper, the source kernel, and the compiled Tile IR "
+"text during JIT compilation:"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:394
+msgid ""
+"#[cutile::entry(print_ir = true)]\n"
+"fn debug_kernel<const S: [i32; 2]>(...) { ... }\n"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:399
+msgid "`dump_mlir_dir` writes the compiled Tile IR text to files:"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:401
+msgid ""
+"#[cutile::entry(dump_mlir_dir = \"/tmp/cutile-ir\")]\n"
+"fn debug_kernel<const S: [i32; 2]>(...) { ... }\n"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:406
+msgid ""
+"There is no attribute for substituting hand-edited IR: the compiler always "
+"assembles its own output."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:408
+msgid ""
+"The `CUTILE_DUMP` and `CUTILE_DUMP_FILTER` environment variables print the "
+"compiler's output to stderr, once per compiled module:"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "Variable"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "Description"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "`CUTILE_DUMP`"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid ""
+"Comma-separated stages: `ir` (the Tile IR module as text), `bytecode` or "
+"`bc` (the encoded image, decoded back to text), or `all` for both. These are "
+"the only stages emitted today; the pass-level names `ast`, `resolved`, "
+"`typed`, and `instantiated` are accepted but produce no output."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "`CUTILE_DUMP_FILTER`"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid ""
+"Comma-separated `module::function` paths or bare function names. The dumps "
+"are per module, so a qualified entry selects by its module part (`kernels::"
+"fmha_prefill` dumps every kernel compiled from `kernels`); a bare function "
+"name matches every module."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:415
+msgid "`TILE_IR_DUMP=1` is a legacy alias for `CUTILE_DUMP=ir`."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:417
+msgid "Bytecode Version"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:419
+msgid ""
+"The compiler can write Tile IR bytecode at versions 13.2 and 13.3, and picks "
+"one per toolchain so that a newer default is never handed to an older "
+"`tileiras`:"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:421
+msgid ""
+"`CUTILE_BYTECODE_VERSION`, when set (e.g. `13.2`), overrides everything else."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:422
+msgid ""
+"Otherwise the resolved toolkit's `cuda.h` decides: CUDA 13.2 emits 13.2, "
+"CUDA 13.3 and newer emit 13.3."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:423
+msgid ""
+"Otherwise — `CUTILE_TILEIRAS_PATH` pointing at a bare binary, or `tileiras` "
+"found on `PATH` — the compiler probes the binary with a small representative "
+"kernel at each version, newest first."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:425
+msgid ""
+"The result is clamped to the emittable range. A toolkit older than CUDA "
+"13.2, or a probe that cannot run (the temporary directory is not writable, "
+"the binary cannot be launched or crashes, or it rejects every version), is a "
+"compile error naming the cause rather than a silent fallback. The selected "
+"version is part of the persistent cache key, and `CompileArtifacts::"
+"bytecode()` writes the same negotiated version a launch would use."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:427
+msgid "Compilation Failures"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:429
+msgid ""
+"Most compile-time errors are ordinary type or shape errors: incompatible "
+"tile shapes, unsupported element-type combinations, invalid reduction axes, "
+"or missing `#[cutile::entry()]`."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:431
+msgid ""
+"JIT failures usually point to the local CUDA installation or target "
+"architecture:"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "Symptom"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "Likely cause"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "Check"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "`invalid GPU architecture`"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "Toolchain does not support the selected SM"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "`tileiras --help`, CUDA Toolkit version"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "Failed to load generated kernel"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "Driver/toolkit mismatch"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "`nvidia-smi`, `nvcc --version`"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "Segfault inside CUDA or Tile IR libraries"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "Broken toolkit path or incompatible libraries"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "`CUDA_TOOLKIT_PATH`, dynamic library search path"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "OOM during first launch"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "Host memory exhausted during compilation"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:56
+msgid "System memory, specialization count"
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:440
+msgid ""
+"Restart the process to force recompilation after changing environment "
+"variables or clearing a bad in-memory cache entry."
+msgstr ""
+
+#: ../../../guide/jit-compilation.md:444
+msgid "Continue to [Device Operations](device-operations.md)."
+msgstr ""
