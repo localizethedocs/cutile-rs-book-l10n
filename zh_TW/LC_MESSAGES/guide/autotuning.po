@@ -1,0 +1,268 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2025-2026, NVIDIA Corporation
+# This file is distributed under the same license as the cuTile Rust package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: cuTile Rust main\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-21 16:36+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: zh_TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../guide/autotuning.md:1
+msgid "Autotuning"
+msgstr ""
+
+#: ../../../guide/autotuning.md:3
+msgid ""
+"`cutile::tune` searches a declared space of kernel configurations, measures "
+"each candidate with `cutile::bench`'s device-event timing, and persists both "
+"the trials and the winner. It is gated behind the `experimental-tune` "
+"feature, and the API may change between releases:"
+msgstr ""
+
+#: ../../../guide/autotuning.md:8
+msgid "cutile = { version = \"...\", features = [\"experimental-tune\"] }\n"
+msgstr "cutile = { version = \"...\", features = [\"experimental-tune\"] }\n"
+
+#: ../../../guide/autotuning.md:12
+msgid ""
+"Use a closure to tune an individual kernel, or implement `Objective` to "
+"measure a whole request. The `autotune` example uses a closure: `cargo run -"
+"p cutile-examples --example autotune --features experimental-tune`."
+msgstr ""
+
+#: ../../../guide/autotuning.md:16
+msgid "Declaring a space and running the search"
+msgstr ""
+
+#: ../../../guide/autotuning.md:18
+msgid ""
+"A configuration is a set of named integer or string parameters; the space is "
+"the list of configurations. Only `configs` and the terminal `run` are "
+"required. The rest of the builder is optional: `prune` filters candidates, "
+"`budget` bounds wall-clock, `log` makes the run resumable, and `require` "
+"declares incumbents the search must cover."
+msgstr ""
+
+#: ../../../guide/autotuning.md:24
+msgid ""
+"let configs: Vec<Config> = [16i64, 32, 64, 128]\n"
+"    .into_iter()\n"
+"    .map(|bn| Config::new([(\"BN\", ParamValue::Int(bn))]))\n"
+"    .collect();\n"
+"\n"
+"let output = Autotuner::new(\"fmha_decode\")\n"
+"    .configs(configs)\n"
+"    .prune(|c| c.int(\"BN\").unwrap() <= pp)\n"
+"    .require(vec![shipping_config])\n"
+"    .budget(Duration::from_secs(300))\n"
+"    .arch(\"sm_100\") // record the arch; a resume from another arch is "
+"refused\n"
+"    .log(\"fmha_decode.trials.jsonl\")\n"
+"    .run(&stream, |stream, config| {\n"
+"        // The setup closure is yours: read the config, build the kernel's\n"
+"        // composed launcher for it, run it once as a correctness gate, and\n"
+"        // return the closure to be timed. Err(..) records the candidate as\n"
+"        // invalid and the search continues.\n"
+"        let bn = config.int(\"BN\").unwrap();\n"
+"        let mut launch = move |stream: &Arc<Stream>| {\n"
+"            fmha_decode(out.partition([1, bn as i32]), &q, &k, &v)\n"
+"                .generics(generics_for(bn))\n"
+"                .sync_on(stream)\n"
+"        };\n"
+"        launch(&stream)?;\n"
+"        Ok(launch)\n"
+"    })?;\n"
+"let best: Config = output.best.expect(\"a winner\");\n"
+msgstr ""
+"let configs: Vec<Config> = [16i64, 32, 64, 128]\n"
+"    .into_iter()\n"
+"    .map(|bn| Config::new([(\"BN\", ParamValue::Int(bn))]))\n"
+"    .collect();\n"
+"\n"
+"let output = Autotuner::new(\"fmha_decode\")\n"
+"    .configs(configs)\n"
+"    .prune(|c| c.int(\"BN\").unwrap() <= pp)\n"
+"    .require(vec![shipping_config])\n"
+"    .budget(Duration::from_secs(300))\n"
+"    .arch(\"sm_100\") // record the arch; a resume from another arch is "
+"refused\n"
+"    .log(\"fmha_decode.trials.jsonl\")\n"
+"    .run(&stream, |stream, config| {\n"
+"        // The setup closure is yours: read the config, build the kernel's\n"
+"        // composed launcher for it, run it once as a correctness gate, and\n"
+"        // return the closure to be timed. Err(..) records the candidate as\n"
+"        // invalid and the search continues.\n"
+"        let bn = config.int(\"BN\").unwrap();\n"
+"        let mut launch = move |stream: &Arc<Stream>| {\n"
+"            fmha_decode(out.partition([1, bn as i32]), &q, &k, &v)\n"
+"                .generics(generics_for(bn))\n"
+"                .sync_on(stream)\n"
+"        };\n"
+"        launch(&stream)?;\n"
+"        Ok(launch)\n"
+"    })?;\n"
+"let best: Config = output.best.expect(\"a winner\");\n"
+
+#: ../../../guide/autotuning.md:54
+msgid ""
+"The two best candidates are compared in a paired A/B runoff to account for "
+"clock and temperature drift. A finalist that fails setup forfeits."
+msgstr ""
+
+#: ../../../guide/autotuning.md:57
+msgid ""
+"Every `require`d configuration must belong to the search space. These "
+"configurations are measured first, before the budget can cut off the search. "
+"The winner must match or beat each of them."
+msgstr ""
+
+#: ../../../guide/autotuning.md:61
+msgid ""
+"Trial logs record the tuner name and a hash of the search space. A log from "
+"a different tuner or space is rejected."
+msgstr ""
+
+#: ../../../guide/autotuning.md:65
+msgid "Measuring a full request with `Objective`"
+msgstr ""
+
+#: ../../../guide/autotuning.md:67
+msgid ""
+"When the objective is end-to-end (tokens per second, request latency), the "
+"library cannot own the launch. Implement `Objective` instead: `configs()` "
+"exposes the space, `measure(index)` applies one candidate at engine scope "
+"and returns a `Trial` built with `Trial::measured` or `Trial::invalid`, and "
+"`budget_remaining()` reports what is left. `Autotuner::run_objective` then "
+"provides the same trial logging, resume, and `require` coverage as the "
+"closure path:"
+msgstr ""
+
+#: ../../../guide/autotuning.md:75
+msgid ""
+"let mut objective = EngineObjective::new(engine, configs);\n"
+"let output = Autotuner::new(\"engine_prefill\")\n"
+"    .arch(current_arch) // e.g. \"sm_100\"; resume refuses a foreign-arch "
+"log\n"
+"    .log(\"prefill.trials.jsonl\")\n"
+"    .require(vec![current_default])\n"
+"    .run_objective(&mut objective)?;\n"
+msgstr ""
+
+#: ../../../guide/autotuning.md:84
+msgid ""
+"This path has no paired runoff: the library cannot re-time an engine "
+"objective through its bench closures. `Output::best` is the best sequential "
+"median. The caller can re-measure finalists together to check for drift."
+msgstr ""
+
+#: ../../../guide/autotuning.md:88
+msgid ""
+"Serialized `Trial` records remain compatible across cuTile upgrades. An "
+"incompatible change increments the log schema version, and `TrialLog::open` "
+"rejects the old schema."
+msgstr ""
+
+#: ../../../guide/autotuning.md:93
+msgid "Committing winners"
+msgstr ""
+
+#: ../../../guide/autotuning.md:95
+msgid ""
+"A `tune::Record` persists winners so production loads them instead of re-"
+"searching: one JSON file per kernel, written by `save` and committed next to "
+"the code it tunes. The file holds a provenance header (kernel name, source "
+"hash, cutile version, `tileiras` fingerprint, architecture, search-space "
+"hash) and one entry per shape-class bucket."
+msgstr ""
+
+#: ../../../guide/autotuning.md:101
+msgid ""
+"use cutile::tune::{L2Key, Record, RecordEntry, Workspace};\n"
+"\n"
+"// After tuning: `winner` is the winning Trial, `best` its Config\n"
+"// (`output.best`), and `launcher` the kernel's composed builder applied\n"
+"// with `best`'s values — the same call expression production dispatches.\n"
+"let TrialState::Measured { median_ms, reps, .. } = winner.state else {\n"
+"    unreachable!(\"the winner was measured\");\n"
+"};\n"
+"let mut record = Record::new(&workspace);\n"
+"record.insert(RecordEntry {\n"
+"    bucket: \"tg<=512\".into(),\n"
+"    config: best,\n"
+"    median_ms,\n"
+"    samples: reps,\n"
+"    l2_key: Some(L2Key::current(launcher.l2_cache_key()?)),\n"
+"});\n"
+"record.save(&path)?;\n"
+"\n"
+"// In production: load, verified against the running workspace.\n"
+"let (record, warnings) = Record::load_verified(&path, &workspace, |entry| {\n"
+"    Ok(Some(specialize_for(&entry.config)?.l2_cache_key()?))\n"
+"})?;\n"
+"let entry = record.get(\"tg<=512\");\n"
+msgstr ""
+
+#: ../../../guide/autotuning.md:127
+msgid ""
+"A bucket is a plain string label, matched exactly by `Record::get`; the "
+"predicate that decides which bucket a runtime shape falls into lives in the "
+"consumer's dispatch code, and the record only stores the label. `median_ms` "
+"and `samples` are the winner's measured median latency and the number of "
+"timed reps behind it — provenance for a human reading the committed file, "
+"not inputs to verification. The `l2_key` is the winner's persistent-cache "
+"key, computed from the composed builder without compiling or launching (`."
+"l2_cache_key()`)."
+msgstr ""
+
+#: ../../../guide/autotuning.md:136
+msgid ""
+"`load_verified` rejects a record if its kernel, architecture, source hash, "
+"or search space differs from the running workspace. It also recomputes each "
+"entry's cache key to check the kernel's dependencies and toolchain. Changes "
+"that affect only timing produce warnings."
+msgstr ""
+
+#: ../../../guide/autotuning.md:141
+msgid "Warming and managing the kernel cache during sweeps"
+msgstr ""
+
+#: ../../../guide/autotuning.md:143
+msgid ""
+"Call `.compile()` on the same builder used for `.execute` or `.sync_on` to "
+"warm the specialization that will run. `api::meta` tensors supply shape and "
+"dtype without device allocation or kernel launches:"
+msgstr ""
+
+#: ../../../guide/autotuning.md:147
+msgid ""
+"my_module::my_kernel(api::meta::<f32>(&[64, 64]).sync()?.partition([16, "
+"16]), ...)\n"
+"    .generics(generics)\n"
+"    .compile_options(opts)\n"
+"    .compile()?;\n"
+msgstr ""
+
+#: ../../../guide/autotuning.md:154
+msgid ""
+"Tuning sweeps and long-running serving engines can accumulate many "
+"specializations, and each cached kernel holds device memory. The in-memory "
+"kernel cache is intentionally unbounded. The `unsafe` functions "
+"`clear_kernel_cache()`, `evict_kernel(&key)`, and `retain_kernels(pred)` in "
+"`cutile::tile_kernel` are available without any Cargo feature. They remove "
+"entries, releasing each module's device memory when its last holder drops. "
+"These functions are `unsafe`: synchronize every stream that may still be "
+"running a cached kernel before evicting it. Between tuning trials or while a "
+"serving engine is idle, callers can evict and then reload the needed "
+"specializations. The autotuning API in `cutile::tune` still requires "
+"`experimental-tune`."
+msgstr ""

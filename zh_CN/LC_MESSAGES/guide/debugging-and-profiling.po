@@ -1,0 +1,663 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2025-2026, NVIDIA Corporation
+# This file is distributed under the same license as the cuTile Rust package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: cuTile Rust main\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-21 16:36+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../guide/debugging-and-profiling.md:1
+msgid "Debugging and Profiling"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:3
+msgid ""
+"Start debugging with small, deterministic inputs. Read results back to the "
+"host, compare against a CPU reference, then inspect generated Tile IR or "
+"profile the GPU when correctness is established."
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:5
+msgid "Printing and Assertions"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:7
+msgid "`cuda_tile_print!` prints from inside a GPU kernel:"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:9
+msgid ""
+"#[cutile::entry()]\n"
+"fn debug_kernel<const S: [i32; 2]>(\n"
+"    z: &mut Tensor<f32, S>,\n"
+"    x: &Tensor<f32, { [-1, -1] }>,\n"
+") {\n"
+"    let pid0 = program_id(0);\n"
+"    let pid1 = program_id(1);\n"
+"    let tile = x.load_like(z);\n"
+"\n"
+"    cuda_tile_print!(\"Program ({}, {}): loaded tile\\n\", pid0, pid1);\n"
+"    z.store(tile);\n"
+"}\n"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:24
+msgid ""
+"GPU printing is slow and serializes tile block execution. Use it for small "
+"grids and remove it before measuring performance."
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:26
+msgid "`cuda_tile_assert!` checks conditions inside a kernel:"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:28
+msgid ""
+"let n: i32 = x.shape()[0];\n"
+"cuda_tile_assert!(n > 0, \"expected a non-empty input\");\n"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:33
+msgid "Host Readback"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:35
+msgid ""
+"Host readback is a `DeviceOp`; execute it before reading the host vector:"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:37
+msgid ""
+"let z_host: Vec<f32> = z\n"
+"    .unpartition()\n"
+"    .to_host_vec()\n"
+"    .sync_on(&stream)?;\n"
+"\n"
+"assert!(!z_host.iter().any(|x| x.is_nan()));\n"
+"assert!(!z_host.iter().any(|x| x.is_infinite()));\n"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:47
+msgid ""
+"If a fused kernel is wrong, split it into stages and read back each "
+"intermediate. Each stage should match a simple CPU implementation on a small "
+"input."
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:49
+msgid "Correctness Tests"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:51
+msgid "Use minimal inputs first:"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:53
+msgid ""
+"#[test]\n"
+"fn small_add_matches_cpu() {\n"
+"    let a = vec![1.0, 2.0, 3.0, 4.0];\n"
+"    let b = vec![10.0, 20.0, 30.0, 40.0];\n"
+"    let expected = vec![11.0, 22.0, 33.0, 44.0];\n"
+"\n"
+"    let result = run_add_kernel(&a, &b);\n"
+"    assert_eq!(result, expected);\n"
+"}\n"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:65
+msgid ""
+"Then compare larger random inputs against a CPU reference with an "
+"appropriate tolerance:"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:67
+msgid ""
+"for (cpu, gpu) in cpu_result.iter().zip(gpu_result.iter()) {\n"
+"    assert!((cpu - gpu).abs() < 1e-5, \"CPU={cpu}, GPU={gpu}\");\n"
+"}\n"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:73
+msgid ""
+"For numerically sensitive kernels, test edge cases: zeros, large positive "
+"values, large negative values, non-divisible shapes if supported, and known "
+"overflow-prone inputs."
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:75
+msgid "Inspecting Tile IR"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:77
+msgid ""
+"`print_ir = true` prints the generated entry point wrapper and the Tile IR "
+"text during JIT compilation:"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:79
+msgid ""
+"#[cutile::entry(print_ir = true)]\n"
+"fn debug_ir_kernel<const S: [i32; 2]>(...) { ... }\n"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:84
+msgid "`dump_mlir_dir` writes the compiled Tile IR text to files:"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:86
+msgid ""
+"#[cutile::entry(dump_mlir_dir = \"/tmp/cutile-ir\")]\n"
+"fn debug_ir_kernel<const S: [i32; 2]>(...) { ... }\n"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:91
+msgid ""
+"Module-level dumps are also available with environment variables. They are "
+"written to stderr once per compiled module:"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid "Variable"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid "Description"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid "Default"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid "`CUTILE_DUMP`"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid ""
+"Comma-separated stages to dump: `ir` (the Tile IR module text) and "
+"`bytecode` (alias `bc`; the encoded bytecode decoded back to text), or "
+"`all`. The `ast`, `resolved`, `typed`, and `instantiated` names are accepted "
+"but no code path emits them today"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid "unset"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid "`CUTILE_DUMP_FILTER`"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid ""
+"Comma-separated `module::function` paths; the dumps are per module, so only "
+"the `module` part is matched. Bare function names do not exclude any module"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:99
+msgid "Errors and Crashes"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:101
+msgid "Most cuTile Rust errors are caught before a kernel runs:"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid "Error"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid "Cause"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid "Fix"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid "Shape mismatch"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid "Incompatible tile shapes"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid "Align shapes or use `reshape` / `broadcast`"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid "Element type mismatch"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid "Different element types in one operation"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid "Add explicit `convert_tile()`"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid "Invalid reduction axis"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid "Axis outside the tile rank"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid "Use an axis in `0..rank`"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid "Unsupported MMA shape or dtype"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid "No lowering for that combination"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid "Use a supported shape and element type"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid "Missing entry"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid "Function is not marked with `#[cutile::entry()]`"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid "Add the entry attribute"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:111
+msgid ""
+"Runtime errors usually come from out-of-bounds accesses, toolkit issues, or "
+"invalid raw-pointer usage:"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid "CUDA error: no kernel image"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid "Wrong GPU architecture or stale cubin"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid "Clear cache, rebuild, verify target SM"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid "Failed to load kernel"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid "CUDA toolkit or driver issue"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid "Check `nvidia-smi` and toolkit version"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid "Out of memory"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid "Tensor allocation or JIT memory pressure"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid "Reduce allocation size or specialization count"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid "Shape mismatch at runtime"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid "Tensor size incompatible with partition"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:0
+msgid "Ensure expected divisibility or bounds handling"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:120
+msgid ""
+"CPU segfaults usually mean the failure happened in host-side FFI, JIT "
+"compilation, or raw-pointer lifetime management rather than inside ordinary "
+"safe tile code. Get a backtrace first:"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:122
+msgid ""
+"RUST_BACKTRACE=1 cargo run\n"
+"RUST_BACKTRACE=full cargo run\n"
+"\n"
+"gdb --args ./target/debug/my_program\n"
+"(gdb) run\n"
+"(gdb) bt\n"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:131
+msgid ""
+"Check the CUDA driver, CUDA Toolkit path, raw pointer lifetimes, spawned "
+"task lifetimes, and host memory use during first-launch compilation."
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:133
+msgid "Debug Builds and Sanitizers"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:135
+msgid ""
+"Device debug information follows Cargo's profile `debug` setting by default. "
+"With the standard profiles, `cargo build` enables device-debug mode and "
+"`cargo build --release` disables it. This is independent of `debug-"
+"assertions`."
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:140
+msgid ""
+"For example, turn device debugging off in a development build through the "
+"workspace's `Cargo.toml`:"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:143
+msgid ""
+"[profile.dev]\n"
+"debug = false\n"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:148
+msgid ""
+"Cargo provides only `DEBUG=true|false` to build scripts, not the exact debug "
+"level. Any enabled level currently selects device-debug mode, including "
+"`debug = \"line-tables-only\"` and `\"limited\"`. It also selects device "
+"optimization level 0 unless explicitly overridden, even in a release profile "
+"with `debug = true`. Automatic line-only mapping is not implemented. Use the "
+"explicit `line` override below for optimized profiling. See Cargo's [profile "
+"settings][cargo-profiles] and [build-script environment][cargo-build-env]."
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:157
+msgid ""
+"`CUDA_RUST_DEBUG` overrides the Cargo-derived default when building the app. "
+"No per-launch `.compile_options()` call is needed:"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:160
+msgid ""
+"# Optimized device code with source lines for profiling.\n"
+"CUDA_RUST_DEBUG=line cargo build --release\n"
+"\n"
+"# Unoptimized device code with source locations and inline frames.\n"
+"CUDA_RUST_DEBUG=full cargo build\n"
+"cuda-gdb --args ./target/debug/my_program\n"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:169
+msgid ""
+"The accepted values are `none`, `line`, and `full`. Unset follows Cargo; "
+"other values fail the build. Cargo tracks changes, so no `cargo clean` is "
+"needed. The setting is captured when the target `cutile-compiler` library is "
+"built, not when the proc macro is built. A package-specific profile override "
+"for `cutile-compiler` affects this shared default; an override only for a "
+"kernel's crate does not. Setting the environment variable only when running "
+"an already-built binary does not change device compilation."
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:177
+msgid ""
+"`CompileOptions::new()` and `CompileOptions::default()` inherit this build "
+"default. Use `debug_info()` to replace it for one launch. It sets both debug "
+"flags, so it can also turn off a build-time `full` default:"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:181
+msgid ""
+"use cutile::tile_kernel::{CompileOptions, DebugInfoLevel};\n"
+"\n"
+"my_kernel(args)\n"
+"    .compile_options(CompileOptions::new().debug_info(DebugInfoLevel::"
+"None))\n"
+"    .sync()?;\n"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:189
+msgid ""
+"Each option is part of the JIT cache key, so the modes do not share a cached "
+"compiled kernel. The individual flags remain available, as does sanitizer "
+"instrumentation:"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:193
+msgid ""
+"use cutile::tile_kernel::{CompileOptions, DebugInfoLevel};\n"
+"\n"
+"// cuda-gdb: debug information, no optimization.\n"
+"my_kernel(args)\n"
+"    .compile_options(CompileOptions::new().debug_info(DebugInfoLevel::"
+"Full))\n"
+"    .sync()?;\n"
+"\n"
+"// Profiler correlation: line-number information only, full optimization.\n"
+"my_kernel(args)\n"
+"    .compile_options(CompileOptions::new().debug_info(DebugInfoLevel::"
+"Line))\n"
+"    .sync()?;\n"
+"\n"
+"// Compute Sanitizer: memory-access instrumentation.\n"
+"my_kernel(args).compile_options(CompileOptions::new()."
+"sanitize_memcheck(true)).sync()?;\n"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:210
+msgid ""
+"`debug_info(level)` replaces both debug flags. The individual "
+"`device_debug(bool)` and `lineinfo(bool)` setters change only their own "
+"flag, leaving other inherited settings in place."
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:213
+msgid ""
+"`device_debug(true)` passes `--device-debug` to the device compiler and "
+"implies optimization level 0. An explicit `opt_level` takes precedence, but "
+"`tileiras` currently rejects full debug information at optimized levels. The "
+"frontend also stops hoisting bounds checks out of loops. Checks it proved "
+"unnecessary or moved to launch time are unaffected; they never reach device "
+"code in any mode."
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:219
+msgid ""
+"`lineinfo(true)` passes `--lineinfo`: source-line correlation for Nsight "
+"Compute and Nsight Systems without changing code generation. This is the "
+"option for profiling optimized kernels."
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:220
+msgid ""
+"`sanitize_memcheck(true)` passes `--sanitize=memcheck` for `compute-"
+"sanitizer --tool memcheck`."
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:221
+msgid "`opt_level(n)` selects `--opt-level` directly; the default is 3."
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:223
+msgid ""
+"Full debug mode describes source locations and inline frames, not Rust "
+"variables or values. Tile IR currently supports control-flow debugging of "
+"unoptimized code but not inspection of user variables; see the [Tile IR "
+"debug-info documentation][tile-debug-info]."
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:228
+msgid ""
+"User helpers and methods retain their definition's source file and line when "
+"inlined, including across modules. Core operations are attributed to the "
+"user's call site. Multiple generated instructions can still map to one Rust "
+"line; this is not a one-to-one mapping, especially with optimization."
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:233
+msgid "Profiling"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:235
+msgid ""
+"Use NVIDIA **Nsight Compute** (`ncu`, reports opened with `ncu-ui`) for "
+"individual kernels: throughput, occupancy, register use, and stalls. "
+"**Nsight Systems** (`nsys`, `nsys-ui`) shows the application timeline: CPU/"
+"GPU scheduling, transfers, synchronization, and launch gaps."
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:240
+msgid ""
+"For source correlation, build with `CUDA_RUST_DEBUG=line`. Keep the Rust "
+"sources available on the machine where you inspect the report. Profile the "
+"built executable, not the Cargo build itself:"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:244
+msgid ""
+"CUDA_RUST_DEBUG=line cargo build --release\n"
+"ncu --target-processes all ./my_cutile_program\n"
+"ncu --set full -o profile_report ./my_cutile_program\n"
+"ncu-ui profile_report.ncu-rep\n"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:251
+msgid ""
+"Replace `./my_cutile_program` with your binary's path, such as `./target/"
+"release/my_program`. An `ERR_NVGPUCTRPERM` report means this machine's GPU "
+"performance-counter access needs to be enabled by its administrator; "
+"changing line-info settings will not fix that."
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:256
+msgid "Use Nsight Systems for CPU/GPU scheduling:"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:258
+msgid ""
+"nsys profile ./my_cutile_program\n"
+"nsys-ui report.nsys-rep\n"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:263
+msgid ""
+"Look for launch gaps, unnecessary synchronization, memory transfer overlap, "
+"and whether independent kernels actually overlap on separate streams."
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:265
+msgid ""
+"Tile IR display is separate from Rust source-line correlation. NVIDIA lists "
+"the Tile IR Source view as a new feature in [Nsight Compute 2026.3][ncu-tile-"
+"ir]. If it is missing, record the Nsight Compute and CUDA Toolkit versions, "
+"compile options, cubin, and report before diagnosing a metadata problem. The "
+"standalone Tile IR dumps above remain useful independently of that view."
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:271
+msgid "Regression Checks"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:273
+msgid ""
+"The repository tests source provenance and compile-option cache separation "
+"without a GPU:"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:276
+msgid ""
+"cargo test -p cutile --test debug_info\n"
+"bash scripts/test_debug_defaults.sh\n"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:281
+msgid ""
+"The second command requires `jq`. It checks Cargo profiles, independent "
+"debug assertions and build-dependency settings, explicit overrides, and the "
+"line-only mapping limitation. It also checks that changing the runtime "
+"environment does not change the built default. Additional checks are opt-in:"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:286
+msgid ""
+"# Requires tileiras, nvdisasm, and readelf, but no GPU.\n"
+"cargo test -p cutile --test debug_info "
+"cubin_has_rust_lines_and_inline_frames -- --ignored\n"
+"\n"
+"# Requires a supported GPU and tileiras.\n"
+"cargo test -p cutile --test debug_info kernel_executes_in_all_debug_modes -- "
+"--ignored\n"
+"\n"
+"# Also requires cuda-gdb and timeout; stops at a helper's source line and\n"
+"# checks its nested inline backtrace before completing the kernel.\n"
+"cargo test -p cutile --test debug_info cuda_gdb_stops_in_cross_file_helper "
+"-- --ignored\n"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:303
+msgid "Debugging Checklist"
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:305
+msgid "Shapes match the operation and launch partition."
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:306
+msgid "Tensor sizes are compatible with the partition shape."
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:307
+msgid "Element types match or are explicitly converted."
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:308
+msgid "Small inputs match a CPU reference."
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:309
+msgid "Numerically sensitive code handles overflow and underflow."
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:310
+msgid "Raw pointers outlive all GPU work that uses them."
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:311
+msgid "`print_ir` shows the expected Tile IR operations."
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:312
+msgid "Profiles are captured after correctness checks pass."
+msgstr ""
+
+#: ../../../guide/debugging-and-profiling.md:316
+msgid ""
+"Review [Performance](performance.md) for optimization strategies or "
+"[Interoperability](interoperability.md) for custom CUDA kernels."
+msgstr ""

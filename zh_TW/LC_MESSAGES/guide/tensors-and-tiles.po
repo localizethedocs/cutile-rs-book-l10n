@@ -1,0 +1,549 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2025-2026, NVIDIA Corporation
+# This file is distributed under the same license as the cuTile Rust package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: cuTile Rust main\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-21 16:36+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: zh_TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../guide/tensors-and-tiles.md:1
+msgid "Tensors and Tiles"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:3
+msgid ""
+"cuTile Rust kernels operate by moving data from tensors into tiles, "
+"computing on those tiles, and storing the result back to tensors."
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "Property"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "Tensor"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "Tile"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "Location"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "Global memory (HBM)"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "Registers"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "Mutability"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "Mutable or read-only"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "Immutable"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "Shape"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "Static, dynamic, or mixed"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "Static"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "Operations"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "Load and store"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "Arithmetic, reductions, matrix multiply, shape ops"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "Lifetime"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "Persists across kernels"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "Exists only inside a kernel"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "Addressable"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "Yes"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "No"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:14
+msgid ""
+"#[cutile::entry()]\n"
+"fn add<const S: [i32; 2]>(\n"
+"    z: &mut Tensor<f32, S>,\n"
+"    x: &Tensor<f32, { [-1, -1] }>,\n"
+"    y: &Tensor<f32, { [-1, -1] }>,\n"
+") {\n"
+"    let tile_x = x.load_like(z);\n"
+"    let tile_y = y.load_like(z);\n"
+"    z.store(tile_x + tile_y);\n"
+"}\n"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:27
+msgid ""
+"The output tensor is mutable and already partitioned by the host launcher. "
+"The input tensors are read-only and can be loaded into tiles that match the "
+"output partition."
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:29
+msgid "Tensor, Partition, Tile"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:31
+msgid ""
+"`Tensor<E, S>` is the device-side view of global memory. Kernels receive "
+"tensors as parameters. A tensor can be loaded into a `Tile<E, S>` or used to "
+"create a device-side partition."
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:33
+msgid ""
+"`Partition<E, S>` is a tiled view of a tensor. On the host, partitioning a "
+"mutable tensor determines how many tile blocks launch and which region each "
+"block writes. On the device, partitioning a read-only tensor lets a kernel "
+"load arbitrary tiles by index."
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:35
+msgid ""
+"`Tile<E, S>` is an immutable register-resident array fragment. Tile "
+"operations create new tiles instead of mutating the original value:"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:37
+msgid ""
+"let tile = x.load_like(z);\n"
+"let shifted = tile + 1.0f32;\n"
+"let scaled = shifted * 2.0f32;\n"
+"z.store(scaled);\n"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:44
+msgid ""
+"![Data flow: Load from Tensor to Tile, Compute in registers, Store back to "
+"Tensor](../_static/images/data-flow.svg)"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:44
+msgid ""
+"Data flow: Load from Tensor to Tile, Compute in registers, Store back to "
+"Tensor"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:46
+msgid "Tensor -> Partition -> Tile -> Compute -> Store\n"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:50
+msgid "Partitioning and the Grid"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:52
+msgid "Mutable outputs are partitioned on the host before launch:"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:54
+msgid ""
+"let mut z = api::zeros::<f32>(&[1024, 1024]).sync_on(&stream)?;\n"
+"let _ = add((&mut z).partition([64, 64]), &x, &y).sync_on(&stream)?;\n"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:59
+msgid ""
+"The partition shape becomes the static shape seen by the kernel. A `[1024, "
+"1024]` tensor partitioned as `[64, 64]` creates a logical grid of `(16, 16, "
+"1)` tile blocks. Each tile block receives one writable sub-tensor."
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:61
+msgid ""
+"Read-only inputs do not need host-side partitioning. Inside the kernel, "
+"partition them with the shape needed by the algorithm:"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:63
+msgid ""
+"let pid_m = program_id(0);\n"
+"let part_x = x.partition(shape![BM, BK]);\n"
+"let tile_x = part_x.load([pid_m, i]);\n"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:69
+msgid ""
+"The same read-only tensor can be partitioned multiple ways inside one "
+"kernel. This is common in matrix multiplication, where the left-hand side "
+"and right-hand side are loaded with different tile shapes."
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:71
+msgid ""
+"The launch grid is inferred from mutable output partitions unless the "
+"launcher sets it explicitly:"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:73
+msgid "kernel(z.partition([64, 64]), x).grid((16, 16, 1)).sync_on(&stream)?;\n"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:77
+msgid ""
+"When a kernel has multiple mutable outputs, their inferred grids must match."
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:79
+msgid "Static and Dynamic Shapes"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:81
+msgid ""
+"Static dimensions are compile-time constants. Dynamic dimensions use `-1` "
+"and are resolved from the runtime tensor shape."
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:83
+msgid ""
+"#[cutile::entry()]\n"
+"fn normalize<const S: [i32; 2]>(\n"
+"    z: &mut Tensor<f32, S>,          // Static tile shape from partition.\n"
+"    x: &Tensor<f32, { [-1, -1] }>,   // Runtime full tensor shape.\n"
+") {\n"
+"    let tile = x.load_like(z);\n"
+"    z.store(tile);\n"
+"}\n"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:94
+msgid ""
+"Static shapes let the compiler check operations and optimize layout. Dynamic "
+"dimensions let the same compiled variant handle different full tensor sizes. "
+"The common pattern is static output tile shape and dynamic read-only input "
+"shape."
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:96
+msgid ""
+"Const generic arrays such as `const S: [i32; 2]` and `shape![BM, BK]` carry "
+"tile dimensions through the type system. Changing a const generic value can "
+"create a new compiled variant."
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:98
+msgid "Loading, Computing, Storing"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:100
+msgid ""
+"`input.load_like(output)` loads a read-only tensor region matching the "
+"output tensor's tile shape and tile-block coordinates. For explicit device-"
+"side partitions, call `partition.load(index)`:"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:102
+msgid ""
+"let part_x = x.partition(shape![BM, BK]);\n"
+"let tile_x = part_x.load([pid_m, k_tile]);\n"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:107
+msgid "Writable tensors store tile results:"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:109
+msgid ""
+"let result = tile_x + tile_y;\n"
+"z.store(result);\n"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:114
+msgid ""
+"Use `load_tile_mut` when a kernel needs to read the existing output value "
+"before writing a new one:"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:116
+msgid ""
+"let acc = load_tile_mut(z);\n"
+"z.store(acc + update);\n"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:122
+msgid "Kernel operations"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "Category"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "Examples"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid ""
+"`load_like` (method form of `load_tile_like`), `load_tile_mut`, `Partition::"
+"load`, `Tensor::store`"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "Arithmetic"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "`+`, `-`, `*`, `/`, `fma`, `true_div`"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "Math"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "`exp`, `log`, `sqrt`, `rsqrt`, `sin`, `cos`, `tanh`"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "Reduction and scan"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "`reduce_max`, `reduce_sum`, `reduce_min`, `scan`"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "Matrix multiply"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "`mma`, `mmaf_scaled`"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "Shape manipulation"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "`reshape`, `broadcast`, `transpose`, `shape!`"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "Comparison"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "`gt_tile`, `ge_tile`, `lt_tile`, `le_tile`, `eq_tile`, `select`"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "Creation and conversion"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:0
+msgid "`constant`, `iota`, `convert_tile`, `pack`, `unpack`"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:135
+msgid ""
+"For element types, operation signatures, and lower-level memory operations, "
+"see the [DSL API](../reference/dsl-api.md)."
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:137
+msgid "Broadcasting and Reductions"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:139
+msgid ""
+"Broadcasting expands a scalar or smaller tile to match a larger tile shape. "
+"It follows NumPy-style rules: align dimensions from the right; each "
+"dimension must either match or be 1."
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:141
+msgid ""
+"let bias: Tile<f32, { [1, BN] }> = ...;\n"
+"let x: Tile<f32, { [BM, BN] }> = ...;\n"
+"let y = x + bias.broadcast(shape![BM, BN]);\n"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:147
+msgid ""
+"Reductions collapse one axis. Reshape the reduced result before broadcasting "
+"it back:"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:149
+msgid ""
+"fn softmax<const BM: i32, const BN: i32>(\n"
+"    x: Tile<f32, { [BM, BN] }>,\n"
+") -> Tile<f32, { [BM, BN] }> {\n"
+"    let max = reduce_max(x, 1i32)\n"
+"        .reshape(shape![BM, 1])\n"
+"        .broadcast(shape![BM, BN]);\n"
+"    let stable = x - max;\n"
+"\n"
+"    let exp_x = exp(stable);\n"
+"    let sum = reduce_sum(exp_x, 1i32)\n"
+"        .reshape(shape![BM, 1])\n"
+"        .broadcast(shape![BM, BN]);\n"
+"\n"
+"    true_div(exp_x, sum)\n"
+"}\n"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:167
+msgid "Numerically Stable Softmax"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:169
+msgid ""
+"Subtract the per-row maximum before `exp` when implementing softmax. This "
+"prevents overflow on large positive inputs and is the pattern used in fused "
+"softmax and attention kernels."
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:171
+msgid "Tiled Matrix Multiply"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:173
+msgid ""
+"Matrix multiply accumulates repeated `mma` calls across the K dimension. "
+"Each tile block owns one output tile. Each loop iteration loads a `[BM, BK]` "
+"tile from the left input and a `[BK, BN]` tile from the right input."
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:175
+msgid ""
+"fn tiled_gemm<\n"
+"    E: ElementType,\n"
+"    const BM: i32,\n"
+"    const BN: i32,\n"
+"    const BK: i32,\n"
+">(\n"
+"    z: &mut Tensor<f32, { [BM, BN] }>,\n"
+"    x: &Tensor<E, { [-1, -1] }>,\n"
+"    y: &Tensor<E, { [-1, -1] }>,\n"
+") {\n"
+"    let pid_m = program_id(0);\n"
+"    let pid_n = program_id(1);\n"
+"    let k_tiles = x.shape()[1] / BK;\n"
+"\n"
+"    let part_x = x.partition(shape![BM, BK]);\n"
+"    let part_y = y.partition(shape![BK, BN]);\n"
+"\n"
+"    let mut acc = constant(0.0f32, shape![BM, BN]);\n"
+"    for k_tile in 0i32..k_tiles {\n"
+"        let tile_x = part_x.load([pid_m, k_tile]);\n"
+"        let tile_y = part_y.load([k_tile, pid_n]);\n"
+"        acc = mma(tile_x, tile_y, acc);\n"
+"    }\n"
+"\n"
+"    z.store(acc);\n"
+"}\n"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:204
+msgid ""
+"The output accumulator usually uses a wider type than the inputs. For "
+"example, FP16 or FP8 inputs often accumulate into FP32."
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:206
+msgid "Type Safety and Generics"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:208
+msgid ""
+"The compiler catches shape mismatches, element-type mismatches, and invalid "
+"matrix multiply shapes before code runs:"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:210
+msgid ""
+"let a: Tile<f32, { [16, 8] }> = ...;\n"
+"let b: Tile<f32, { [16, 32] }> = ...;\n"
+"let c = mma(a, b, acc); // Error: inner dimensions do not match.\n"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:216
+msgid "Use explicit conversion when element types differ:"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:218
+msgid ""
+"let y_float: Tile<f32, { [4, 4] }> = convert_tile(y_int);\n"
+"let z = x_float + y_float;\n"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:223
+msgid "Generic kernels can support multiple shapes and element types:"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:225
+msgid ""
+"#[cutile::entry()]\n"
+"fn scale<E: ElementType, const S: [i32; 2]>(\n"
+"    z: &mut Tensor<E, S>,\n"
+"    x: &Tensor<E, { [-1, -1] }>,\n"
+"    alpha: E,\n"
+") {\n"
+"    let tile = x.load_like(z);\n"
+"    z.store(tile * alpha);\n"
+"}\n"
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:237
+msgid ""
+"Each concrete element type and const generic value can produce a separate "
+"compiled variant. Dynamic tensor dimensions do not."
+msgstr ""
+
+#: ../../../guide/tensors-and-tiles.md:241
+msgid "Continue to [Compilation](jit-compilation.md)."
+msgstr ""

@@ -1,0 +1,1121 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2025-2026, NVIDIA Corporation
+# This file is distributed under the same license as the cuTile Rust package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: cuTile Rust main\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-21 16:36+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: zh_TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../tutorials/04-matrix-multiplication.md:1
+msgid "4. Matrix Multiplication"
+msgstr "4. 矩陣乘法"
+
+#: ../../../tutorials/04-matrix-multiplication.md:3
+msgid ""
+"<!-- TODO: This tutorial has grown to cover basic GEMM, const generic "
+"inference,\n"
+"mapped persistent GEMM, unsafe optimization hints, and fully static GEMM. "
+"Split\n"
+"or streamline it when there is bandwidth: keep this page focused on the "
+"first\n"
+"GEMM path and move advanced performance variants to separate pages. -->\n"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:8
+msgid "Matrix multiplication (GEMM, or General Matrix Multiply) is used in:"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "Application"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "Where GEMM is Used"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "**Transformers**"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "Attention and Fully Connected layers — 90%+ of compute"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "**CNNs**"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "Convolutions expressed as matrix multiplications"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "**Scientific Computing**"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "Simulations and solvers"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "**Graphics**"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "Transformations, lighting calculations"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:19
+msgid "Naive GEMM is Memory-Bound"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:21
+msgid "The naive algorithm for C = A × B is:"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:23
+msgid ""
+"for each output element C[i,j]:\n"
+"    sum = 0\n"
+"    for k in 0..K:\n"
+"        sum += A[i,k] * B[k,j]\n"
+"    C[i,j] = sum\n"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:31
+msgid ""
+"![Memory bandwidth problem showing the mismatch between naive GEMM and GPU "
+"capabilities](../_static/images/gemm-memory-bandwidth.svg)"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:31
+msgid ""
+"Memory bandwidth problem showing the mismatch between naive GEMM and GPU "
+"capabilities"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:33
+msgid ""
+"Each element of A and B is loaded from global memory repeatedly. To get good "
+"performance, we need to load data once and reuse it many times."
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:37
+msgid "Tiled Matrix Multiplication"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:39
+msgid ""
+"Instead of computing one element at a time, we compute **tiles** of elements:"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:41
+msgid ""
+"![Tiled GEMM showing how tiles from A and B combine to form output tile C]"
+"(../_static/images/gemm-tiled-strategy.svg)"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:41
+msgid "Tiled GEMM showing how tiles from A and B combine to form output tile C"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:43
+msgid ""
+"Per output TILE (BM × BN elements):\n"
+"  - Load BM × K elements from A (once per row group)\n"
+"  - Load K × BN elements from B (once per column group)\n"
+"  - Do BM × BN × K multiply-adds\n"
+"\n"
+"Memory loads: BM×K + K×BN    Compute: BM×BN×K ops\n"
+"Ratio: With BM=BN=BK=16: ~16× better data reuse!\n"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:53
+msgid ""
+"Each loaded element of A is reused BN times, and each element of B is reused "
+"BM times. This reduces global-memory traffic."
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:58
+msgid "<a id=\"the-code\"></a>"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:58
+msgid "<a id=\"the-code\">"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:58
+msgid "</a>"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:59
+msgid "GEMM kernel"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:61
+msgid ""
+"use cuda_async::device_operation::DeviceOp;\n"
+"use cuda_core::Device;\n"
+"use std::sync::Arc;\n"
+"use cutile;\n"
+"use cutile::api;\n"
+"use cutile::DType;\n"
+"use cutile::error::Error;\n"
+"use cutile::tensor::{IntoPartition, Tensor, ToHostVec, Unpartition};\n"
+"use cutile::tile_kernel::TileKernel;\n"
+"\n"
+"#[cutile::module]\n"
+"mod my_module {\n"
+"    use cutile::core::*;\n"
+"\n"
+"    #[cutile::entry()]\n"
+"    fn gemm<E: ElementType, const BM: i32, const BN: i32, const BK: i32, "
+"const K: i32>(\n"
+"        z: &mut Tensor<E, { [BM, BN] }>,   // Output tile\n"
+"        x: &Tensor<E, { [-1, K] }>,        // A matrix\n"
+"        y: &Tensor<E, { [K, -1] }>,        // B matrix\n"
+"    ) {\n"
+"        let part_x = x.partition(shape![BM, BK]);\n"
+"        let part_y = y.partition(shape![BK, BN]);\n"
+"        let pid_m = program_id(0);\n"
+"        let pid_n = program_id(1);\n"
+"\n"
+"        let mut tile_z = load_tile_mut(z);\n"
+"\n"
+"        for i in 0i32..(K / BK) {\n"
+"            let tile_x = part_x.load([pid_m, i]);\n"
+"            let tile_y = part_y.load([i, pid_n]);\n"
+"            tile_z = mma(tile_x, tile_y, tile_z);  // C += A @ B\n"
+"        }\n"
+"        z.store(tile_z);\n"
+"    }\n"
+"}\n"
+"\n"
+"use my_module::gemm;\n"
+"\n"
+"fn main() -> Result<(), Error> {\n"
+"    let device = Device::new(0)?;\n"
+"    let stream = device.new_stream()?;\n"
+"\n"
+"    let (bm, bn, bk) = (16usize, 16usize, 8usize);\n"
+"    let (m, n, k) = (64usize, 64usize, 64usize);\n"
+"\n"
+"    let generics = vec![\n"
+"        f32::DTYPE.as_str().to_string(),\n"
+"        bm.to_string(), bn.to_string(), bk.to_string(), k.to_string()\n"
+"    ];\n"
+"\n"
+"    let z = api::zeros(&[m, n]).partition([bm, bn]).sync_on(&stream)?;\n"
+"    let x: Arc<Tensor<f32>> = api::ones(&[m, k]).map(Into::into)."
+"sync_on(&stream)?;\n"
+"    let y: Arc<Tensor<f32>> = api::ones(&[k, n]).map(Into::into)."
+"sync_on(&stream)?;\n"
+"\n"
+"    let (z, _x, _y) = gemm(z, x, y).generics(generics).sync_on(&stream)?;\n"
+"\n"
+"    let z_host: Vec<f32> = z.unpartition().to_host_vec().sync_on(&stream)?;\n"
+"    println!(\"z[0] = {} (expected {})\", z_host[0], k);\n"
+"\n"
+"\n"
+"    Ok(())\n"
+"}\n"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:126
+msgid "**Output:**"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:128
+msgid "z[0] = 64 (expected 64)\n"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:132
+msgid ""
+"Each output element is the dot product of a row of ones with a column of "
+"ones, which equals K. With K=64, every output element is 64."
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:136
+msgid "The K-Loop"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:138
+msgid ""
+"The K-loop iterates over pairs of tiles from A and B, accumulating partial "
+"products into the output tile:"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:140
+msgid ""
+"for i in 0i32..(K / BK) {\n"
+"    let tile_x = part_x.load([pid_m, i]);  // Load A[row_group, i]\n"
+"    let tile_y = part_y.load([i, pid_n]);  // Load B[i, col_group]\n"
+"    tile_z = mma(tile_x, tile_y, tile_z);  // Accumulate: C += A @ B\n"
+"}\n"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:148
+msgid ""
+"![K-loop showing how partial products accumulate across iterations](../"
+"_static/images/gemm-kloop.svg)"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:148
+msgid "K-loop showing how partial products accumulate across iterations"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:152
+msgid "The `mma()` Intrinsic"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:154
+msgid "`mma` stands for **Matrix Multiply-Accumulate**:"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:156
+msgid ""
+"tile_z = mma(tile_x, tile_y, tile_z);\n"
+"// Equivalent to: tile_z = tile_x @ tile_y + tile_z\n"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:161
+msgid ""
+"On modern GPUs (Volta and later), this maps directly to **Tensor Cores** — "
+"specialized hardware that can multiply small matrices (like 16×16×16) in a "
+"single operation."
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:165
+msgid "Const Generics and JIT Recompilation"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:167
+msgid ""
+"fn gemm<E: ElementType, const BM: i32, const BN: i32, const BK: i32, const "
+"K: i32>\n"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:171
+msgid "These are **const generics** — values known at compile time:"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:173
+msgid "**Loop unrolling:** `for i in 0..(K/BK)` can be fully unrolled."
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:174
+msgid ""
+"**Register allocation:** The compiler knows exactly how many registers are "
+"needed."
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:175
+msgid "**Tensor Core mapping:** The hardware requires specific tile sizes."
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:177
+msgid "They are passed via `.generics()`:"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:179
+msgid ""
+"let generics = vec![\"f32\".to_string(), \"16\".to_string(), \"16\"."
+"to_string(), \"8\".to_string(), \"64\".to_string()];\n"
+"gemm(z, x, y).generics(generics)\n"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:184
+msgid ""
+"Changing a type parameter or const generic in the entry function signature "
+"creates a new compiled variant. The first time a variant is launched, cuTile "
+"compiles the kernel through Tile IR bytecode → cubin. The resulting binary "
+"is cached, so subsequent launches that resolve to the same variant reuse it. "
+"Launching with different generics — for example, switching from `K=64` to "
+"`K=128` — produces a new compilation. The full cache rules, including "
+"compile options and specialization hints, are covered in [Compilation](../"
+"guide/jit-compilation.md)."
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:186
+msgid ""
+"This is the tradeoff between **static** and **dynamic** shape dimensions. In "
+"the GEMM signature above, `K` is a const generic while the M and N "
+"dimensions of `x` and `y` are dynamic (`-1`):"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:188
+msgid ""
+"x: &Tensor<E, { [-1, K] }>,   // M is dynamic (-1), K is static\n"
+"y: &Tensor<E, { [K, -1] }>,   // K is static, N is dynamic (-1)\n"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:193
+msgid ""
+"**Static dimensions** (const generics) enable aggressive optimization but "
+"trigger recompilation when they change."
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:194
+msgid ""
+"**Dynamic dimensions** (`-1`) carry no optimization benefit but can vary "
+"freely across launches without creating a new compiled variant."
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:196
+msgid ""
+"As a rule, make tile sizes (`BM`, `BN`, `BK`) static — they are fixed for a "
+"given kernel variant and the compiler needs them for register allocation and "
+"Tensor Core mapping. Make problem dimensions that change often (such as "
+"sequence length or batch size) dynamic."
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:198
+msgid ""
+"![Performance comparison between naive and tiled GEMM](../_static/images/"
+"gemm-performance-comparison.svg)"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:198
+msgid "Performance comparison between naive and tiled GEMM"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:200
+msgid ""
+"With larger tiles (like 128×128), you can achieve even better ratios, "
+"approaching the GPU's theoretical peak."
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:204
+msgid "Const Generic Inference"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:206
+msgid ""
+"SAXPY needs no `.generics()` call: cuTile infers the const generics from the "
+"host-side output partition."
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:209
+msgid "Consider SAXPY's kernel signature:"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:211
+msgid ""
+"fn saxpy<const S: [i32; 2]>(\n"
+"    y: &mut Tensor<f32, S>,\n"
+"    a: f32,\n"
+"    x: &Tensor<f32, { [-1, -1] }>\n"
+")\n"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:219
+msgid ""
+"On the host side, `y` is a `Partition<Tensor<f32>>` created by calling `."
+"partition([2, 2])`. The `partition_shape` of that `Partition` — `[2, 2]` — "
+"is used to infer `S`. Since `S` is the only const generic and it appears "
+"directly in the `&mut Tensor<f32, S>` parameter, cutile can infer everything "
+"it needs from the host-side types alone. No `.generics()` call required."
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:221
+msgid ""
+"The inference rule is the same as Rust: const generics that appear in the "
+"shape of a `&mut Tensor` are read from the `Partition`'s `partition_shape`, "
+"and const generics that appear in the shape of a `&Tensor` are read from the "
+"tensor's `shape`. Type parameters like `E: ElementType` are inferred from "
+"the tensor's `dtype()`."
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:223
+msgid "For GEMM, this inference is **partial**:"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:225
+msgid ""
+"fn gemm<E: ElementType, const BM: i32, const BN: i32, const BK: i32, const "
+"K: i32>(\n"
+"    z: &mut Tensor<E, { [BM, BN] }>,   // BM, BN inferred from z's "
+"partition_shape\n"
+"    x: &Tensor<E, { [-1, K] }>,        // K inferred from x's shape[1]\n"
+"    y: &Tensor<E, { [K, -1] }>,        // K also available from y's "
+"shape[0]\n"
+")\n"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "Generic"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "Appears in"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "Inferred from"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "Inferable?"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "`E`"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "`z`, `x`, `y`"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "`z.dtype()`"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "Yes"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "`BM`"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "`z` (`&mut`)"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "`z.partition_shape[0]`"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "`BN`"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "`z.partition_shape[1]`"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "`K`"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "`x`, `y`"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "`x.shape()[1]`"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "`BK`"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "—"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "No"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:241
+msgid ""
+"`BM` and `BN` are known at kernel launch time because they are embedded in "
+"the `Partition` created by `.partition([bm, bn])`. `K` is known because it "
+"appears as a dimension of the input tensors `x` and `y`. But `BK` does not "
+"appear in the type of any kernel argument — it is only used *inside* the "
+"kernel body when partitioning `x` and `y` into tiles:"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:243
+msgid ""
+"let part_x = x.partition(shape![BM, BK]);\n"
+"let part_y = y.partition(shape![BK, BN]);\n"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:248
+msgid ""
+"The launcher cannot infer `BK` from a tensor or partition, so GEMM needs an "
+"explicit `.generics()` call."
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:251
+msgid ""
+"As a general rule: if every const generic appears somewhere in the kernel's "
+"`&Tensor` or `&mut Tensor` parameter types, inference will work and `."
+"generics()` is optional. If any const generic is used only inside the kernel "
+"body (like `BK`), you must pass all generics explicitly."
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:256
+msgid "GEMM optimization"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:258
+msgid ""
+"The GEMM kernel above is correct but does not reach the GPU's theoretical "
+"peak (speed-of-light, or SoL) throughput. The recommended safe path is "
+"mapped persistent GEMM: the output partition produces bounded, disjoint "
+"indices, and the compiler derives the input bounds from the loops that "
+"produce each index. This avoids `unsafe` and does not require making full "
+"tensor dimensions const generics."
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:265
+msgid "Approach 1: Mapped Persistent GEMM (Safe, Recommended)"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:267
+msgid ""
+"Mapped output partitions expose an iterator over output tile indices. The "
+"indices are produced by the partition itself, so stores are bounded and "
+"disjoint. The K-loop iterates `0..num_tiles(&part_x, 1)` and indexes the "
+"input partitions with plain arrays; the compiler infers the same bounds from "
+"the loop and the mapped components, and verifies the cross-tensor ties (for "
+"example `ceil(dim(x, 1)/BK) <= ceil(dim(y, 0)/BK)`) as launch checks before "
+"any GPU work. `deny_in_kernel_checks = true` turns any check that would "
+"remain in the kernel into a compile error, so the body is assert-free by "
+"construction:"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:276
+msgid ""
+"#[cutile::entry(\n"
+"    optimization_hints = (\n"
+"        sm_120 = (num_cta_in_cga = 2,),\n"
+"        sm_100 = (num_cta_in_cga = 2,),\n"
+"    ),\n"
+"    deny_in_kernel_checks = true,\n"
+")]\n"
+"fn gemm_persistent<\n"
+"    T: ElementType,\n"
+"    const BM: i32,\n"
+"    const BN: i32,\n"
+"    const BK: i32,\n"
+"    const MAP_SHAPE: [i32; 2],\n"
+">(\n"
+"    mut z: MappedPartitionMut<T, { [BM, BN] }, MAP_SHAPE>,\n"
+"    x: &Tensor<T, { [-1, -1] }>,\n"
+"    y: &Tensor<T, { [-1, -1] }>,\n"
+") {\n"
+"    let part_x = x.partition(shape![BM, BK]);\n"
+"    let part_y = y.partition(shape![BK, BN]);\n"
+"\n"
+"    for out_idx in z.iter_indices() {\n"
+"        let (bid_m, bid_n) = out_idx.components();\n"
+"\n"
+"        let mut tile_z: Tile<T, { [BM, BN] }> = constant(T::ZERO, shape![BM, "
+"BN]);\n"
+"        for k_tile in 0i32..num_tiles(&part_x, 1) {\n"
+"            let tile_x = part_x.load([bid_m, k_tile]);\n"
+"            let tile_y = part_y.load([k_tile, bid_n]);\n"
+"            tile_z = mma(tile_x, tile_y, tile_z);\n"
+"        }\n"
+"        z.store(tile_z, out_idx);\n"
+"    }\n"
+"}\n"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:312
+msgid ""
+"`with_bounds(...)`, `Dim::new(...)`, and `coord(...)` from earlier versions "
+"of this kernel are deprecated since 0.3.0; see [Bounds-Check Placement](../"
+"guide/bounds-check-placement.md) for the placement rules."
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:317
+msgid ""
+"On the host side, `.map(...)` selects the mapped output traversal and the "
+"launch grid is inferred from the mapped partition:"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:320
+msgid ""
+"let z = z.partition([BM, BN]).map([4, 1], num_tile_blocks);\n"
+"let (z, _x, _y) = gemm_persistent(z, x, y)\n"
+"    .generics(generics)\n"
+"    .sync_on(&stream)?;\n"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:327
+msgid ""
+"Changing the full runtime tensor dimensions does not require recompilation. "
+"Only the type-level parameters, such as tile sizes and the map shape, "
+"specialize the JIT compilation."
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:331
+msgid ""
+"See [`cutile-examples/examples/persistent_gemm.rs`](https://github.com/"
+"NVIDIA/cuda-rust/blob/main/cutile-rs/cutile-examples/examples/"
+"persistent_gemm.rs) for the complete example."
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:333
+msgid "Approach 2: Disabling Bounds Checks (Unsafe)"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:335
+msgid ""
+"The `#[cutile::entry()]` attribute accepts `unchecked_accesses` and "
+"`optimization_hints`. Setting `unchecked_accesses = true` disables runtime "
+"bounds checks on all tensor loads and stores and requires an `unsafe` entry "
+"point. `optimization_hints` supplies architecture-specific tuning parameters:"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:340
+msgid ""
+"#[cutile::entry(\n"
+"    unchecked_accesses = true,\n"
+"    optimization_hints = (\n"
+"        sm_120 = (num_cta_in_cga = 2, max_divisibility = 16,),\n"
+"    )\n"
+")]\n"
+"unsafe fn gemm<T: ElementType, const BM: i32, const BN: i32, const BK: "
+"i32>(\n"
+"    z: &mut Tensor<T, { [BM, BN] }>,\n"
+"    x: &Tensor<T, { [-1, -1] }>,\n"
+"    y: &Tensor<T, { [-1, -1] }>,\n"
+"    k: i32,\n"
+") {\n"
+"    let part_x = x.partition(shape![BM, BK]);\n"
+"    let part_y = y.partition(shape![BK, BN]);\n"
+"    let pid_m = program_id(0);\n"
+"    let pid_n = program_id(1);\n"
+"    let mut tile_z: Tile<T, { [BM, BN] }> = z.load();\n"
+"    for i in 0i32..(k / BK) {\n"
+"        let tile_x = part_x.load([pid_m, i]);\n"
+"        let tile_y = part_y.load([i, pid_n]);\n"
+"        tile_z = mma(tile_x, tile_y, tile_z);\n"
+"    }\n"
+"    z.store(tile_z);\n"
+"}\n"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:367
+msgid "This version changes three parts of the kernel:"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:369
+msgid ""
+"**`unchecked_accesses = true`** removes bounds-checking overhead on every "
+"`load` and `store` call."
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:370
+msgid ""
+"**`sm_120 = (num_cta_in_cga = 2, max_divisibility = 16,)`** is an "
+"architecture-specific hint for Blackwell (SM 120) that groups two CTAs into "
+"a CGA for better inter-SM data sharing and caps auto-inferred alignment at "
+"16."
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:371
+msgid ""
+"**`k` is passed as a runtime `i32`** rather than a const generic, so "
+"changing the K dimension does not create a new compiled variant."
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:373
+msgid ""
+"The compiler still checks tile shapes, `mma` dimensions, and element types. "
+"`unchecked_accesses` disables only runtime bounds checks."
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:376
+msgid "The call site must also use an `unsafe` block:"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:378
+msgid ""
+"unsafe {\n"
+"    let (z, _, _, _) = gemm(z, x, y, k as i32)\n"
+"        .generics(generics)\n"
+"        .sync_on(&stream)?;\n"
+"}\n"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:386
+msgid ""
+"See [`cutile-benchmarks/benches/gemm.rs`](https://github.com/NVIDIA/cuda-"
+"rust/blob/main/cutile-rs/cutile-benchmarks/benches/gemm.rs) for a full "
+"benchmark comparing optimized and unoptimized variants."
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:388
+msgid "Approach 3: Fully Static GEMM (Safe, Legacy)"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:390
+msgid ""
+"The older safe performance path is to make **all** tensor dimensions static "
+"const generics. When the compiler knows every dimension and the launch grid "
+"at JIT time, it can prove direct `program_id(axis)` partition accesses are "
+"in bounds and optimize the checks away entirely - no `unsafe` required:"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:395
+msgid ""
+"#[cutile::entry()]\n"
+"fn gemm<\n"
+"    E: ElementType,\n"
+"    const BM: i32, const BN: i32, const BK: i32,\n"
+"    const M: i32, const N: i32, const K: i32,\n"
+">(\n"
+"    z: &mut Tensor<E, { [BM, BN] }>,\n"
+"    x: &Tensor<E, { [M, K] }>,\n"
+"    y: &Tensor<E, { [K, N] }>,\n"
+") {\n"
+"    let part_x = x.partition(shape![BM, BK]);\n"
+"    let part_y = y.partition(shape![BK, BN]);\n"
+"    let mut tile_z = load_tile_mut(z);\n"
+"    let pid_m = program_id(0);\n"
+"    let pid_n = program_id(1);\n"
+"    for i in 0i32..(K / BK) {\n"
+"        let tile_x = part_x.load([pid_m, i]);\n"
+"        let tile_y = part_y.load([i, pid_n]);\n"
+"        tile_z = mma(tile_x, tile_y, tile_z);\n"
+"    }\n"
+"    z.store(tile_z);\n"
+"}\n"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:420
+msgid "In this version:"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:422
+msgid ""
+"**`x: &Tensor<E, { [M, K] }>` and `y: &Tensor<E, { [K, N] }>`** — input "
+"dimensions are fully static instead of dynamic (`-1`). The compiler sees the "
+"exact shape of every tensor."
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:423
+msgid ""
+"**No `unsafe`, no `unchecked_accesses`** — bounds checks are present in the "
+"source but the JIT compiler proves they are redundant and eliminates them "
+"during optimization."
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:424
+msgid ""
+"**`M`, `N`, `K` are const generics** — they must be passed via `.generics()` "
+"at launch time, and every new combination creates a new compiled variant."
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:425
+msgid ""
+"**`.const_grid(grid)`** — optional. The launch grid is inferred from the "
+"output partition as usual; `.const_grid()` additionally passes the grid as a "
+"compile-time constant, which gives the compiler exact bounds for "
+"`program_id(axis)` / `num_programs(axis)` and makes the grid part of the "
+"specialization key (each distinct grid is its own compiled variant). The "
+"grid is computed from the output partition (`let grid = z.grid()?`):"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:427
+msgid ""
+"let grid = z.grid()?;\n"
+"let (z, _x, _y) = gemm(z, x, y)\n"
+"    .const_grid(grid)\n"
+"    .generics(generics)\n"
+"    .sync_on(&stream)?;\n"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:435
+msgid ""
+"See [`cutile-examples/examples/gemm_static.rs`](https://github.com/NVIDIA/"
+"cuda-rust/blob/main/cutile-rs/cutile-examples/examples/gemm_static.rs) for "
+"the legacy static example."
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:437
+msgid "Choosing Between the Approaches"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "Mapped Persistent"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "Unsafe + Hints"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "Fully Static"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "**Safety**"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "Safe bounded/disjoint output iteration"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "`unsafe` - programmer must ensure correct dimensions"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "Safe - compiler verifies direct static accesses"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "**Compilation behavior**"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "Tile sizes and map shape create new compiled variants"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "Tile sizes create new compiled variants"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "Every full tensor shape creates a new compiled variant"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "**Flexibility**"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "Problem sizes can change at runtime"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "Each new problem size is a new compilation"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "**Compile-time checks**"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "Tile shapes, types, and mapped index proofs"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "Tile shapes and types still checked"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "All shapes and types checked"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "**Best for**"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "Default high-performance safe GEMM"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "Escape hatch for manually proven kernels"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "Legacy fixed-size kernels"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:447
+msgid ""
+"Start with mapped persistent GEMM. An unsafe kernel requires a manual proof "
+"of its access pattern and is useful when that pattern cannot yet be "
+"expressed in the safe DSL. Fully static GEMM suits older kernels or a small, "
+"fixed set of tensor shapes."
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:454
+msgid "Key Takeaways"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "Concept"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "What It Means"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "**Tiling**"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "Process data in blocks to maximize data reuse"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "**K-loop**"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "Iterate over tile pairs, accumulating partial results"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "**mma()**"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "Matrix multiply-accumulate, maps to Tensor Cores"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "**Const generics**"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid ""
+"Tile sizes known at compile time for optimization; changing them creates a "
+"new compiled variant"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "**Const generic inference**"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid ""
+"Generics appearing in `&mut Tensor` / `&Tensor` parameter types are inferred "
+"from host-side `Partition` shapes and tensor shapes; generics used only "
+"inside the kernel body (like `BK`) must be passed explicitly"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "**Dynamic dimensions (`-1`)**"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "Can vary across launches without creating a new compiled variant"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "**Arithmetic intensity**"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "Ratio of compute to memory ops — higher is better"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "**Mapped output iteration**"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "Recommended safe performance path for persistent GEMM"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "**`unchecked_accesses`**"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "Disables runtime bounds checks for peak performance; requires `unsafe`"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid "**Fully static shapes**"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:0
+msgid ""
+"Legacy safe path that lets the compiler eliminate direct block-id bounds "
+"checks"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:471
+msgid "Exercise 1: Change Tile Sizes"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:473
+msgid "Experiment with different `(BM, BN, BK)` values:"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:474
+msgid "Try `(32, 32, 16)` — larger tiles."
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:475
+msgid "Try `(8, 8, 4)` — smaller tiles."
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:477
+msgid "Measure each configuration over multiple runs. Which is faster?"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:479
+msgid "Exercise 2: Non-Square Matrices"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:481
+msgid "Modify to multiply `[M, K] @ [K, N]` where M ≠ N:"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:483
+msgid "let (m, n, k) = (128, 256, 64);  // Non-square output\n"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:487
+msgid "Does the code need changes?"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:489
+msgid "Exercise 3: Mixed Precision"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:491
+msgid ""
+"Try using `f16` (half precision) for inputs and `f32` for the accumulator. "
+"This is common in ML for faster compute."
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:495
+msgid "See also"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:497
+msgid ""
+"[Tensors and Tiles](../guide/tensors-and-tiles.md#tiled-matrix-multiply) — "
+"`mma` usage and the accumulate pattern"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:498
+msgid ""
+"[Useful Mental Models](../guide/useful-mental-models.md) — 2D partitioning "
+"and grid mapping"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:499
+msgid ""
+"[Performance](../guide/performance.md) — Tensor Core usage and tile-size "
+"selection"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:500
+msgid ""
+"[DSL API](../reference/dsl-api.md#matrix-multiply) — `mma` signature and "
+"element-type constraints"
+msgstr ""
+
+#: ../../../tutorials/04-matrix-multiplication.md:501
+msgid ""
+"[Inference with NVFP4/MXFP8](11-nvfp4-inference.md) — packed FP4, FP8 data, "
+"and block-scaled MMA"
+msgstr ""
