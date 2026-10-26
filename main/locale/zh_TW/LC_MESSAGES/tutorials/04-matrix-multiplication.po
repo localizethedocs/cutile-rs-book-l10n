@@ -19,7 +19,7 @@ msgstr ""
 
 #: ../../../tutorials/04-matrix-multiplication.md:1
 msgid "4. Matrix Multiplication"
-msgstr ""
+msgstr "4. 矩陣乘法"
 
 #: ../../../tutorials/04-matrix-multiplication.md:3
 msgid ""

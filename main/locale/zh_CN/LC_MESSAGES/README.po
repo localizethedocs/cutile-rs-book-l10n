@@ -76,4 +76,4 @@ msgstr ""
 
 #: ../../../README.md:41
 msgid "**Examples**: See the `cutile-examples/` directory"
-msgstr ""
+msgstr "**示例**: 请参阅`cutile-examples/`目录"

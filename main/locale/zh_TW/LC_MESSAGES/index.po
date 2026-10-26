@@ -47,6 +47,9 @@ msgid ""
 "bugs, incomplete features, and breaking API changes. Feedback from using it "
 "in your own projects helps us decide what to work on next."
 msgstr ""
+"這是一個仍在積極開發的早期研究專案。請預期可能會有錯誤、功能尚未完善，以及 "
+"API 變更導致的重大異動。您在自己的專案中使用後提供的意見，有助於我們決定下一"
+"步的開發方向。"
 
 #: ../../../index.md:15
 msgid "Get Started"
@@ -124,7 +127,7 @@ msgstr ""
 
 #: ../../../index.md:54
 msgid "What it gives you"
-msgstr ""
+msgstr "它能提供什麼"
 
 #: ../../../index.md:60
 msgid "Ownership at the launch boundary"

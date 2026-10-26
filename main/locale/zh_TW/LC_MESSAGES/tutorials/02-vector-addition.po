@@ -19,7 +19,7 @@ msgstr ""
 
 #: ../../../tutorials/02-vector-addition.md:1
 msgid "2. Vector Addition"
-msgstr ""
+msgstr "2. 向量加法"
 
 #: ../../../tutorials/02-vector-addition.md:3
 msgid ""
