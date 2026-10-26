@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-TW" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>2. Vector Addition &#8212; cuTile Rust</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/nvidia-sphinx-theme.css?v=933278ad" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=4011299f" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/lightbox.css?v=31fdf494" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../_static/documentation_options.js?v=a7999bab"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/translations.js?v=cbf116e0"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/02-vector-addition';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <script src="../_static/js/lightbox.js?v=17028852"></script>
+    <link rel="canonical" href="https://projects.localizethedocs.org/cutile-rs-book-l10n/tutorials/02-vector-addition.html" />
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜尋" href="../search.html" />
+    <link rel="next" title="3. SAXPY" href="03-saxpy.html" />
+    <link rel="prev" title="1. Hello World" href="01-hello-world.html" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="zh-TW"/>
+  <meta name="docsearch:version" content="main" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+<script type="text/javascript" src="../ltd-provenance.js"></script>
+<script type="text/javascript" src="../ltd-current.js"></script>
+<script type="text/javascript" src="../../../ltd-config.js"></script>
+<script type="text/javascript" src="../../../ltd-flyout.js"></script>
+
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">跳转至主要内容</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>回到顶部</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="版本警告"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="网页导航">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" class="logo__image only-light" alt=""/>
+    <img src="../_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cuTile Rust</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item"><div class="github-links">
+  <!--
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/stargazers" target="_blank" rel="noopener">
+    <i class="fa-solid fa-star" aria-hidden="true"></i>
+    <span class="sr-only">Star</span>
+  </a>
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/fork" target="_blank" rel="noopener">
+    <i class="fa-solid fa-code-fork" aria-hidden="true"></i>
+    <span class="sr-only">Fork</span>
+  </a>
+  -->
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/NVIDIA/cuda-rust" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="搜尋" aria-label="搜尋" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button></div>
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="亮色"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="暗色"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>亮色</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>暗色</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="当前页面">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><div class="github-links">
+  <!--
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/stargazers" target="_blank" rel="noopener">
+    <i class="fa-solid fa-star" aria-hidden="true"></i>
+    <span class="sr-only">Star</span>
+  </a>
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/fork" target="_blank" rel="noopener">
+    <i class="fa-solid fa-code-fork" aria-hidden="true"></i>
+    <span class="sr-only">Fork</span>
+  </a>
+  -->
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/NVIDIA/cuda-rust" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="搜尋" aria-label="搜尋" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button></div>
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="亮色"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="暗色"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>亮色</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>暗色</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><div class="sidebar-tree">
+    <p class="sidebar-tree-title">
+        Table of Contents
+    </p>
+    <p aria-level="2" class="caption" role="heading"><span class="caption-text">教學課程</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="01-hello-world.html">1. Hello World</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">2. Vector Addition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03-saxpy.html">3. SAXPY</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04-matrix-multiplication.html">4. Matrix Multiplication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05-fused-softmax.html">5. Fused Softmax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06-flash-attention.html">6. Fused Multihead Attention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07-intro-to-async.html">7. Intro to Async Execution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08-data-parallel-mlp.html">8. Data Parallel MLP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="09-pointer-addition.html">9. Pointer Addition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10-cuda-graphs.html">10. CUDA Graphs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11-nvfp4-inference.html">11. Inference with NVFP4/MXFP8</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12-dgx-spark-inference.html">12. LLM Inference on DGX Spark</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">使用者指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guide/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/host-vs-device.html">Host vs. Device Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/tensors-and-tiles.html">Tensors and Tiles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/jit-compilation.html">Compilation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/device-operations.html">Device Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/performance.html">Performance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/autotuning.html">Autotuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/bounds-check-placement.html">Bounds-Check Placement</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/interoperability.html">Interoperability</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/debugging-and-profiling.html">Debugging and Profiling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/useful-mental-models.html">Useful Mental Models</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">參考</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../reference/dsl-api.html">DSL API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/host-api.html">Host API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/compatibility.html">CUDA and Tile IR compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/glossary.html">Glossary</a></li>
+</ul>
+
+</div></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="初始页面">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">2. Vector Addition</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="vector-addition">
+<h1>2. Vector Addition<a class="headerlink" href="#vector-addition" title="連結到這個標頭">#</a></h1>
+<p>In cutile, tile programs run concurrently and each program knows its grid coordinates via <code class="docutils literal notranslate"><span class="pre">program_id(axis)</span></code>. To make programs process different pieces of data, we use <strong>partitioning</strong> — dividing the output tensor into sub-tensors so that each tile program reads from and writes to a distinct region.</p>
+<p><img alt="Partitioning divides data among tile threads" src="../_images/vector-addition-partitioning.svg" /></p>
+<hr class="docutils" />
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">use</span><span class="w"> </span><span class="n">cuda_async</span><span class="p">::</span><span class="n">device_operation</span><span class="p">::</span><span class="n">DeviceOp</span><span class="p">;</span>
+<span class="k">use</span><span class="w"> </span><span class="n">cuda_core</span><span class="p">::</span><span class="n">Device</span><span class="p">;</span>
+<span class="k">use</span><span class="w"> </span><span class="n">std</span><span class="p">::</span><span class="n">sync</span><span class="p">::</span><span class="n">Arc</span><span class="p">;</span>
+<span class="k">use</span><span class="w"> </span><span class="n">cutile</span><span class="p">;</span>
+<span class="k">use</span><span class="w"> </span><span class="n">cutile</span><span class="p">::</span><span class="n">api</span><span class="p">::{</span><span class="n">ones</span><span class="p">,</span><span class="w"> </span><span class="n">zeros</span><span class="p">};</span>
+<span class="k">use</span><span class="w"> </span><span class="n">cutile</span><span class="p">::</span><span class="n">error</span><span class="p">::</span><span class="n">Error</span><span class="p">;</span>
+<span class="k">use</span><span class="w"> </span><span class="n">cutile</span><span class="p">::</span><span class="n">tensor</span><span class="p">::{</span><span class="n">IntoPartition</span><span class="p">,</span><span class="w"> </span><span class="n">Tensor</span><span class="p">,</span><span class="w"> </span><span class="n">ToHostVec</span><span class="p">,</span><span class="w"> </span><span class="n">Unpartition</span><span class="p">};</span>
+<span class="k">use</span><span class="w"> </span><span class="n">cutile</span><span class="p">::</span><span class="n">tile_kernel</span><span class="p">::</span><span class="n">TileKernel</span><span class="p">;</span>
+
+<span class="cp">#[cutile::module]</span>
+<span class="k">mod</span><span class="w"> </span><span class="nn">my_module</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">use</span><span class="w"> </span><span class="n">cutile</span><span class="p">::</span><span class="n">core</span><span class="p">::</span><span class="o">*</span><span class="p">;</span>
+
+<span class="w">    </span><span class="cp">#[cutile::entry()]</span>
+<span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">add</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">S</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="kt">i32</span><span class="p">;</span><span class="w"> </span><span class="mi">2</span><span class="p">]</span><span class="o">&gt;</span><span class="p">(</span>
+<span class="w">        </span><span class="n">z</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">mut</span><span class="w"> </span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="n">S</span><span class="o">&gt;</span><span class="p">,</span><span class="w">          </span><span class="c1">// Output: has static shape S (the tile shape)</span>
+<span class="w">        </span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="p">{[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">]}</span><span class="o">&gt;</span><span class="p">,</span><span class="w">     </span><span class="c1">// Input: dynamic shape (full tensor)</span>
+<span class="w">        </span><span class="n">y</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="p">{[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">]}</span><span class="o">&gt;</span><span class="w">      </span><span class="c1">// Input: dynamic shape (full tensor)</span>
+<span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">tile_x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="n">load_like</span><span class="p">(</span><span class="n">z</span><span class="p">);</span><span class="w">  </span><span class="c1">// Load a tile from x using z's partitioning</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">tile_y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">y</span><span class="p">.</span><span class="n">load_like</span><span class="p">(</span><span class="n">z</span><span class="p">);</span><span class="w">  </span><span class="c1">// Load a tile from y using z's partitioning</span>
+<span class="w">        </span><span class="n">z</span><span class="p">.</span><span class="n">store</span><span class="p">(</span><span class="n">tile_x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">tile_y</span><span class="p">);</span><span class="w">              </span><span class="c1">// Add and store result</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">use</span><span class="w"> </span><span class="n">my_module</span><span class="p">::</span><span class="n">add</span><span class="p">;</span>
+
+<span class="k">fn</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">Result</span><span class="o">&lt;</span><span class="p">(),</span><span class="w"> </span><span class="n">Error</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Device</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">stream</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">device</span><span class="p">.</span><span class="n">new_stream</span><span class="p">()</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="c1">// Create input tensors: 32×32 matrices filled with 1.0</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ones</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">]).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="n">into</span><span class="p">();</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">y</span><span class="p">:</span><span class="w"> </span><span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ones</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">]).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="n">into</span><span class="p">();</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="c1">// Create output tensor, PARTITIONED into 4×4 sub-tensors.</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">zeros</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">]).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="n">partition</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">]);</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="c1">// Run the kernel — one tile thread per sub-tensor, for a total of 64 threads.</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">_x</span><span class="p">,</span><span class="w"> </span><span class="n">_y</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">add</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="c1">// Verify results.</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">z_host</span><span class="p">:</span><span class="w"> </span><span class="nb">Vec</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">z</span><span class="p">.</span><span class="n">unpartition</span><span class="p">().</span><span class="n">to_host_vec</span><span class="p">().</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">"z[0] = {} (expected 2.0)"</span><span class="p">,</span><span class="w"> </span><span class="n">z_host</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="nb">Ok</span><span class="p">(())</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Output:</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>z[0] = 2 (expected 2.0)
+</pre></div>
+</div>
+<hr class="docutils" />
+<section id="partitioning">
+<h2>Partitioning<a class="headerlink" href="#partitioning" title="連結到這個標頭">#</a></h2>
+<p>Partitioning divides a tensor into a grid of sub-regions, each processed by one tile block. In cuTile Rust, partitioning works differently for mutable outputs (<code class="docutils literal notranslate"><span class="pre">&amp;mut</span> <span class="pre">Tensor</span></code>) and read-only inputs (<code class="docutils literal notranslate"><span class="pre">&amp;Tensor</span></code>).</p>
+<section id="host-side-partitioning-required-for-mut-tensor">
+<h3>Host-Side Partitioning (Required for <code class="docutils literal notranslate"><span class="pre">&amp;mut</span> <span class="pre">Tensor</span></code>)<a class="headerlink" href="#host-side-partitioning-required-for-mut-tensor" title="連結到這個標頭">#</a></h3>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">zeros</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">]).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="n">partition</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">]);</span>
+</pre></div>
+</div>
+<ol class="arabic simple">
+<li><p>Creates a 32×32 output tensor initialized to zeros.</p></li>
+<li><p>Divides it into 4×4 sub-tensors.</p></li>
+<li><p>Creates an 8×8 grid of sub-tensors (32÷4 = 8 in each dimension).</p></li>
+</ol>
+<p><img alt="How partitioning creates the tile grid" src="../_images/vector-addition-grid.svg" /></p>
+<p>Mutable tensors <strong>must</strong> be partitioned on the host side before kernel launch. This guarantees that each tile block writes to a disjoint sub-region — satisfying Rust's exclusive access requirement for mutable memory. The host-side <code class="docutils literal notranslate"><span class="pre">Partition</span></code> also determines the launch grid: cutile automatically infers that an 8×8 partition means 64 tile blocks.</p>
+<p>On the host side, the generated launcher expects a partition for every <code class="docutils literal notranslate"><span class="pre">&amp;mut</span> <span class="pre">Tensor</span></code> parameter — <code class="docutils literal notranslate"><span class="pre">Partition&lt;Tensor&lt;T&gt;&gt;</span></code> from <code class="docutils literal notranslate"><span class="pre">tensor.partition(...)</span></code>, <code class="docutils literal notranslate"><span class="pre">Partition&lt;&amp;mut</span> <span class="pre">Tensor&lt;T&gt;&gt;</span></code> from <code class="docutils literal notranslate"><span class="pre">(&amp;mut</span> <span class="pre">tensor).partition(...)</span></code>, or a mapped partition — so you always call <code class="docutils literal notranslate"><span class="pre">.partition(...)</span></code> before passing the tensor.</p>
+</section>
+<section id="device-side-partitioning-available-for-tensor">
+<h3>Device-Side Partitioning (Available for <code class="docutils literal notranslate"><span class="pre">&amp;Tensor</span></code>)<a class="headerlink" href="#device-side-partitioning-available-for-tensor" title="連結到這個標頭">#</a></h3>
+<p>Read-only inputs are passed as <code class="docutils literal notranslate"><span class="pre">&amp;Tensor&lt;T&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">Tensor&lt;T&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">Arc&lt;Tensor&lt;T&gt;&gt;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&amp;TensorView&lt;T&gt;</span></code> on the host side — no host-side partitioning required. Multiple tile blocks can safely read from the same or overlapping regions, so there is no exclusive-access constraint to enforce.</p>
+<p>Instead, read-only tensors can be partitioned <strong>inside the kernel</strong> using <code class="docutils literal notranslate"><span class="pre">.partition(shape![M,</span> <span class="pre">N])</span></code>:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="c1">// Device-side: partition a read-only tensor inside the kernel.</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">part_x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="n">partition</span><span class="p">(</span><span class="n">shape</span><span class="o">!</span><span class="p">[</span><span class="n">BM</span><span class="p">,</span><span class="w"> </span><span class="n">BK</span><span class="p">]);</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">tile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">part_x</span><span class="p">.</span><span class="n">load</span><span class="p">([</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">]);</span>
+</pre></div>
+</div>
+<p>The same <code class="docutils literal notranslate"><span class="pre">&amp;Tensor</span></code> can use different partition shapes within one kernel. GEMM,
+for example, uses different shapes for <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code>.</p>
+<p>In this tutorial, we use <code class="docutils literal notranslate"><span class="pre">x.load_like(z)</span></code> instead of explicit device-side partitioning. This convenience function partitions <code class="docutils literal notranslate"><span class="pre">x</span></code> using the same shape and coordinates as <code class="docutils literal notranslate"><span class="pre">z</span></code>, which is the common case for element-wise operations. Later tutorials (starting with <a class="reference internal" href="04-matrix-multiplication.html"><span class="std std-doc">matrix multiplication</span></a>) use explicit device-side partitioning when inputs need different access patterns.</p>
+<p><a id="putting-it-together"></a></p>
+</section>
+<section id="launch-grid">
+<h3>Launch grid<a class="headerlink" href="#launch-grid" title="連結到這個標頭">#</a></h3>
+<p>Calling <code class="docutils literal notranslate"><span class="pre">add(z,</span> <span class="pre">x,</span> <span class="pre">y)</span></code> launches an 8×8×1 grid from <code class="docutils literal notranslate"><span class="pre">z</span></code>'s host-side partition.
+Each of the 64 tile blocks processes a 4×4 chunk.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="the-kernel">
+<h2>The Kernel<a class="headerlink" href="#the-kernel" title="連結到這個標頭">#</a></h2>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">fn</span><span class="w"> </span><span class="nf">add</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">S</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="kt">i32</span><span class="p">;</span><span class="w"> </span><span class="mi">2</span><span class="p">]</span><span class="o">&gt;</span><span class="p">(</span>
+<span class="w">    </span><span class="n">z</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">mut</span><span class="w"> </span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="n">S</span><span class="o">&gt;</span><span class="p">,</span><span class="w">       </span><span class="c1">// Output sub-tensor (4×4)</span>
+<span class="w">    </span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="p">{[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">]}</span><span class="o">&gt;</span><span class="p">,</span><span class="w">  </span><span class="c1">// Full input tensor</span>
+<span class="w">    </span><span class="n">y</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="p">{[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">]}</span><span class="o">&gt;</span><span class="w">   </span><span class="c1">// Full input tensor</span>
+<span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">tile_x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="n">load_like</span><span class="p">(</span><span class="n">z</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">tile_y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">y</span><span class="p">.</span><span class="n">load_like</span><span class="p">(</span><span class="n">z</span><span class="p">);</span>
+<span class="w">    </span><span class="n">z</span><span class="p">.</span><span class="n">store</span><span class="p">(</span><span class="n">tile_x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">tile_y</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">x.load_like(z)</span></code> loads a tile from <code class="docutils literal notranslate"><span class="pre">x</span></code> using the same tile shape (<code class="docutils literal notranslate"><span class="pre">S</span></code>=4×4) and coordinates (tile thread id) as <code class="docutils literal notranslate"><span class="pre">z</span></code>.</p>
+<p><img alt="How load_tile_like calculates which region to load" src="../_images/vector-addition-load-tile.svg" /></p>
+<p>Compare to CUDA C++:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Task</p></th>
+<th class="head"><p>CUDA C++</p></th>
+<th class="head"><p>cuTile Rust</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Calculate thread index</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">int</span> <span class="pre">i</span> <span class="pre">=</span> <span class="pre">blockIdx.x</span> <span class="pre">*</span> <span class="pre">blockDim.x</span> <span class="pre">+</span> <span class="pre">threadIdx.x;</span></code></p></td>
+<td><p>Not needed</p></td>
+</tr>
+<tr class="row-odd"><td><p>Calculate global offset</p></td>
+<td><p>Manual pointer arithmetic</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">x.load_like(z)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Bounds checking</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">(i</span> <span class="pre">&lt;</span> <span class="pre">n)</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">}</span></code></p></td>
+<td><p>Built-in</p></td>
+</tr>
+<tr class="row-odd"><td><p>Coalesced memory access</p></td>
+<td><p>Manual, error-prone</p></td>
+<td><p>Automatic</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="the-load-store-pattern">
+<h2>The Load/Store Pattern<a class="headerlink" href="#the-load-store-pattern" title="連結到這個標頭">#</a></h2>
+<p>Almost every kernel follows this pattern:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">fn</span><span class="w"> </span><span class="nf">my_kernel</span><span class="p">(</span><span class="o">..</span><span class="p">.)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// 1. LOAD: Global memory → tiles (registers).</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">tile_a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">load_something</span><span class="p">(</span><span class="o">..</span><span class="p">.);</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">tile_b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">load_something_else</span><span class="p">(</span><span class="o">..</span><span class="p">.);</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="c1">// 2. COMPUTE: Operate on tiles in registers.</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tile_a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">tile_b</span><span class="p">;</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="c1">// 3. STORE: Tiles (registers) → global memory.</span>
+<span class="w">    </span><span class="n">output</span><span class="p">.</span><span class="n">store</span><span class="p">(</span><span class="n">result</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="key-takeaways">
+<h2>Key Takeaways<a class="headerlink" href="#key-takeaways" title="連結到這個標頭">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Concept</p></th>
+<th class="head"><p>What It Means</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Host-side partitioning</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.partition([M,</span> <span class="pre">N])</span></code> on the host — required for <code class="docutils literal notranslate"><span class="pre">&amp;mut</span> <span class="pre">Tensor</span></code> to ensure exclusive write access and determine the launch grid</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Device-side partitioning</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.partition(shape![M,</span> <span class="pre">N])</span></code> inside the kernel — available for <code class="docutils literal notranslate"><span class="pre">&amp;Tensor</span></code>, flexible access patterns</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Static shape <code class="docutils literal notranslate"><span class="pre">S</span></code></strong></p></td>
+<td><p>The tile shape carried in the compiled variant</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Dynamic shape <code class="docutils literal notranslate"><span class="pre">[-1,</span> <span class="pre">-1]</span></code></strong></p></td>
+<td><p>Dynamic tensor shape; does not create a new compiled variant when tensor shape changes</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>load_like</strong></p></td>
+<td><p>Convenience for element-wise ops: loads from the input using the same partitioning and mapping as the output (also available as the free function <code class="docutils literal notranslate"><span class="pre">load_tile_like</span></code>). The input must have the same shape as the whole output tensor — the tensor the host partitioned, not the per-program sub-tensor — and the output must be a partitioned mutable tensor</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Load/Store pattern</strong></p></td>
+<td><p>Load → Compute → Store is the GPU kernel idiom</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr class="docutils" />
+<section id="exercise-1-change-tile-shape">
+<h3>Exercise 1: Change Tile Shape<a class="headerlink" href="#exercise-1-change-tile-shape" title="連結到這個標頭">#</a></h3>
+<p>Modify the partition to <code class="docutils literal notranslate"><span class="pre">[8,</span> <span class="pre">8]</span></code>:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">zeros</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">]).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="n">partition</span><span class="p">([</span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">]);</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>How many tile threads are launched?</p></li>
+<li><p>How many elements does each tile thread process?</p></li>
+</ul>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-text">Answer</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<ul class="simple">
+<li><p class="sd-card-text">32÷8 = 4 tiles per dimension → 4×4 = 16 tiles total.</p></li>
+<li><p class="sd-card-text">Each tile thread processes 8×8 = 64 elements.</p></li>
+</ul>
+</div>
+</details></section>
+<section id="exercise-2-three-way-addition">
+<h3>Exercise 2: Three-Way Addition<a class="headerlink" href="#exercise-2-three-way-addition" title="連結到這個標頭">#</a></h3>
+<p>Modify the kernel to add three tensors: <code class="docutils literal notranslate"><span class="pre">z</span> <span class="pre">=</span> <span class="pre">x</span> <span class="pre">+</span> <span class="pre">y</span> <span class="pre">+</span> <span class="pre">w</span></code>.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-text">Hint</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">Add a third input parameter and load three tiles:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">tile_w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">w</span><span class="p">.</span><span class="n">load_like</span><span class="p">(</span><span class="n">z</span><span class="p">);</span>
+<span class="n">z</span><span class="p">.</span><span class="n">store</span><span class="p">(</span><span class="n">tile_x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">tile_y</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">tile_w</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</details></section>
+<section id="exercise-3-non-square-partitions">
+<h3>Exercise 3: Non-Square Partitions<a class="headerlink" href="#exercise-3-non-square-partitions" title="連結到這個標頭">#</a></h3>
+<p>Try <code class="docutils literal notranslate"><span class="pre">partition([4,</span> <span class="pre">8])</span></code> — rectangular tiles. Does it still work?</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="see-also">
+<h2>See also<a class="headerlink" href="#see-also" title="連結到這個標頭">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../guide/tensors-and-tiles.html"><span class="std std-doc">Tensors and Tiles</span></a> — partitioning, load/store, and tile arithmetic</p></li>
+<li><p><a class="reference internal" href="../guide/useful-mental-models.html"><span class="std std-doc">Useful Mental Models</span></a> — tile blocks and grid geometry</p></li>
+<li><p><a class="reference internal" href="../reference/dsl-api.html"><span class="std std-doc">DSL API</span></a> — full signatures for <code class="docutils literal notranslate"><span class="pre">load_like</span></code>, <code class="docutils literal notranslate"><span class="pre">store</span></code>, and the arithmetic operators used here</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="01-hello-world.html"
+       title="上一页">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">上一頁</p>
+        <p class="prev-next-title">1. Hello World</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="03-saxpy.html"
+       title="下一页">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">下一頁</p>
+        <p class="prev-next-title">3. SAXPY</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> 当前页面
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#partitioning">Partitioning</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#host-side-partitioning-required-for-mut-tensor">Host-Side Partitioning (Required for <code class="docutils literal notranslate"><span class="pre">&amp;mut</span> <span class="pre">Tensor</span></code>)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#device-side-partitioning-available-for-tensor">Device-Side Partitioning (Available for <code class="docutils literal notranslate"><span class="pre">&amp;Tensor</span></code>)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#launch-grid">Launch grid</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-kernel">The Kernel</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-load-store-pattern">The Load/Store Pattern</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-takeaways">Key Takeaways</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-1-change-tile-shape">Exercise 1: Change Tile Shape</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-2-three-way-addition">Exercise 2: Three-Way Addition</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-3-non-square-partitions">Exercise 3: Non-Square Partitions</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#see-also">See also</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+  
+    <div class="footer-items__center">
+      
+        <div class="footer-item"><footer class="bd-footer-content">
+  <div class="footer-container" style="padding: 1rem 0 2rem 0; border-top: 1px solid var(--pst-color-border); text-align: left;">
+    
+    <!-- NVIDIA Logo -->
+    <div style="margin-bottom: 1rem;">
+      <img src="../_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" 
+           alt="NVIDIA" 
+           style="height: 3.5rem; filter: brightness(0);"
+           class="only-light">
+      <img src="../_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" 
+           alt="NVIDIA" 
+           style="height: 3.5rem;"
+           class="only-dark pst-js-only">
+    </div>
+    
+    <!-- Footer Links - single line, left aligned -->
+    <div style="font-size: 0.8125rem; margin-bottom: 0.5rem; color: var(--pst-color-text-muted);">
+      <a href="https://www.nvidia.com/en-us/about-nvidia/privacy-policy/" target="_blank" style="color: inherit; text-decoration: none;">Privacy Policy</a> | 
+      <a href="https://www.nvidia.com/en-us/preferences/email-preferences/" target="_blank" style="color: inherit; text-decoration: none;">Your Privacy Choices</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/terms-of-service/" target="_blank" style="color: inherit; text-decoration: none;">Terms of Service</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/accessibility/" target="_blank" style="color: inherit; text-decoration: none;">Accessibility</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/company-policies/" target="_blank" style="color: inherit; text-decoration: none;">Corporate Policies</a> | 
+      <a href="https://www.nvidia.com/en-us/product-security/" target="_blank" style="color: inherit; text-decoration: none;">Product Security</a> | 
+      <a href="https://www.nvidia.com/en-us/contact/" target="_blank" style="color: inherit; text-decoration: none;">Contact</a>
+    </div>
+    
+    <!-- Copyright -->
+    <div style="font-size: 0.8125rem; color: var(--pst-color-text-muted);">
+      Copyright &copy; 2025, NVIDIA.
+    </div>
+    
+  </div>
+</footer></div>
+      
+    </div>
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>1. Hello World &#8212; cuTile Rust</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/nvidia-sphinx-theme.css?v=933278ad" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=4011299f" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/lightbox.css?v=31fdf494" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../_static/documentation_options.js?v=d786bb5c"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/translations.js?v=540d3cec"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/01-hello-world';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <script src="../_static/js/lightbox.js?v=17028852"></script>
+    <link rel="canonical" href="https://projects.localizethedocs.org/cutile-rs-book-l10n/tutorials/01-hello-world.html" />
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="2. Vector Addition" href="02-vector-addition.html" />
+    <link rel="prev" title="cuTile Rust" href="../index.html" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="zh-CN"/>
+  <meta name="docsearch:version" content="main" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+<script type="text/javascript" src="../ltd-provenance.js"></script>
+<script type="text/javascript" src="../ltd-current.js"></script>
+<script type="text/javascript" src="../../../ltd-config.js"></script>
+<script type="text/javascript" src="../../../ltd-flyout.js"></script>
+
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">跳转至主要内容</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>回到顶部</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="版本警告"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="网页导航">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" class="logo__image only-light" alt=""/>
+    <img src="../_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cuTile Rust</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item"><div class="github-links">
+  <!--
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/stargazers" target="_blank" rel="noopener">
+    <i class="fa-solid fa-star" aria-hidden="true"></i>
+    <span class="sr-only">Star</span>
+  </a>
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/fork" target="_blank" rel="noopener">
+    <i class="fa-solid fa-code-fork" aria-hidden="true"></i>
+    <span class="sr-only">Fork</span>
+  </a>
+  -->
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/NVIDIA/cuda-rust" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="搜索" aria-label="搜索" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button></div>
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="亮色"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="暗色"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>亮色</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>暗色</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="当前页面">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><div class="github-links">
+  <!--
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/stargazers" target="_blank" rel="noopener">
+    <i class="fa-solid fa-star" aria-hidden="true"></i>
+    <span class="sr-only">Star</span>
+  </a>
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/fork" target="_blank" rel="noopener">
+    <i class="fa-solid fa-code-fork" aria-hidden="true"></i>
+    <span class="sr-only">Fork</span>
+  </a>
+  -->
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/NVIDIA/cuda-rust" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="搜索" aria-label="搜索" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button></div>
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="亮色"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="暗色"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>亮色</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>暗色</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><div class="sidebar-tree">
+    <p class="sidebar-tree-title">
+        Table of Contents
+    </p>
+    <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">1. Hello World</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02-vector-addition.html">2. Vector Addition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03-saxpy.html">3. SAXPY</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04-matrix-multiplication.html">4. Matrix Multiplication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05-fused-softmax.html">5. Fused Softmax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06-flash-attention.html">6. Fused Multihead Attention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07-intro-to-async.html">7. Intro to Async Execution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08-data-parallel-mlp.html">8. Data Parallel MLP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="09-pointer-addition.html">9. Pointer Addition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10-cuda-graphs.html">10. CUDA Graphs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11-nvfp4-inference.html">11. Inference with NVFP4/MXFP8</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12-dgx-spark-inference.html">12. LLM Inference on DGX Spark</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guide/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/host-vs-device.html">Host vs. Device Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/tensors-and-tiles.html">Tensors and Tiles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/jit-compilation.html">Compilation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/device-operations.html">Device Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/performance.html">Performance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/autotuning.html">Autotuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/bounds-check-placement.html">Bounds-Check Placement</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/interoperability.html">Interoperability</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/debugging-and-profiling.html">Debugging and Profiling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/useful-mental-models.html">Useful Mental Models</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../reference/dsl-api.html">DSL API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/host-api.html">Host API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/compatibility.html">CUDA and Tile IR compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/glossary.html">Glossary</a></li>
+</ul>
+
+</div></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="初始页面">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">1. Hello World</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="hello-world">
+<h1>1. Hello World<a class="headerlink" href="#hello-world" title="链接到此标题。">#</a></h1>
+<p>Launching a tile kernel starts <code class="docutils literal notranslate"><span class="pre">N</span></code> concurrent copies of the same function.
+Each copy is a <em>tile program</em> (also called a <em>tile block</em>): a single logical
+thread operating on a multi-dimensional tile of data.</p>
+<blockquote>
+<div><p><strong>Note</strong>: Tile programs run concurrently, but the CUDA runtime may not run
+all of them at the same time. Communication between tile programs requires
+detailed knowledge of the CUDA runtime.</p>
+</div></blockquote>
+<p><img alt="Thread-centric vs Tile-centric GPU programming models" src="../_images/mental-model-shift.svg" /></p>
+<hr class="docutils" />
+<p>Here is a kernel that prints &quot;hello&quot; from the GPU:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">use</span><span class="w"> </span><span class="n">cutile</span><span class="p">::</span><span class="n">error</span><span class="p">::</span><span class="n">Error</span><span class="p">;</span>
+<span class="k">use</span><span class="w"> </span><span class="n">cutile</span><span class="p">::</span><span class="n">prelude</span><span class="p">::</span><span class="o">*</span><span class="p">;</span>
+
+<span class="cp">#[cutile::module]</span>
+<span class="k">mod</span><span class="w"> </span><span class="nn">hello_world_module</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">use</span><span class="w"> </span><span class="n">cutile</span><span class="p">::</span><span class="n">core</span><span class="p">::</span><span class="o">*</span><span class="p">;</span>
+
+<span class="w">    </span><span class="cp">#[cutile::entry()]</span>
+<span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">hello_world_kernel</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">pid0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">program_id</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">pid1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">program_id</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">pid2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">program_id</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">n0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">num_programs</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">n1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">num_programs</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">n2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">num_programs</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+<span class="w">        </span><span class="n">cuda_tile_print</span><span class="o">!</span><span class="p">(</span>
+<span class="w">            </span><span class="s">"Hello from program &lt;{}, {}, {}&gt; in a grid of &lt;{}, {}, {}&gt; programs!</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span>
+<span class="w">            </span><span class="n">pid0</span><span class="p">,</span><span class="w"> </span><span class="n">pid1</span><span class="p">,</span><span class="w"> </span><span class="n">pid2</span><span class="p">,</span>
+<span class="w">            </span><span class="n">n0</span><span class="p">,</span><span class="w"> </span><span class="n">n1</span><span class="p">,</span><span class="w"> </span><span class="n">n2</span>
+<span class="w">        </span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">use</span><span class="w"> </span><span class="n">hello_world_module</span><span class="p">::</span><span class="n">hello_world_kernel</span><span class="p">;</span>
+
+<span class="k">fn</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">Result</span><span class="o">&lt;</span><span class="p">(),</span><span class="w"> </span><span class="n">Error</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Device</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">stream</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">device</span><span class="p">.</span><span class="n">new_stream</span><span class="p">()</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">launcher</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hello_world_kernel</span><span class="p">();</span>
+<span class="w">    </span><span class="n">launcher</span><span class="p">.</span><span class="n">grid</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span><span class="nb">Ok</span><span class="p">(())</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Output:</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Hello from program &lt;0, 0, 0&gt; in a grid of &lt;2, 2, 1&gt; programs!
+Hello from program &lt;1, 0, 0&gt; in a grid of &lt;2, 2, 1&gt; programs!
+Hello from program &lt;0, 1, 0&gt; in a grid of &lt;2, 2, 1&gt; programs!
+Hello from program &lt;1, 1, 0&gt; in a grid of &lt;2, 2, 1&gt; programs!
+</pre></div>
+</div>
+<p>Four tile programs were executed by the CUDA runtime, each printing its own coordinates.</p>
+<hr class="docutils" />
+<section id="gpu-vs-cpu-code">
+<h2>GPU vs. CPU Code<a class="headerlink" href="#gpu-vs-cpu-code" title="链接到此标题。">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">cutile-rs</span></code> programs have two parts: code that runs on the GPU, or the <em>device-side</em>, and code that runs on the CPU, or the <em>host-side</em>.
+The following snippet will JIT-compile to the GPU when executed from the host-side:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="cp">#[cutile::module]</span>
+<span class="k">mod</span><span class="w"> </span><span class="nn">hello_world_module</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">use</span><span class="w"> </span><span class="n">cutile</span><span class="p">::</span><span class="n">core</span><span class="p">::</span><span class="o">*</span><span class="p">;</span>
+
+<span class="w">    </span><span class="cp">#[cutile::entry()]</span>
+<span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">hello_world_kernel</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// This code runs on the GPU!</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">#[cutile::module]</span></code> marks a module as containing GPU code.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">#[cutile::entry()]</span></code> marks a function as a kernel entry point.</p></li>
+</ul>
+<p>Each coordinate in the launch grid gets one instance of the kernel function.</p>
+<p>The following host-side code will launch the device-side code:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">fn</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">Result</span><span class="o">&lt;</span><span class="p">(),</span><span class="w"> </span><span class="n">Error</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Device</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">?</span><span class="p">;</span><span class="w">             </span><span class="c1">// Connect to GPU</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">stream</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">device</span><span class="p">.</span><span class="n">new_stream</span><span class="p">()</span><span class="o">?</span><span class="p">;</span><span class="w">             </span><span class="c1">// Create a work queue</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">launcher</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hello_world_kernel</span><span class="p">();</span><span class="w">   </span><span class="c1">// Get the kernel launcher</span>
+<span class="w">    </span><span class="n">launcher</span><span class="p">.</span><span class="n">grid</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span><span class="w"> </span><span class="c1">// Launch 2×2×1 = 4 programs</span>
+<span class="w">    </span><span class="nb">Ok</span><span class="p">(())</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Host-side code sets up the GPU, specifies the kernel launch grid, and launches the kernel.</p>
+</section>
+<hr class="docutils" />
+<section id="program-ids">
+<h2>Program IDs<a class="headerlink" href="#program-ids" title="链接到此标题。">#</a></h2>
+<p>Each tile program is assigned an ID along each axis of the 3-dimensional launch grid, following Triton's <code class="docutils literal notranslate"><span class="pre">tl.program_id(axis)</span></code> / <code class="docutils literal notranslate"><span class="pre">tl.num_programs(axis)</span></code>:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">pid0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">program_id</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span><span class="w">   </span><span class="c1">// This program's index along grid axis 0</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">n0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">num_programs</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span><span class="w">   </span><span class="c1">// The grid extent along axis 0</span>
+</pre></div>
+</div>
+<p>For each axis <code class="docutils literal notranslate"><span class="pre">k</span></code>, <code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">program_id(k)</span> <span class="pre">&lt;</span> <span class="pre">num_programs(k)</span></code>. The tuple forms <code class="docutils literal notranslate"><span class="pre">get_tile_block_id()</span></code> and <code class="docutils literal notranslate"><span class="pre">get_num_tile_blocks()</span></code> return all three coordinates at once.</p>
+<p><img alt="A grid of tile programs showing (x,y) coordinates" src="../_images/hello-world-grid.svg" /></p>
+<p>Programs use their coordinates to select which data to process.</p>
+</section>
+<hr class="docutils" />
+<section id="under-the-hood">
+<h2>Under the hood<a class="headerlink" href="#under-the-hood" title="链接到此标题。">#</a></h2>
+<ol class="arabic simple">
+<li><p><strong>At compile time:</strong> <code class="docutils literal notranslate"><span class="pre">#[cutile::module]</span></code> captures your Rust code as an AST.</p></li>
+<li><p><strong>At first kernel launch:</strong> The AST is compiled to Tile IR bytecode → cubin (GPU binary).</p></li>
+<li><p><strong>Cached:</strong> The compiled kernel is cached in memory for the rest of the process, so later launches of the same variant skip compilation. Caching across processes (an on-disk cubin cache) is opt-in; see <a class="reference internal" href="../guide/jit-compilation.html"><span class="std std-doc">Compilation</span></a>.</p></li>
+<li><p><strong>Launch:</strong> 4 tile programs are dispatched to the GPU.</p></li>
+<li><p><strong>Execution:</strong> All 4 tile programs run concurrently, each printing its coordinates.</p></li>
+</ol>
+<p><img alt="The cuTile Rust compilation pipeline from Rust source to GPU execution" src="../_images/compilation-pipeline.svg" /></p>
+</section>
+<hr class="docutils" />
+<section id="key-takeaways">
+<h2>Key Takeaways<a class="headerlink" href="#key-takeaways" title="链接到此标题。">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Concept</p></th>
+<th class="head"><p>What It Means</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Tile programs run concurrently</strong></p></td>
+<td><p>You launch N tile programs, they all execute concurrently</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Tile programs are assigned IDs</strong></p></td>
+<td><p>Each program uses its per-axis IDs to work on different data</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Host orchestrates</strong></p></td>
+<td><p>CPU code decides grid shape and launches work</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Same code, different data</strong></p></td>
+<td><p>The kernel is written once and executed by many tile programs</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr class="docutils" />
+<section id="exercise-1-change-the-grid-size">
+<h3>Exercise 1: Change the Grid Size<a class="headerlink" href="#exercise-1-change-the-grid-size" title="链接到此标题。">#</a></h3>
+<p>Modify the grid to <code class="docutils literal notranslate"><span class="pre">(3,</span> <span class="pre">3,</span> <span class="pre">1)</span></code>. How many messages do you see?</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="n">launcher</span><span class="p">.</span><span class="n">grid</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-text">Answer</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">You should see 9 messages (3 × 3 × 1 = 9 tile programs).</p>
+</div>
+</details></section>
+<section id="exercise-2-use-the-z-dimension">
+<h3>Exercise 2: Use the Z Dimension<a class="headerlink" href="#exercise-2-use-the-z-dimension" title="链接到此标题。">#</a></h3>
+<p>Try <code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">2,</span> <span class="pre">2)</span></code> for a 3D grid. What changes?</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-text">Answer</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">You'll see 8 messages. The <code class="docutils literal notranslate"><span class="pre">z</span></code> coordinate will now vary from 0 to 1.</p>
+</div>
+</details></section>
+<section id="exercise-3-calculate-total-programs">
+<h3>Exercise 3: Calculate Total Programs<a class="headerlink" href="#exercise-3-calculate-total-programs" title="链接到此标题。">#</a></h3>
+<p>Modify the kernel to also print the total number of tile programs.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-text">Answer</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">total</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">n1</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">n2</span><span class="p">;</span>
+<span class="n">cuda_tile_print</span><span class="o">!</span><span class="p">(</span>
+<span class="w">    </span><span class="s">"Program &lt;{}, {}, {}&gt; of {} total programs</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span>
+<span class="w">    </span><span class="n">pid0</span><span class="p">,</span><span class="w"> </span><span class="n">pid1</span><span class="p">,</span><span class="w"> </span><span class="n">pid2</span><span class="p">,</span><span class="w"> </span><span class="n">total</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</details></section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../index.html"
+       title="上一页">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">上一页</p>
+        <p class="prev-next-title">cuTile Rust</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="02-vector-addition.html"
+       title="下一页">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">下一页</p>
+        <p class="prev-next-title">2. Vector Addition</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> 当前页面
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gpu-vs-cpu-code">GPU vs. CPU Code</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#program-ids">Program IDs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#under-the-hood">Under the hood</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-takeaways">Key Takeaways</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-1-change-the-grid-size">Exercise 1: Change the Grid Size</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-2-use-the-z-dimension">Exercise 2: Use the Z Dimension</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-3-calculate-total-programs">Exercise 3: Calculate Total Programs</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+  
+    <div class="footer-items__center">
+      
+        <div class="footer-item"><footer class="bd-footer-content">
+  <div class="footer-container" style="padding: 1rem 0 2rem 0; border-top: 1px solid var(--pst-color-border); text-align: left;">
+    
+    <!-- NVIDIA Logo -->
+    <div style="margin-bottom: 1rem;">
+      <img src="../_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" 
+           alt="NVIDIA" 
+           style="height: 3.5rem; filter: brightness(0);"
+           class="only-light">
+      <img src="../_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" 
+           alt="NVIDIA" 
+           style="height: 3.5rem;"
+           class="only-dark pst-js-only">
+    </div>
+    
+    <!-- Footer Links - single line, left aligned -->
+    <div style="font-size: 0.8125rem; margin-bottom: 0.5rem; color: var(--pst-color-text-muted);">
+      <a href="https://www.nvidia.com/en-us/about-nvidia/privacy-policy/" target="_blank" style="color: inherit; text-decoration: none;">Privacy Policy</a> | 
+      <a href="https://www.nvidia.com/en-us/preferences/email-preferences/" target="_blank" style="color: inherit; text-decoration: none;">Your Privacy Choices</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/terms-of-service/" target="_blank" style="color: inherit; text-decoration: none;">Terms of Service</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/accessibility/" target="_blank" style="color: inherit; text-decoration: none;">Accessibility</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/company-policies/" target="_blank" style="color: inherit; text-decoration: none;">Corporate Policies</a> | 
+      <a href="https://www.nvidia.com/en-us/product-security/" target="_blank" style="color: inherit; text-decoration: none;">Product Security</a> | 
+      <a href="https://www.nvidia.com/en-us/contact/" target="_blank" style="color: inherit; text-decoration: none;">Contact</a>
+    </div>
+    
+    <!-- Copyright -->
+    <div style="font-size: 0.8125rem; color: var(--pst-color-text-muted);">
+      Copyright &copy; 2025, NVIDIA.
+    </div>
+    
+  </div>
+</footer></div>
+      
+    </div>
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,1814 @@
+<!DOCTYPE html>
+
+
+<html lang="en-US" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Host API &#8212; cuTile Rust</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/nvidia-sphinx-theme.css?v=933278ad" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=4011299f" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/lightbox.css?v=31fdf494" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../_static/documentation_options.js?v=66d1f95f"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/host-api';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <script src="../_static/js/lightbox.js?v=17028852"></script>
+    <link rel="canonical" href="https://projects.localizethedocs.org/cutile-rs-book-l10n/reference/host-api.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="CUDA and Tile IR compatibility" href="compatibility.html" />
+    <link rel="prev" title="DSL API" href="dsl-api.html" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en-US"/>
+  <meta name="docsearch:version" content="main" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+<script type="text/javascript" src="../ltd-provenance.js"></script>
+<script type="text/javascript" src="../ltd-current.js"></script>
+<script type="text/javascript" src="../../../ltd-config.js"></script>
+<script type="text/javascript" src="../../../ltd-flyout.js"></script>
+
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" class="logo__image only-light" alt=""/>
+    <img src="../_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cuTile Rust</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item"><div class="github-links">
+  <!--
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/stargazers" target="_blank" rel="noopener">
+    <i class="fa-solid fa-star" aria-hidden="true"></i>
+    <span class="sr-only">Star</span>
+  </a>
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/fork" target="_blank" rel="noopener">
+    <i class="fa-solid fa-code-fork" aria-hidden="true"></i>
+    <span class="sr-only">Fork</span>
+  </a>
+  -->
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/NVIDIA/cuda-rust" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button></div>
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><div class="github-links">
+  <!--
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/stargazers" target="_blank" rel="noopener">
+    <i class="fa-solid fa-star" aria-hidden="true"></i>
+    <span class="sr-only">Star</span>
+  </a>
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/fork" target="_blank" rel="noopener">
+    <i class="fa-solid fa-code-fork" aria-hidden="true"></i>
+    <span class="sr-only">Fork</span>
+  </a>
+  -->
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/NVIDIA/cuda-rust" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button></div>
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><div class="sidebar-tree">
+    <p class="sidebar-tree-title">
+        Table of Contents
+    </p>
+    <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/01-hello-world.html">1. Hello World</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/02-vector-addition.html">2. Vector Addition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/03-saxpy.html">3. SAXPY</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/04-matrix-multiplication.html">4. Matrix Multiplication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/05-fused-softmax.html">5. Fused Softmax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/06-flash-attention.html">6. Fused Multihead Attention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/07-intro-to-async.html">7. Intro to Async Execution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/08-data-parallel-mlp.html">8. Data Parallel MLP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/09-pointer-addition.html">9. Pointer Addition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/10-cuda-graphs.html">10. CUDA Graphs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/11-nvfp4-inference.html">11. Inference with NVFP4/MXFP8</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/12-dgx-spark-inference.html">12. LLM Inference on DGX Spark</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guide/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/host-vs-device.html">Host vs. Device Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/tensors-and-tiles.html">Tensors and Tiles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/jit-compilation.html">Compilation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/device-operations.html">Device Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/performance.html">Performance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/autotuning.html">Autotuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/bounds-check-placement.html">Bounds-Check Placement</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/interoperability.html">Interoperability</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/debugging-and-profiling.html">Debugging and Profiling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/useful-mental-models.html">Useful Mental Models</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="dsl-api.html">DSL API</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Host API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compatibility.html">CUDA and Tile IR compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+
+</div></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Host API</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="host-api">
+<h1>Host API<a class="headerlink" href="#host-api" title="Link to this heading">#</a></h1>
+<p>The host API covers tensors, CUDA contexts and streams, kernel launches, and
+<code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> execution. For an introduction, see
+<a class="reference internal" href="../guide/host-vs-device.html"><span class="std std-doc">Host vs. Device Code</span></a>,
+<a class="reference internal" href="../guide/tensors-and-tiles.html"><span class="std std-doc">Tensors and Tiles</span></a>, and
+<a class="reference internal" href="../guide/device-operations.html"><span class="std std-doc">Device Operations</span></a>.</p>
+<hr class="docutils" />
+<section id="tensor-creation-and-views">
+<h2>Tensor Creation and Views<a class="headerlink" href="#tensor-creation-and-views" title="Link to this heading">#</a></h2>
+<section id="api-constructors">
+<h3><code class="docutils literal notranslate"><span class="pre">api::*</span></code> constructors<a class="headerlink" href="#api-constructors" title="Link to this heading">#</a></h3>
+<p>All creation functions return a <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> — allocation and initialization happen when the operation runs, not when it is constructed.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Function</p></th>
+<th class="head"><p>Output</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">api::zeros::&lt;T&gt;(shape:</span> <span class="pre">&amp;[usize])</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DeviceOp&lt;Output</span> <span class="pre">=</span> <span class="pre">Tensor&lt;T&gt;&gt;</span></code></p></td>
+<td><p>All zeros</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">api::ones::&lt;T&gt;(shape:</span> <span class="pre">&amp;[usize])</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DeviceOp&lt;Output</span> <span class="pre">=</span> <span class="pre">Tensor&lt;T&gt;&gt;</span></code></p></td>
+<td><p>All ones</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">api::full::&lt;T&gt;(val,</span> <span class="pre">shape:</span> <span class="pre">&amp;[usize])</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DeviceOp&lt;Output</span> <span class="pre">=</span> <span class="pre">Tensor&lt;T&gt;&gt;</span></code></p></td>
+<td><p>Fill with scalar value</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">api::fill::&lt;T&gt;(tensor,</span> <span class="pre">val)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DeviceOp&lt;Output</span> <span class="pre">=</span> <span class="pre">Tensor&lt;T&gt;&gt;</span></code></p></td>
+<td><p>Fill an existing tensor and return it</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">api::arange::&lt;T&gt;(len:</span> <span class="pre">usize)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DeviceOp&lt;Output</span> <span class="pre">=</span> <span class="pre">Tensor&lt;T&gt;&gt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1,</span> <span class="pre">2,</span> <span class="pre">...,</span> <span class="pre">len-1]</span></code> (1D)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">api::linspace(start:</span> <span class="pre">f32,</span> <span class="pre">stop:</span> <span class="pre">f32,</span> <span class="pre">n:</span> <span class="pre">usize)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DeviceOp&lt;Output</span> <span class="pre">=</span> <span class="pre">Tensor&lt;f32&gt;&gt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">n</span></code> values evenly spaced from <code class="docutils literal notranslate"><span class="pre">start</span></code> to <code class="docutils literal notranslate"><span class="pre">stop</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">api::eye(n:</span> <span class="pre">usize)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DeviceOp&lt;Output</span> <span class="pre">=</span> <span class="pre">Tensor&lt;f32&gt;&gt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">×</span> <span class="pre">n</span></code> identity matrix</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">api::eye_rect(rows:</span> <span class="pre">usize,</span> <span class="pre">cols:</span> <span class="pre">usize)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DeviceOp&lt;Output</span> <span class="pre">=</span> <span class="pre">Tensor&lt;f32&gt;&gt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">rows</span> <span class="pre">×</span> <span class="pre">cols</span></code>, ones on main diagonal</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">api::convert::&lt;From,</span> <span class="pre">To&gt;(src:</span> <span class="pre">Arc&lt;Tensor&lt;From&gt;&gt;)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DeviceOp&lt;Output</span> <span class="pre">=</span> <span class="pre">Tensor&lt;To&gt;&gt;</span></code></p></td>
+<td><p>Convert tensor element type</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">api::rand::&lt;T,</span> <span class="pre">RANK&gt;(shape:</span> <span class="pre">[usize;</span> <span class="pre">RANK],</span> <span class="pre">seed:</span> <span class="pre">Option&lt;u64&gt;)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DeviceOp&lt;Output</span> <span class="pre">=</span> <span class="pre">Tensor&lt;T&gt;&gt;</span></code></p></td>
+<td><p>Uniform <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1)</span></code> from cuRAND (<code class="docutils literal notranslate"><span class="pre">T:</span> <span class="pre">RandUniform</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">api::randn::&lt;T,</span> <span class="pre">RANK&gt;(mean:</span> <span class="pre">T,</span> <span class="pre">std:</span> <span class="pre">T,</span> <span class="pre">shape:</span> <span class="pre">[usize;</span> <span class="pre">RANK],</span> <span class="pre">seed:</span> <span class="pre">Option&lt;u64&gt;)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DeviceOp&lt;Output</span> <span class="pre">=</span> <span class="pre">Tensor&lt;T&gt;&gt;</span></code></p></td>
+<td><p>Normal <code class="docutils literal notranslate"><span class="pre">N(mean,</span> <span class="pre">std²)</span></code> from cuRAND (<code class="docutils literal notranslate"><span class="pre">T:</span> <span class="pre">RandNormal</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">api::randn_f16(mean:</span> <span class="pre">f16,</span> <span class="pre">std:</span> <span class="pre">f16,</span> <span class="pre">shape:</span> <span class="pre">[usize;</span> <span class="pre">RANK],</span> <span class="pre">seed:</span> <span class="pre">Option&lt;u64&gt;)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DeviceOp&lt;Output</span> <span class="pre">=</span> <span class="pre">Tensor&lt;f16&gt;&gt;</span></code></p></td>
+<td><p>Normal for <code class="docutils literal notranslate"><span class="pre">f16</span></code> (generates <code class="docutils literal notranslate"><span class="pre">f32</span></code> and converts; cuRAND has no native <code class="docutils literal notranslate"><span class="pre">f16</span></code>)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Shape conventions vary across the module: <code class="docutils literal notranslate"><span class="pre">zeros</span></code>/<code class="docutils literal notranslate"><span class="pre">ones</span></code>/<code class="docutils literal notranslate"><span class="pre">full</span></code> take <code class="docutils literal notranslate"><span class="pre">&amp;[usize]</span></code> slices of arbitrary length; <code class="docutils literal notranslate"><span class="pre">rand</span></code>/<code class="docutils literal notranslate"><span class="pre">randn</span></code> take <code class="docutils literal notranslate"><span class="pre">[usize;</span> <span class="pre">RANK]</span></code> arrays (rank is a const generic). The <code class="docutils literal notranslate"><span class="pre">RANK</span></code> parameter is usually inferred from the array literal.</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">use</span><span class="w"> </span><span class="n">cutile</span><span class="p">::</span><span class="n">api</span><span class="p">;</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">api</span><span class="p">::</span><span class="n">zeros</span><span class="p">::</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">1024</span><span class="p">]).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">api</span><span class="p">::</span><span class="n">ones</span><span class="p">::</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">256</span><span class="p">,</span><span class="w"> </span><span class="mi">256</span><span class="p">]).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">api</span><span class="p">::</span><span class="n">randn</span><span class="p">(</span><span class="mf">0.0</span><span class="k">f32</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="mi">64</span><span class="p">,</span><span class="w"> </span><span class="mi">128</span><span class="p">],</span><span class="w"> </span><span class="nb">None</span><span class="p">).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span><span class="w">   </span><span class="c1">// 3D N(0, 1)</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">api</span><span class="p">::</span><span class="n">rand</span><span class="p">::</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="o">&gt;</span><span class="p">([</span><span class="mi">1024</span><span class="p">],</span><span class="w"> </span><span class="nb">Some</span><span class="p">(</span><span class="mi">42</span><span class="p">)).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span><span class="w">          </span><span class="c1">// Uniform with fixed seed</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">api</span><span class="p">::</span><span class="n">arange</span><span class="p">::</span><span class="o">&lt;</span><span class="kt">i32</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">1024</span><span class="p">).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">I</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">api</span><span class="p">::</span><span class="n">eye</span><span class="p">(</span><span class="mi">64</span><span class="p">).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="tensor-and-deviceop-shape-helpers">
+<h3>Tensor and <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> shape helpers<a class="headerlink" href="#tensor-and-deviceop-shape-helpers" title="Link to this heading">#</a></h3>
+<p>Host-side reshapes are zero-copy metadata changes. They require the new shape
+to preserve the element count and, for borrowed views, to be contiguous.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>API</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tensor.reshape(&amp;shape)</span></code></p></td>
+<td><p>Consume and return <code class="docutils literal notranslate"><span class="pre">Result&lt;Tensor&lt;T&gt;,</span> <span class="pre">Error&gt;</span></code> with a new shape (<code class="docutils literal notranslate"><span class="pre">Reshape</span></code> trait).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">(&amp;arc_tensor).reshape(&amp;shape)</span></code></p></td>
+<td><p>Return <code class="docutils literal notranslate"><span class="pre">Result&lt;Arc&lt;Tensor&lt;T&gt;&gt;,</span> <span class="pre">Error&gt;</span></code>: a new <code class="docutils literal notranslate"><span class="pre">Arc&lt;Tensor&lt;T&gt;&gt;</span></code> sharing the same allocation with new shape metadata.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">device_op.reshape(&amp;shape)</span></code></p></td>
+<td><p>Reshape the <code class="docutils literal notranslate"><span class="pre">Tensor&lt;T&gt;</span></code> or <code class="docutils literal notranslate"><span class="pre">Arc&lt;Tensor&lt;T&gt;&gt;</span></code> produced by a <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tensor.partition(shape)</span></code></p></td>
+<td><p>Consume a tensor and create a mutable output partition for kernel launch. Panics if the tensor’s storage is shared with another tensor or view (for example a <code class="docutils literal notranslate"><span class="pre">(&amp;arc_tensor).reshape(..)</span></code> alias).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">arc_tensor.try_partition(shape)</span></code></p></td>
+<td><p>Consume an <code class="docutils literal notranslate"><span class="pre">Arc&lt;Tensor&lt;T&gt;&gt;</span></code> only if it has a single owner (returns <code class="docutils literal notranslate"><span class="pre">Err</span></code> otherwise), then <code class="docutils literal notranslate"><span class="pre">partition</span></code> it, with the same shared-storage panic.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">partition.unpartition()</span></code></p></td>
+<td><p>Recover the owned tensor from a partition returned by a kernel.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">use</span><span class="w"> </span><span class="n">cutile</span><span class="p">::</span><span class="n">api</span><span class="p">::{</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">DeviceOpReshape</span><span class="p">};</span>
+<span class="k">use</span><span class="w"> </span><span class="n">cutile</span><span class="p">::</span><span class="n">tensor</span><span class="p">::{</span><span class="n">Reshape</span><span class="p">,</span><span class="w"> </span><span class="n">Tensor</span><span class="p">,</span><span class="w"> </span><span class="n">TryPartition</span><span class="p">};</span>
+<span class="k">use</span><span class="w"> </span><span class="n">cutile</span><span class="p">::</span><span class="n">tile_kernel</span><span class="p">::</span><span class="n">PartitionOp</span><span class="p">;</span>
+<span class="k">use</span><span class="w"> </span><span class="n">std</span><span class="p">::</span><span class="n">sync</span><span class="p">::</span><span class="n">Arc</span><span class="p">;</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">api</span><span class="p">::</span><span class="n">arange</span><span class="p">::</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">32</span><span class="p">).</span><span class="n">reshape</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">]).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">api</span><span class="p">::</span><span class="n">zeros</span><span class="p">::</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">32</span><span class="p">]).</span><span class="n">partition</span><span class="p">([</span><span class="mi">4</span><span class="p">]);</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="n">weights</span><span class="p">:</span><span class="w"> </span><span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">api</span><span class="p">::</span><span class="n">ones</span><span class="p">::</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">]).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="n">into</span><span class="p">();</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">weights_2d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="o">&amp;</span><span class="n">weights</span><span class="p">).</span><span class="n">reshape</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">])</span><span class="o">?</span><span class="p">;</span>
+<span class="nb">drop</span><span class="p">(</span><span class="n">weights</span><span class="p">);</span><span class="w"> </span><span class="c1">// weights_2d is now the storage's only owner; keeping `weights` alive would make `partition` panic</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">partitioned</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">weights_2d</span><span class="p">.</span><span class="n">try_partition</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">])</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="tensor-metadata-and-reinterpretation">
+<h3>Tensor metadata and reinterpretation<a class="headerlink" href="#tensor-metadata-and-reinterpretation" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">Tensor&lt;T&gt;</span></code> stores shape and layout metadata alongside the device allocation.
+These accessors do not synchronize with the GPU:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>API</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tensor.shape()</span></code></p></td>
+<td><p>Runtime dimensions as <code class="docutils literal notranslate"><span class="pre">&amp;[i32]</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tensor.strides()</span></code></p></td>
+<td><p>Runtime strides as <code class="docutils literal notranslate"><span class="pre">&amp;[i32]</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tensor.size()</span></code></p></td>
+<td><p>Number of elements</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tensor.num_bytes()</span></code></p></td>
+<td><p>Number of bytes in the tensor view</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tensor.is_contiguous()</span></code></p></td>
+<td><p>Whether the view is contiguous</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tensor.device_id()</span></code></p></td>
+<td><p>CUDA device ordinal for the allocation</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tensor.device_pointer()</span></code></p></td>
+<td><p>Typed non-owning <code class="docutils literal notranslate"><span class="pre">DevicePointer&lt;T&gt;</span></code> for interop</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">arc_tensor.reinterpret::&lt;U&gt;(&amp;shape)</span></code></p></td>
+<td><p>Zero-copy reinterpretation as <code class="docutils literal notranslate"><span class="pre">Arc&lt;Tensor&lt;U&gt;&gt;</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">reinterpret</span></code> requires an <code class="docutils literal notranslate"><span class="pre">Arc&lt;Tensor&lt;T&gt;&gt;</span></code>, contiguous storage, matching total
+byte size, and compatible pointer alignment:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">use</span><span class="w"> </span><span class="n">cutile</span><span class="p">::</span><span class="n">tensor</span><span class="p">::</span><span class="n">Tensor</span><span class="p">;</span>
+<span class="k">use</span><span class="w"> </span><span class="n">std</span><span class="p">::</span><span class="n">sync</span><span class="p">::</span><span class="n">Arc</span><span class="p">;</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="n">raw</span><span class="p">:</span><span class="w"> </span><span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">u32</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">api</span><span class="p">::</span><span class="n">arange</span><span class="p">::</span><span class="o">&lt;</span><span class="kt">u32</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">4</span><span class="p">).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="n">into</span><span class="p">();</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">floats</span><span class="p">:</span><span class="w"> </span><span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">raw</span><span class="p">.</span><span class="n">reinterpret</span><span class="p">::</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span><span class="o">?</span><span class="p">;</span>
+<span class="fm">assert_eq!</span><span class="p">(</span><span class="n">floats</span><span class="p">.</span><span class="n">shape</span><span class="p">(),</span><span class="w"> </span><span class="o">&amp;</span><span class="p">[</span><span class="mi">4</span><span class="p">]);</span>
+</pre></div>
+</div>
+<p>Packed FP4 model bytes can use the same zero-copy metadata path. If an
+interoperability layer gives you byte storage, reinterpret it as
+<code class="docutils literal notranslate"><span class="pre">f4e2m1fnx2</span></code> before launching kernels that expect typed packed FP4 tensors:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">use</span><span class="w"> </span><span class="n">cutile</span><span class="p">::</span><span class="n">api</span><span class="p">::{</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">DeviceOpReshape</span><span class="p">};</span>
+<span class="k">use</span><span class="w"> </span><span class="n">cutile</span><span class="p">::</span><span class="n">cuda_core</span><span class="p">::</span><span class="n">f4e2m1fnx2</span><span class="p">;</span>
+<span class="k">use</span><span class="w"> </span><span class="n">cutile</span><span class="p">::</span><span class="n">tensor</span><span class="p">::</span><span class="n">Tensor</span><span class="p">;</span>
+<span class="k">use</span><span class="w"> </span><span class="n">std</span><span class="p">::</span><span class="n">sync</span><span class="p">::</span><span class="n">Arc</span><span class="p">;</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="n">packed_bytes</span><span class="p">:</span><span class="w"> </span><span class="nc">Arc</span><span class="o">&lt;</span><span class="nb">Vec</span><span class="o">&lt;</span><span class="kt">u8</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Arc</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="n">model_bytes</span><span class="p">);</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">raw</span><span class="p">:</span><span class="w"> </span><span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">u8</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">api</span><span class="p">::</span><span class="n">copy_host_vec_to_device</span><span class="p">(</span><span class="o">&amp;</span><span class="n">packed_bytes</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="p">])</span>
+<span class="w">    </span><span class="p">.</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span>
+<span class="w">    </span><span class="p">.</span><span class="n">into</span><span class="p">();</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">fp4</span><span class="p">:</span><span class="w"> </span><span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="n">f4e2m1fnx2</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">raw</span><span class="p">.</span><span class="n">reinterpret</span><span class="p">::</span><span class="o">&lt;</span><span class="n">f4e2m1fnx2</span><span class="o">&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="p">])</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">reinterpret</span></code> does not repack or validate the FP4 payload. It preserves the
+bytes and changes the tensor element type metadata, so the producer of
+<code class="docutils literal notranslate"><span class="pre">model_bytes</span></code> is responsible for the low-nibble, high-nibble packing order.</p>
+</section>
+<section id="tensorview-zero-copy-views-and-slices">
+<h3><code class="docutils literal notranslate"><span class="pre">TensorView</span></code>: zero-copy views and slices<a class="headerlink" href="#tensorview-zero-copy-views-and-slices" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">TensorView</span></code> provides zero-copy borrowed views of a tensor with a different shape or offset. Views borrow the underlying tensor — the tensor cannot be mutated while a view exists. The offset is applied host-side, so passing a view to a kernel hands the kernel a pointer to the correct starting address without any data movement.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tensor.view(&amp;shape)</span></code></p></td>
+<td><p>Reshape to the given shape without copying. Total element count must match.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tensor.slice(&amp;ranges)</span></code></p></td>
+<td><p>Borrow a rectangular sub-region (one numpy-style range per dimension).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">view.slice(&amp;ranges)</span></code></p></td>
+<td><p>Chain-slice further; offsets accumulate.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">tensor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">api</span><span class="p">::</span><span class="n">arange</span><span class="p">::</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">1024</span><span class="p">).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+
+<span class="c1">// Reshape without copying.</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tensor</span><span class="p">.</span><span class="n">view</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">])</span><span class="o">?</span><span class="p">;</span>
+
+<span class="c1">// Slice: borrow a subregion (numpy-style ranges).</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">first_half</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tensor</span><span class="p">.</span><span class="n">slice</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="mi">512</span><span class="p">])</span><span class="o">?</span><span class="p">;</span><span class="w">       </span><span class="c1">// elements 0-511</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">row_slice</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">matrix</span><span class="p">.</span><span class="n">slice</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">3</span><span class="p">])</span><span class="o">?</span><span class="p">;</span><span class="w">          </span><span class="c1">// rows 1-2, all columns</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">block</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">matrix</span><span class="p">.</span><span class="n">slice</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="o">..</span><span class="mi">6</span><span class="p">])</span><span class="o">?</span><span class="p">;</span><span class="w">        </span><span class="c1">// rows 1-2, cols 2-5</span>
+
+<span class="c1">// Chained slices accumulate offsets.</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">inner</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tensor</span><span class="p">.</span><span class="n">slice</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">100</span><span class="o">..</span><span class="mi">200</span><span class="p">])</span><span class="o">?</span><span class="p">.</span><span class="n">slice</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">10</span><span class="o">..</span><span class="mi">20</span><span class="p">])</span><span class="o">?</span><span class="p">;</span><span class="w">  </span><span class="c1">// = tensor[110..120]</span>
+</pre></div>
+</div>
+<p>Pass views and slices to kernels as <code class="docutils literal notranslate"><span class="pre">&amp;Tensor</span></code> parameters to process part of an
+existing tensor without allocation or copying.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="host-device-and-device-device-transfers">
+<h2>Host-Device and Device-Device Transfers<a class="headerlink" href="#host-device-and-device-device-transfers" title="Link to this heading">#</a></h2>
+<p>Moving data between CPU and GPU, or between two device tensors, uses APIs that
+return <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code>s — the copy is scheduled when the op runs, not constructed:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>API</p></th>
+<th class="head"><p>Returns</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">api::copy_host_vec_to_device::&lt;T&gt;(vec:</span> <span class="pre">&amp;Arc&lt;Vec&lt;T&gt;&gt;)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DeviceOp&lt;Output</span> <span class="pre">=</span> <span class="pre">Tensor&lt;T&gt;&gt;</span></code></p></td>
+<td><p>Copy host <code class="docutils literal notranslate"><span class="pre">Vec&lt;T&gt;</span></code> to a new device <code class="docutils literal notranslate"><span class="pre">Tensor&lt;T&gt;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">api::copy_device_to_host_vec::&lt;T&gt;(tensor:</span> <span class="pre">&amp;Arc&lt;Tensor&lt;T&gt;&gt;)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DeviceOp&lt;Output</span> <span class="pre">=</span> <span class="pre">Vec&lt;T&gt;&gt;</span></code></p></td>
+<td><p>Copy a device <code class="docutils literal notranslate"><span class="pre">Tensor&lt;T&gt;</span></code> to a host <code class="docutils literal notranslate"><span class="pre">Vec&lt;T&gt;</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tensor.to_host_vec()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DeviceOp&lt;Output</span> <span class="pre">=</span> <span class="pre">Vec&lt;T&gt;&gt;</span></code></p></td>
+<td><p>Method form of <code class="docutils literal notranslate"><span class="pre">copy_device_to_host_vec</span></code> (preferred)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">device_op.to_host_vec()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DeviceOp&lt;Output</span> <span class="pre">=</span> <span class="pre">Vec&lt;T&gt;&gt;</span></code></p></td>
+<td><p>Copy the <code class="docutils literal notranslate"><span class="pre">Tensor&lt;T&gt;</span></code> produced by a <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> to host</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">api::dup(&amp;tensor)</span></code> / <code class="docutils literal notranslate"><span class="pre">tensor.dup()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DeviceOp&lt;Output</span> <span class="pre">=</span> <span class="pre">Tensor&lt;T&gt;&gt;</span></code></p></td>
+<td><p>Allocate a new tensor and copy device-to-device</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">api::memcpy(&amp;mut</span> <span class="pre">dst,</span> <span class="pre">&amp;src)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DeviceOp&lt;Output</span> <span class="pre">=</span> <span class="pre">()&gt;</span></code></p></td>
+<td><p>Copy device-to-device into an existing tensor, used especially for CUDA graph updates</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="c1">// Host -&gt; device</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">data</span><span class="p">:</span><span class="w"> </span><span class="nc">Arc</span><span class="o">&lt;</span><span class="nb">Vec</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Arc</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="fm">vec!</span><span class="p">[</span><span class="mf">1.0</span><span class="p">;</span><span class="w"> </span><span class="mi">1024</span><span class="p">]);</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">tensor</span><span class="p">:</span><span class="w"> </span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">api</span><span class="p">::</span><span class="n">copy_host_vec_to_device</span><span class="p">(</span><span class="o">&amp;</span><span class="n">data</span><span class="p">).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+
+<span class="c1">// Device -&gt; host</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">result</span><span class="p">:</span><span class="w"> </span><span class="nb">Vec</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tensor</span><span class="p">.</span><span class="n">to_host_vec</span><span class="p">().</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+
+<span class="c1">// Device -&gt; device</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">copy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tensor</span><span class="p">.</span><span class="n">dup</span><span class="p">().</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The host-side <code class="docutils literal notranslate"><span class="pre">Vec</span></code> must remain alive until the op completes — the async copy
+reads from it until the stream synchronizes. <code class="docutils literal notranslate"><span class="pre">Arc&lt;Vec&lt;T&gt;&gt;</span></code> makes this
+straightforward for shared access. <code class="docutils literal notranslate"><span class="pre">to_host_vec</span></code> is available on <code class="docutils literal notranslate"><span class="pre">Tensor&lt;T&gt;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">Arc&lt;Tensor&lt;T&gt;&gt;</span></code>, and <code class="docutils literal notranslate"><span class="pre">&amp;Arc&lt;Tensor&lt;T&gt;&gt;</span></code>; each returns the same
+<code class="docutils literal notranslate"><span class="pre">DeviceOp&lt;Output</span> <span class="pre">=</span> <span class="pre">Vec&lt;T&gt;&gt;</span></code>. It is also available on a
+<code class="docutils literal notranslate"><span class="pre">DeviceOp&lt;Output</span> <span class="pre">=</span> <span class="pre">Tensor&lt;T&gt;&gt;</span></code>, which is the common form after a kernel chain:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">host</span><span class="p">:</span><span class="w"> </span><span class="nb">Vec</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kernel</span><span class="p">(</span><span class="n">out</span><span class="p">.</span><span class="n">partition</span><span class="p">([</span><span class="mi">128</span><span class="p">]),</span><span class="w"> </span><span class="o">&amp;</span><span class="n">input</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">first</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="n">unpartition</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="n">to_host_vec</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">api::memcpy</span></code> copies between already allocated tensors and panics if the source
+and destination element counts differ. It is the usual way to update graph
+input buffers before replay:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="n">graph</span><span class="p">.</span><span class="n">update</span><span class="p">(</span><span class="n">api</span><span class="p">::</span><span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="n">input_buffer</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">new_input</span><span class="p">))</span><span class="o">?</span><span class="p">;</span>
+<span class="n">graph</span><span class="p">.</span><span class="n">launch</span><span class="p">().</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="devices-and-streams">
+<h2>Devices and Streams<a class="headerlink" href="#devices-and-streams" title="Link to this heading">#</a></h2>
+<p>Every host program starts with a <code class="docutils literal notranslate"><span class="pre">Device</span></code>, plus one or more <code class="docutils literal notranslate"><span class="pre">Stream</span></code>s for scheduling GPU work:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">use</span><span class="w"> </span><span class="n">cuda_core</span><span class="p">::</span><span class="n">Device</span><span class="p">;</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Device</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">?</span><span class="p">;</span><span class="w">              </span><span class="c1">// Device ordinal 0</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">stream</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">device</span><span class="p">.</span><span class="n">new_stream</span><span class="p">()</span><span class="o">?</span><span class="p">;</span><span class="w">         </span><span class="c1">// A new stream owned by this device</span>
+</pre></div>
+</div>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Returns</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Device::new(ordinal:</span> <span class="pre">usize)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Result&lt;Arc&lt;Device&gt;,</span> <span class="pre">DriverError&gt;</span></code></p></td>
+<td><p>Create a device handle bound to a GPU ordinal</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Device::device_count()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Result&lt;i32,</span> <span class="pre">DriverError&gt;</span></code></p></td>
+<td><p>Number of CUDA-capable devices</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">device.ordinal()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">usize</span></code></p></td>
+<td><p>GPU ordinal this handle represents</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">device.name()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Result&lt;String,</span> <span class="pre">DriverError&gt;</span></code></p></td>
+<td><p>Device name</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">device.new_stream()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Result&lt;Arc&lt;Stream&gt;,</span> <span class="pre">DriverError&gt;</span></code></p></td>
+<td><p>Create a new stream on this device</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">unsafe</span> <span class="pre">Device::borrow_raw(cu_ctx,</span> <span class="pre">cu_device,</span> <span class="pre">ordinal)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Arc&lt;Device&gt;</span></code></p></td>
+<td><p>Borrow an externally owned CUDA context/device for interop</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">unsafe</span> <span class="pre">Device::borrow_with_owner(cu_ctx,</span> <span class="pre">cu_device,</span> <span class="pre">ordinal,</span> <span class="pre">owner)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Arc&lt;Device&gt;</span></code></p></td>
+<td><p>Same, holding an <code class="docutils literal notranslate"><span class="pre">Arc&lt;dyn</span> <span class="pre">ForeignOwner&gt;</span></code> so the foreign owner outlives the handle</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">unsafe</span> <span class="pre">Stream::borrow_raw(cu_stream,</span> <span class="pre">&amp;device)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Arc&lt;Stream&gt;</span></code></p></td>
+<td><p>Borrow an externally owned CUDA stream for interop</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">unsafe</span> <span class="pre">Stream::borrow_with_owner(cu_stream,</span> <span class="pre">&amp;device,</span> <span class="pre">owner)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Arc&lt;Stream&gt;</span></code></p></td>
+<td><p>Same, holding an <code class="docutils literal notranslate"><span class="pre">Arc&lt;dyn</span> <span class="pre">ForeignOwner&gt;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">unsafe</span> <span class="pre">Module::borrow_raw(...)</span></code> / <code class="docutils literal notranslate"><span class="pre">unsafe</span> <span class="pre">Function::borrow_raw(...)</span></code></p></td>
+<td><p>CUDA module/function wrappers</p></td>
+<td><p>Borrow externally owned CUDA handles</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Devices are <code class="docutils literal notranslate"><span class="pre">Arc</span></code>-wrapped for sharing across threads; streams are also <code class="docutils literal notranslate"><span class="pre">Arc</span></code>-wrapped and can be passed to <code class="docutils literal notranslate"><span class="pre">.sync_on(&amp;stream)</span></code> for explicit stream scheduling.</p>
+<p>The default round-robin scheduling policy handles stream assignment automatically for most workloads — these APIs are for when you need explicit stream control (debugging, deterministic ordering, paired with <code class="docutils literal notranslate"><span class="pre">AsyncKernelLaunch</span></code>, or overlapping compute with transfers on dedicated streams).</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">borrow_raw</span></code> constructors do not take ownership of the underlying CUDA
+handles and therefore do not destroy them on drop. They are <code class="docutils literal notranslate"><span class="pre">unsafe</span> <span class="pre">fn</span></code>s: the
+caller guarantees the handles stay valid for as long as the borrow is used.
+The <code class="docutils literal notranslate"><span class="pre">borrow_with_owner</span></code> variants keep an <code class="docutils literal notranslate"><span class="pre">Arc&lt;dyn</span> <span class="pre">ForeignOwner&gt;</span></code> alive so the
+owning runtime’s object cannot be dropped first. Use them when integrating
+with another runtime that owns the context, stream, module, or function.</p>
+</section>
+<hr class="docutils" />
+<section id="kernel-launch-configuration">
+<h2>Kernel Launch Configuration<a class="headerlink" href="#kernel-launch-configuration" title="Link to this heading">#</a></h2>
+<p>Several types configure how kernels compile and launch.</p>
+<p><strong><code class="docutils literal notranslate"><span class="pre">CompileOptions</span></code></strong> — runtime overrides for entry-level <code class="docutils literal notranslate"><span class="pre">optimization_hints</span></code>, typically used for autotuning:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">use</span><span class="w"> </span><span class="n">cutile</span><span class="p">::</span><span class="n">tile_kernel</span><span class="p">::</span><span class="n">CompileOptions</span><span class="p">;</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="n">opts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CompileOptions</span><span class="p">::</span><span class="n">default</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="n">occupancy</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">num_cta_in_cga</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">max_divisibility</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">num_worker_warps_per_cta</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span><span class="w"> </span><span class="c1">// Bytecode 13.3+; use 4 or 8.</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">my_kernel</span><span class="p">(</span><span class="n">args</span><span class="p">).</span><span class="n">compile_options</span><span class="p">(</span><span class="n">opts</span><span class="p">).</span><span class="n">grid</span><span class="p">(</span><span class="n">grid</span><span class="p">).</span><span class="k">await</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Tile IR 13.4 restricts <code class="docutils literal notranslate"><span class="pre">num_worker_warps_per_cta</span></code> to 4 or 8. Tile IR 13.3
+accepts powers of two in <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">32]</span></code> (the assembler clamps to its supported
+worker counts). The JIT checks the selected version’s range.</p>
+<p>Different <code class="docutils literal notranslate"><span class="pre">CompileOptions</span></code> values trigger separate JIT compilations and are part of the kernel cache key.</p>
+<p>Generated <code class="docutils literal notranslate"><span class="pre">#[cutile::entry]</span></code> launchers also expose launch-time configuration
+methods:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">.grid((x,</span> <span class="pre">y,</span> <span class="pre">z))</span></code></p></td>
+<td><p>Set an explicit runtime launch grid instead of inferring it from partitioned tensor inputs.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">.const_grid((x,</span> <span class="pre">y,</span> <span class="pre">z))</span></code></p></td>
+<td><p>Set a compile-time constant grid, enabling grid-dependent optimizations.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">.compile_options(opts)</span></code></p></td>
+<td><p>Override occupancy, cluster/CTA, worker-warp, and divisibility hints for this compilation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">.generics(values)</span></code></p></td>
+<td><p>Bind type and const generic arguments manually when they cannot be inferred.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The JIT compiler resolves <code class="docutils literal notranslate"><span class="pre">tileiras</span></code> in this order: <code class="docutils literal notranslate"><span class="pre">CUTILE_TILEIRAS_PATH</span></code>
+when set, then <code class="docutils literal notranslate"><span class="pre">$CUDA_TOOLKIT_PATH/bin/tileiras</span></code>, then the default CUDA 13.2+
+install directories (<code class="docutils literal notranslate"><span class="pre">/usr/local/cuda-13.4</span></code>, <code class="docutils literal notranslate"><span class="pre">/usr/local/cuda-13.3</span></code>, <code class="docutils literal notranslate"><span class="pre">/usr/local/cuda-13.2</span></code>,
+<code class="docutils literal notranslate"><span class="pre">/usr/local/cuda-13</span></code>, <code class="docutils literal notranslate"><span class="pre">/usr/local/cuda</span></code>), and finally <code class="docutils literal notranslate"><span class="pre">tileiras</span></code> through
+normal <code class="docutils literal notranslate"><span class="pre">PATH</span></code> lookup. Set <code class="docutils literal notranslate"><span class="pre">CUTILE_TILEIRAS_PATH</span></code> to force a specific binary:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">CUTILE_TILEIRAS_PATH</span><span class="o">=</span>/opt/cuda-tile/bin/tileiras<span class="w"> </span>cargo<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-p<span class="w"> </span>cutile
+</pre></div>
+</div>
+<p>The selected binary’s supported bytecode versions determine emission, not
+the CUDA headers used to build the Rust crates. The default is the highest
+mutually supported version (13.2, 13.3, or 13.4). <code class="docutils literal notranslate"><span class="pre">CUTILE_BYTECODE_VERSION</span></code>
+can pin one of those versions, but cannot force a version that the selected
+assembler does not support. Configure these variables before launching;
+already-resolved launch sites retain their toolchain snapshot.</p>
+<p><strong><code class="docutils literal notranslate"><span class="pre">LaunchConfig</span></code></strong> — grid/block/shared-memory specification for <code class="docutils literal notranslate"><span class="pre">AsyncKernelLaunch</span></code> (raw CUDA kernels launched outside the <code class="docutils literal notranslate"><span class="pre">#[cutile::entry]</span></code> path):</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">use</span><span class="w"> </span><span class="n">cuda_core</span><span class="p">::</span><span class="n">LaunchConfig</span><span class="p">;</span>
+
+<span class="n">LaunchConfig</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">grid_dim</span><span class="p">:</span><span class="w"> </span><span class="p">((</span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">255</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">256</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">),</span><span class="w">    </span><span class="c1">// 3D grid of thread blocks</span>
+<span class="w">    </span><span class="n">block_dim</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="mi">256</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">),</span><span class="w">                </span><span class="c1">// 3D block of threads</span>
+<span class="w">    </span><span class="n">shared_mem_bytes</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">                   </span><span class="c1">// Dynamic shared memory per block</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong><code class="docutils literal notranslate"><span class="pre">AsyncKernelLaunch</span></code></strong> — wraps a CUDA driver kernel launch as a <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code>. Build the argument list with <code class="docutils literal notranslate"><span class="pre">push_arg</span></code> (safe, for <code class="docutils literal notranslate"><span class="pre">DType</span></code> scalars) or <code class="docutils literal notranslate"><span class="pre">push_device_ptr</span></code> (<code class="docutils literal notranslate"><span class="pre">unsafe</span></code>, for raw device pointers), set the launch config, then <code class="docutils literal notranslate"><span class="pre">.await</span></code> or <code class="docutils literal notranslate"><span class="pre">.sync_on()</span></code>:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">use</span><span class="w"> </span><span class="n">cuda_async</span><span class="p">::</span><span class="n">launch</span><span class="p">::</span><span class="n">AsyncKernelLaunch</span><span class="p">;</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">launcher</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">AsyncKernelLaunch</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="n">function</span><span class="p">.</span><span class="n">clone</span><span class="p">());</span>
+<span class="n">launcher</span><span class="p">.</span><span class="n">push_arg</span><span class="p">(</span><span class="n">num_elements</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="kt">u32</span><span class="p">);</span>
+<span class="n">launcher</span><span class="p">.</span><span class="n">push_arg</span><span class="p">(</span><span class="n">scale</span><span class="p">);</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">input_ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">input</span><span class="p">.</span><span class="n">device_pointer</span><span class="p">();</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">output_ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">output</span><span class="p">.</span><span class="n">device_pointer</span><span class="p">();</span>
+<span class="k">unsafe</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">launcher</span>
+<span class="w">        </span><span class="p">.</span><span class="n">push_device_ptr</span><span class="p">(</span><span class="n">input_ptr</span><span class="p">.</span><span class="n">cu_deviceptr</span><span class="p">())</span>
+<span class="w">        </span><span class="p">.</span><span class="n">push_device_ptr</span><span class="p">(</span><span class="n">output_ptr</span><span class="p">.</span><span class="n">cu_deviceptr</span><span class="p">());</span>
+<span class="p">}</span>
+<span class="n">launcher</span><span class="p">.</span><span class="n">set_launch_config</span><span class="p">(</span><span class="n">LaunchConfig</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">grid_dim</span><span class="p">:</span><span class="w"> </span><span class="p">((</span><span class="n">num_elements</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="kt">u32</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">255</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">256</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">),</span>
+<span class="w">    </span><span class="n">block_dim</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="mi">256</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">),</span>
+<span class="w">    </span><span class="n">shared_mem_bytes</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="p">});</span>
+<span class="n">launcher</span><span class="p">.</span><span class="k">await</span><span class="o">?</span><span class="p">;</span><span class="w">  </span><span class="c1">// Executes as a DeviceOp</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="../guide/interoperability.html"><span class="std std-doc">Interoperability</span></a> for the full walkthrough and the wrapper pattern that hides <code class="docutils literal notranslate"><span class="pre">unsafe</span></code> at the call site.</p>
+<p><strong><code class="docutils literal notranslate"><span class="pre">.generics(Vec&lt;String&gt;)</span></code></strong> — <code class="docutils literal notranslate"><span class="pre">#[cutile::entry]</span></code>-generated launchers accept this method to bind const generics and type parameters at runtime:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">generics</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="fm">vec!</span><span class="p">[</span>
+<span class="w">    </span><span class="s">"f32"</span><span class="p">.</span><span class="n">to_string</span><span class="p">(),</span><span class="w">  </span><span class="c1">// E</span>
+<span class="w">    </span><span class="s">"16"</span><span class="p">.</span><span class="n">to_string</span><span class="p">(),</span><span class="w">   </span><span class="c1">// BM</span>
+<span class="w">    </span><span class="s">"16"</span><span class="p">.</span><span class="n">to_string</span><span class="p">(),</span><span class="w">   </span><span class="c1">// BN</span>
+<span class="w">    </span><span class="s">"8"</span><span class="p">.</span><span class="n">to_string</span><span class="p">(),</span><span class="w">    </span><span class="c1">// BK</span>
+<span class="w">    </span><span class="s">"128"</span><span class="p">.</span><span class="n">to_string</span><span class="p">(),</span><span class="w">  </span><span class="c1">// K</span>
+<span class="p">];</span>
+<span class="n">gemm</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">).</span><span class="n">generics</span><span class="p">(</span><span class="n">generics</span><span class="p">).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Generic values are part of the kernel cache key: each unique combination triggers its own JIT compilation.</p>
+<hr class="docutils" />
+<section id="programmatic-dependent-launch">
+<h3>Programmatic dependent launch<a class="headerlink" href="#programmatic-dependent-launch" title="Link to this heading">#</a></h3>
+<p>The generated kernel builder has an unsafe, consuming
+<code class="docutils literal notranslate"><span class="pre">.programmatic_dependent_launch()</span></code> method. It is disabled by default and is
+separate from <code class="docutils literal notranslate"><span class="pre">CompileOptions</span></code>. It requires Tile IR 13.4, sm_90 or newer,
+and a driver providing <code class="docutils literal notranslate"><span class="pre">cuLaunchKernelEx</span></code>; unsupported requests fail rather
+than silently using ordinary serialization. <code class="docutils literal notranslate"><span class="pre">cuda_async::AsyncKernelLaunch</span></code>
+also exposes an unsafe mutable-builder method for lower-level callers.</p>
+<p>Enqueue both kernels on the same stream, enabling PDL on the <strong>consumer</strong>:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">unsafe</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">kernels</span><span class="p">::</span><span class="n">producer</span><span class="p">(</span><span class="n">input</span><span class="p">.</span><span class="n">device_pointer</span><span class="p">()).</span><span class="n">grid</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="n">then</span><span class="p">(</span><span class="o">|</span><span class="n">_</span><span class="o">|</span><span class="w"> </span><span class="n">kernels</span><span class="p">::</span><span class="n">consumer</span><span class="p">(</span><span class="n">input</span><span class="p">.</span><span class="n">device_pointer</span><span class="p">(),</span><span class="w"> </span><span class="n">output</span><span class="p">.</span><span class="n">device_pointer</span><span class="p">())</span>
+<span class="w">            </span><span class="p">.</span><span class="n">programmatic_dependent_launch</span><span class="p">().</span><span class="n">grid</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)))</span>
+<span class="p">}.</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>In the producer, chain its stores into
+<code class="docutils literal notranslate"><span class="pre">gdc_launch_dependents_tko(Some(stored))</span></code> when dependent kernels may begin;
+<code class="docutils literal notranslate"><span class="pre">Tensor::store</span></code> returns the token to chain from. Every producer tile block
+must signal or finish. In the consumer, call <code class="docutils literal notranslate"><span class="pre">gdc_wait_tko(None)</span></code> and make
+every predecessor-dependent memory operation consume its result token: for
+a tensor input, <code class="docutils literal notranslate"><span class="pre">input.set_token(ready)</span></code> (unsafe) before creating any view
+of it, so every later load through the tensor is chained after the wait;
+for pointer operations, pass the token directly. Source order alone does
+not establish that dependency. The launch signal permits scheduling; the
+wait establishes dependency completion before consuming data.</p>
+<p>Install the token on a function-level binding, outside conditionals and
+loops. An <code class="docutils literal notranslate"><span class="pre">unsafe</span> <span class="pre">{</span> <span class="pre">input.set_token(ready)</span> <span class="pre">}</span></code> block is fine when <code class="docutils literal notranslate"><span class="pre">input</span></code> is
+declared at function level. Block-local receivers and rebinding the tensor
+after installation are rejected by the JIT; explicit token updates do not
+yet participate in control-flow carries. Existing views keep their old
+token, so create views only after installation. The raw
+<code class="docutils literal notranslate"><span class="pre">make_partition_view</span></code> constructor is unsafe because its caller-supplied
+token can otherwise discard the ordering required by safe view loads.</p>
+<p>Work before the wait must not race unfinished producer work. Neither kernel
+may rely on actual overlap for progress, and all resources must remain alive
+until both kernels have finished using them. Raw pointers do not retain the
+owning tensors. PDL is an unsafe opt-in because these obligations exceed the
+ordinary stream-ordering guarantees of the safe tensor API.</p>
+<p>For a complete executable producer/consumer pair, see
+<code class="docutils literal notranslate"><span class="pre">cutile-examples/examples/pdl.rs</span></code> (with a stream-order vs PDL timing
+comparison) or the test
+<code class="docutils literal notranslate"><span class="pre">cutile/tests/gpu/tile_ir_13_4.rs::dependent_launch_waits_for_producer_data</span></code>.</p>
+</section>
+</section>
+<section id="the-futures-analogy">
+<h2>The Futures Analogy<a class="headerlink" href="#the-futures-analogy" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> is to GPU work what <code class="docutils literal notranslate"><span class="pre">Future</span></code> is to async I/O. Both are lazy
+descriptions of work that don’t execute until driven:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Concept</p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">std::future::Future</span></code></p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>What it represents</p></td>
+<td><p>Async computation</p></td>
+<td><p>GPU computation</p></td>
+</tr>
+<tr class="row-odd"><td><p>When it runs</p></td>
+<td><p>On <code class="docutils literal notranslate"><span class="pre">.await</span></code> or <code class="docutils literal notranslate"><span class="pre">poll()</span></code></p></td>
+<td><p>On <code class="docutils literal notranslate"><span class="pre">.sync()</span></code>, <code class="docutils literal notranslate"><span class="pre">.sync_on()</span></code>, or <code class="docutils literal notranslate"><span class="pre">.await</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Chaining</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.then()</span></code>, <code class="docutils literal notranslate"><span class="pre">.map()</span></code> via <code class="docutils literal notranslate"><span class="pre">FutureExt</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.then()</span></code>, <code class="docutils literal notranslate"><span class="pre">.map()</span></code> on <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Fan-in</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">join!</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">zip!</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Fan-out</p></td>
+<td><p>N/A (single consumer)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.unzip()</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Shared access</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FutureExt::shared()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.shared()</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Type erasure</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">BoxFuture</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.boxed()</span></code> → <code class="docutils literal notranslate"><span class="pre">BoxedDeviceOp</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Output wrapper</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Poll&lt;T&gt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Result&lt;T,</span> <span class="pre">DeviceError&gt;</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>An async runtime drives a <code class="docutils literal notranslate"><span class="pre">Future</span></code> through <code class="docutils literal notranslate"><span class="pre">poll()</span></code>. A <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> submits
+GPU work through <code class="docutils literal notranslate"><span class="pre">execute()</span></code>. Converting it to a future with <code class="docutils literal notranslate"><span class="pre">.await</span></code> or
+<code class="docutils literal notranslate"><span class="pre">.into_future()</span></code> produces a <code class="docutils literal notranslate"><span class="pre">DeviceFuture</span></code>, which the runtime polls for GPU
+completion.</p>
+</section>
+<hr class="docutils" />
+<section id="combinator-reference">
+<h2>Combinator Reference<a class="headerlink" href="#combinator-reference" title="Link to this heading">#</a></h2>
+<p>All combinators follow established Rust conventions. The “Precedent” column
+shows which standard library or <code class="docutils literal notranslate"><span class="pre">futures</span></code> crate method inspired the design.</p>
+<section id="composition">
+<h3>Composition<a class="headerlink" href="#composition" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Combinator</p></th>
+<th class="head"><p>Signature</p></th>
+<th class="head"><p>Precedent</p></th>
+<th class="head"><p>What it does</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">zip!(a,</span> <span class="pre">b,</span> <span class="pre">…)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(impl</span> <span class="pre">DeviceOp,</span> <span class="pre">…)</span> <span class="pre">→</span> <span class="pre">impl</span> <span class="pre">DeviceOp&lt;Output=(A,</span> <span class="pre">B,</span> <span class="pre">…)&gt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Iterator::zip</span></code></p></td>
+<td><p>Combine N operations into a single tuple-producing operation</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">.unzip()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">impl</span> <span class="pre">DeviceOp&lt;Output=(A,</span> <span class="pre">B,</span> <span class="pre">…)&gt;</span> <span class="pre">→</span> <span class="pre">(impl</span> <span class="pre">DeviceOp&lt;Output=A&gt;,</span> <span class="pre">…)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Iterator::unzip</span></code></p></td>
+<td><p>Split a tuple operation into independent per-element operations</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">.then(f)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">self</span> <span class="pre">→</span> <span class="pre">f(Self::Output)</span> <span class="pre">→</span> <span class="pre">impl</span> <span class="pre">DeviceOp&lt;Output=O&gt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FutureExt::then</span></code></p></td>
+<td><p>Chain follow-up GPU work <strong>on the same stream</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">.map(f)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">self</span> <span class="pre">→</span> <span class="pre">f(Self::Output)</span> <span class="pre">→</span> <span class="pre">O</span></code> (no GPU work)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FutureExt::map</span></code></p></td>
+<td><p>Transform output without issuing GPU work</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">.inspect(f)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">self</span> <span class="pre">→</span> <span class="pre">f(&amp;Self::Output)</span></code> (passthrough)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FutureExt::inspect</span></code></p></td>
+<td><p>Peek at output for debugging; returns it unchanged</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="selection">
+<h3>Selection<a class="headerlink" href="#selection" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Combinator</p></th>
+<th class="head"><p>Signature</p></th>
+<th class="head"><p>Precedent</p></th>
+<th class="head"><p>What it does</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">.first()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">impl</span> <span class="pre">DeviceOp&lt;Output=(A,</span> <span class="pre">B,</span> <span class="pre">…)&gt;</span> <span class="pre">→</span> <span class="pre">impl</span> <span class="pre">DeviceOp&lt;Output=A&gt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">slice::first</span></code></p></td>
+<td><p>Extract the first element of a tuple output</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">.last()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">impl</span> <span class="pre">DeviceOp&lt;Output=(A,</span> <span class="pre">B,</span> <span class="pre">…)&gt;</span> <span class="pre">→</span> <span class="pre">impl</span> <span class="pre">DeviceOp&lt;Output=Z&gt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">slice::last</span></code></p></td>
+<td><p>Extract the last element of a tuple output</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="sharing-and-erasure">
+<h3>Sharing and Erasure<a class="headerlink" href="#sharing-and-erasure" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Combinator</p></th>
+<th class="head"><p>Signature</p></th>
+<th class="head"><p>Precedent</p></th>
+<th class="head"><p>What it does</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">.shared()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">self</span> <span class="pre">→</span> <span class="pre">SharedDeviceOp&lt;Self::Output&gt;</span></code> (requires <code class="docutils literal notranslate"><span class="pre">Self:</span> <span class="pre">'static</span></code>, <code class="docutils literal notranslate"><span class="pre">Output:</span> <span class="pre">Sync</span></code>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FutureExt::shared</span></code></p></td>
+<td><p>Cloneable, execute-once; output is <code class="docutils literal notranslate"><span class="pre">Arc&lt;T&gt;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">shared(arc)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Arc&lt;T&gt;</span> <span class="pre">→</span> <span class="pre">SharedDeviceOp&lt;T&gt;</span></code></p></td>
+<td><p>—</p></td>
+<td><p>Wrap an existing <code class="docutils literal notranslate"><span class="pre">Arc</span></code> as a pre-computed <code class="docutils literal notranslate"><span class="pre">SharedDeviceOp</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">.boxed()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">self</span> <span class="pre">→</span> <span class="pre">BoxedDeviceOp&lt;Self::Output&gt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FutureExt::boxed</span></code></p></td>
+<td><p>Type-erase for heterogeneous collections</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="execution">
+<h3>Execution<a class="headerlink" href="#execution" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Stream chosen by</p></th>
+<th class="head"><p>Blocks?</p></th>
+<th class="head"><p>Use case</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">.sync()</span></code></p></td>
+<td><p>Default policy (round-robin)</p></td>
+<td><p>Yes</p></td>
+<td><p>Quick scripts</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">.sync_on(&amp;stream)</span></code></p></td>
+<td><p>The explicit stream</p></td>
+<td><p>Yes</p></td>
+<td><p>Deterministic ordering, debugging</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">.await</span></code></p></td>
+<td><p>Default policy (round-robin)</p></td>
+<td><p>No (suspends task)</p></td>
+<td><p>Async production code</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">.into_future()</span></code></p></td>
+<td><p>Default policy</p></td>
+<td><p>No (returns <code class="docutils literal notranslate"><span class="pre">DeviceFuture</span></code>)</p></td>
+<td><p>Manual future handling</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">.schedule(&amp;policy)</span></code></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">Arc&lt;dyn</span> <span class="pre">SchedulingPolicy&gt;</span></code> you provide</p></td>
+<td><p>No (returns <code class="docutils literal notranslate"><span class="pre">Result&lt;DeviceFuture,</span> <span class="pre">DeviceError&gt;</span></code>)</p></td>
+<td><p>Multi-device dispatch</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">.graph()</span></code></p></td>
+<td><p>Default policy (round-robin)</p></td>
+<td><p>Yes (captures + syncs)</p></td>
+<td><p>CUDA graph capture</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">.graph_on(stream)</span></code></p></td>
+<td><p>The explicit stream</p></td>
+<td><p>Yes (captures + syncs)</p></td>
+<td><p>CUDA graph capture on specific stream</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If any kernel input is <code class="docutils literal notranslate"><span class="pre">&amp;Tensor&lt;T&gt;</span></code> (borrowed), the operation is not
+<code class="docutils literal notranslate"><span class="pre">'static</span></code> and cannot be used with <code class="docutils literal notranslate"><span class="pre">tokio::spawn</span></code>. Use <code class="docutils literal notranslate"><span class="pre">.sync_on()</span></code> or
+<code class="docutils literal notranslate"><span class="pre">.await</span></code> in the same scope, or switch to <code class="docutils literal notranslate"><span class="pre">Arc&lt;Tensor&lt;T&gt;&gt;</span></code> for spawned tasks.</p>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="supported-kernel-parameter-types">
+<h2>Supported Kernel Parameter Types<a class="headerlink" href="#supported-kernel-parameter-types" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Kernel param</p></th>
+<th class="head"><p>Host type</p></th>
+<th class="head"><p>Return type</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&amp;Tensor&lt;T,</span> <span class="pre">S&gt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Tensor&lt;T&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">Arc&lt;Tensor&lt;T&gt;&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&amp;Tensor&lt;T&gt;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&amp;TensorView&lt;T&gt;</span></code></p></td>
+<td><p>Same as input</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&amp;mut</span> <span class="pre">Tensor&lt;T,</span> <span class="pre">S&gt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Partition&lt;Tensor&lt;T&gt;&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">Partition&lt;&amp;mut</span> <span class="pre">Tensor&lt;T&gt;&gt;</span></code>, or their <code class="docutils literal notranslate"><span class="pre">MappedLaunchPartition&lt;…&gt;</span></code> forms from <code class="docutils literal notranslate"><span class="pre">.map(..)</span></code></p></td>
+<td><p>Same as input</p></td>
+</tr>
+<tr class="row-even"><td><p>Scalar (<code class="docutils literal notranslate"><span class="pre">f32</span></code>, <code class="docutils literal notranslate"><span class="pre">i32</span></code>, etc.)</p></td>
+<td><p>Same scalar</p></td>
+<td><p>Same scalar</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">*mut</span> <span class="pre">T</span></code>, <code class="docutils literal notranslate"><span class="pre">*const</span> <span class="pre">T</span></code> (unsafe only)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DevicePointer&lt;T&gt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DevicePointer&lt;T&gt;</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The borrowed partition form (<code class="docutils literal notranslate"><span class="pre">Partition&lt;&amp;mut</span> <span class="pre">Tensor&lt;T&gt;&gt;</span></code>) writes in place — no
+<code class="docutils literal notranslate"><span class="pre">unpartition()</span></code> needed. Create it with <code class="docutils literal notranslate"><span class="pre">(&amp;mut</span> <span class="pre">tensor).partition(shape)</span></code>.</p>
+<p>Raw pointer entry points are <code class="docutils literal notranslate"><span class="pre">unsafe</span> <span class="pre">fn</span></code>s. Obtain a typed device pointer from a
+tensor with <code class="docutils literal notranslate"><span class="pre">tensor.device_pointer()</span></code>, and make sure the pointer remains valid
+for the duration of the kernel launch:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">backing</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">api</span><span class="p">::</span><span class="n">zeros</span><span class="p">::</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">1024</span><span class="p">]).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">backing</span><span class="p">.</span><span class="n">device_pointer</span><span class="p">();</span>
+<span class="k">unsafe</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">raw_ptr_kernel</span><span class="p">(</span><span class="n">ptr</span><span class="p">,</span><span class="w"> </span><span class="mi">1024</span><span class="p">)</span><span class="w"> </span><span class="p">}.</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="ownership-model">
+<h2>Ownership Model<a class="headerlink" href="#ownership-model" title="Link to this heading">#</a></h2>
+<p>Launchers return arguments in the same ownership form they received.</p>
+<section id="read-only-inputs-tensor-params">
+<h3>Read-only inputs (<code class="docutils literal notranslate"><span class="pre">&amp;Tensor</span></code> params)<a class="headerlink" href="#read-only-inputs-tensor-params" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Input</p></th>
+<th class="head"><p>Returned</p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">tokio::spawn</span></code>?</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Tensor&lt;T&gt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Tensor&lt;T&gt;</span></code></p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Arc&lt;Tensor&lt;T&gt;&gt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Arc&lt;Tensor&lt;T&gt;&gt;</span></code></p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&amp;'a</span> <span class="pre">Tensor&lt;T&gt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&amp;'a</span> <span class="pre">Tensor&lt;T&gt;</span></code></p></td>
+<td><p>No (not <code class="docutils literal notranslate"><span class="pre">'static</span></code>)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="mutable-outputs-mut-tensor-params">
+<h3>Mutable outputs (<code class="docutils literal notranslate"><span class="pre">&amp;mut</span> <span class="pre">Tensor</span></code> params)<a class="headerlink" href="#mutable-outputs-mut-tensor-params" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Input</p></th>
+<th class="head"><p>Returned</p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">unpartition()</span></code> needed?</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Partition&lt;Tensor&lt;T&gt;&gt;</span></code> (owned)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Partition&lt;Tensor&lt;T&gt;&gt;</span></code></p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Partition&lt;&amp;'a</span> <span class="pre">mut</span> <span class="pre">Tensor&lt;T&gt;&gt;</span></code> (borrowed)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Partition&lt;&amp;'a</span> <span class="pre">mut</span> <span class="pre">Tensor&lt;T&gt;&gt;</span></code></p></td>
+<td><p>No — tensor is written in place</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The borrowed form is created with <code class="docutils literal notranslate"><span class="pre">(&amp;mut</span> <span class="pre">tensor).partition(shape)</span></code>:</p>
+</section>
+<section id="owned-tensor-t">
+<h3>Owned: <code class="docutils literal notranslate"><span class="pre">Tensor&lt;T&gt;</span></code><a class="headerlink" href="#owned-tensor-t" title="Link to this heading">#</a></h3>
+<p>Pass a tensor directly — the launcher wraps it in <code class="docutils literal notranslate"><span class="pre">Arc</span></code> internally for the
+kernel, then unwraps it back afterward (safe because refcount is 1):</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">my_kernel</span><span class="p">(</span>
+<span class="w">    </span><span class="n">api</span><span class="p">::</span><span class="n">zeros</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">1024</span><span class="p">]).</span><span class="n">partition</span><span class="p">([</span><span class="mi">128</span><span class="p">]),</span>
+<span class="w">    </span><span class="n">api</span><span class="p">::</span><span class="n">ones</span><span class="p">::</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">1024</span><span class="p">]),</span><span class="w">  </span><span class="c1">// DeviceOp&lt;Output=Tensor&lt;f32&gt;&gt;</span>
+<span class="p">)</span>
+<span class="p">.</span><span class="n">first</span><span class="p">()</span>
+<span class="p">.</span><span class="n">unpartition</span><span class="p">()</span>
+<span class="p">.</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Use this for single-use tensors where you don’t need shared access.</p>
+</section>
+<section id="shared-arc-tensor-t">
+<h3>Shared: <code class="docutils literal notranslate"><span class="pre">Arc&lt;Tensor&lt;T&gt;&gt;</span></code><a class="headerlink" href="#shared-arc-tensor-t" title="Link to this heading">#</a></h3>
+<p>Wrap in <code class="docutils literal notranslate"><span class="pre">Arc</span></code> when the same tensor is passed to multiple kernels:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">api</span><span class="p">::</span><span class="n">ones</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">1024</span><span class="p">]).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="n">into</span><span class="p">();</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kernel_a</span><span class="p">(</span><span class="n">out_a</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="n">clone</span><span class="p">()).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kernel_b</span><span class="p">(</span><span class="n">out_b</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="n">clone</span><span class="p">()).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>This is the most common pattern in existing code.</p>
+</section>
+<section id="borrowed-tensor-t">
+<h3>Borrowed: <code class="docutils literal notranslate"><span class="pre">&amp;Tensor&lt;T&gt;</span></code><a class="headerlink" href="#borrowed-tensor-t" title="Link to this heading">#</a></h3>
+<p>Pass a reference when you want to retain ownership and avoid <code class="docutils literal notranslate"><span class="pre">Arc</span></code> overhead.
+The borrow checker ensures the tensor outlives the kernel:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">weights</span><span class="p">:</span><span class="w"> </span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">api</span><span class="p">::</span><span class="n">ones</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">1024</span><span class="p">]).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+
+<span class="c1">// Borrow — no Arc allocation, no refcount.</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">my_kernel</span><span class="p">(</span><span class="n">out_partition</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">weights</span><span class="p">).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+
+<span class="c1">// weights is still available here.</span>
+</pre></div>
+</div>
+<p>Because <code class="docutils literal notranslate"><span class="pre">&amp;Tensor&lt;T&gt;</span></code> is not <code class="docutils literal notranslate"><span class="pre">'static</span></code>,
+<code class="docutils literal notranslate"><span class="pre">tokio::spawn</span></code> rejects operations that borrow tensors:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">op</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">my_kernel</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">weights</span><span class="p">);</span><span class="w">  </span><span class="c1">// borrows weights</span>
+<span class="n">tokio</span><span class="p">::</span><span class="n">spawn</span><span class="p">(</span><span class="n">op</span><span class="p">.</span><span class="n">into_future</span><span class="p">());</span><span class="w">      </span><span class="c1">// ← compile error: not 'static</span>
+</pre></div>
+</div>
+</section>
+<section id="shared-clone-execute-once">
+<h3><code class="docutils literal notranslate"><span class="pre">.shared()</span></code>: Clone + Execute-Once<a class="headerlink" href="#shared-clone-execute-once" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">.shared()</span></code> converts a <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> into a <code class="docutils literal notranslate"><span class="pre">SharedDeviceOp&lt;T&gt;</span></code> that is
+<code class="docutils literal notranslate"><span class="pre">Clone</span></code>. It requires the operation to be <code class="docutils literal notranslate"><span class="pre">'static</span></code> and its output to be
+<code class="docutils literal notranslate"><span class="pre">Sync</span></code>. The underlying operation runs <strong>at most once</strong>; every clone
+receives <code class="docutils literal notranslate"><span class="pre">Arc::clone()</span></code> of the cached result:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">api</span><span class="p">::</span><span class="n">ones</span><span class="p">::</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">]).</span><span class="n">shared</span><span class="p">();</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kernel_a</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="n">clone</span><span class="p">()).</span><span class="n">sync</span><span class="p">()</span><span class="o">?</span><span class="p">;</span><span class="w">  </span><span class="c1">// x executes here (first clone to run)</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kernel_b</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="n">clone</span><span class="p">()).</span><span class="n">sync</span><span class="p">()</span><span class="o">?</span><span class="p">;</span><span class="w">  </span><span class="c1">// uses cached Arc&lt;Tensor&lt;f32&gt;&gt;</span>
+</pre></div>
+</div>
+<p>Output type changes: <code class="docutils literal notranslate"><span class="pre">DeviceOp&lt;Output=T&gt;</span></code> becomes
+<code class="docutils literal notranslate"><span class="pre">SharedDeviceOp</span></code> with <code class="docutils literal notranslate"><span class="pre">Output=Arc&lt;T&gt;</span></code>.</p>
+<p>For pre-computed values (e.g., weight tensors), use the
+<code class="docutils literal notranslate"><span class="pre">shared()</span></code> free function to wrap an <code class="docutils literal notranslate"><span class="pre">Arc&lt;T&gt;</span></code> directly:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">use</span><span class="w"> </span><span class="n">cuda_async</span><span class="p">::</span><span class="n">device_operation</span><span class="p">::</span><span class="n">shared</span><span class="p">;</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="n">w</span><span class="p">:</span><span class="w"> </span><span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="cm">/* loaded weights */</span><span class="p">;</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">w_op</span><span class="p">:</span><span class="w"> </span><span class="nc">SharedDeviceOp</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">shared</span><span class="p">(</span><span class="n">w</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="unwrap-arc">
+<h3><code class="docutils literal notranslate"><span class="pre">.unwrap_arc()</span></code><a class="headerlink" href="#unwrap-arc" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">.shared()</span></code> produces <code class="docutils literal notranslate"><span class="pre">Arc&lt;T&gt;</span></code> outputs (<code class="docutils literal notranslate"><span class="pre">unzip</span></code> keeps the tuple’s element
+types). When you need owned <code class="docutils literal notranslate"><span class="pre">T</span></code> back (e.g., to partition a tensor), use
+<code class="docutils literal notranslate"><span class="pre">.unwrap_arc()</span></code>:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">api</span><span class="p">::</span><span class="n">ones</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">1024</span><span class="p">]).</span><span class="n">shared</span><span class="p">().</span><span class="n">sync</span><span class="p">()</span><span class="o">?</span><span class="p">;</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="n">owned</span><span class="p">:</span><span class="w"> </span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="p">(</span><span class="n">x</span><span class="p">).</span><span class="n">unwrap_arc</span><span class="p">().</span><span class="n">sync</span><span class="p">()</span><span class="o">?</span><span class="p">;</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">partitioned</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">owned</span><span class="p">.</span><span class="n">partition</span><span class="p">([</span><span class="mi">128</span><span class="p">]);</span>
+</pre></div>
+</div>
+<p>Panics if the Arc has multiple owners.</p>
+</section>
+<section id="intodeviceop-automatic-wrapping">
+<h3>IntoDeviceOp: Automatic Wrapping<a class="headerlink" href="#intodeviceop-automatic-wrapping" title="Link to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">IntoDeviceOp</span></code> trait lets kernel launchers accept both <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code>s and
+plain values:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>Wraps as</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Any <code class="docutils literal notranslate"><span class="pre">impl</span> <span class="pre">DeviceOp&lt;Output=T&gt;</span></code></p></td>
+<td><p>Pass-through</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Tensor&lt;T&gt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Value&lt;Tensor&lt;T&gt;&gt;</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Arc&lt;T&gt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Value&lt;Arc&lt;T&gt;&gt;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&amp;'a</span> <span class="pre">Tensor&lt;T&gt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Value&lt;&amp;'a</span> <span class="pre">Tensor&lt;T&gt;&gt;</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&amp;Arc&lt;T&gt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Value&lt;Arc&lt;T&gt;&gt;</span></code> (clones the Arc)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&amp;'a</span> <span class="pre">TensorView&lt;'a,</span> <span class="pre">T&gt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Value&lt;&amp;'a</span> <span class="pre">TensorView&lt;'a,</span> <span class="pre">T&gt;&gt;</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">f32</span></code>, <code class="docutils literal notranslate"><span class="pre">f64</span></code>, <code class="docutils literal notranslate"><span class="pre">i8</span></code>, <code class="docutils literal notranslate"><span class="pre">i16</span></code>, <code class="docutils literal notranslate"><span class="pre">i32</span></code>, <code class="docutils literal notranslate"><span class="pre">i64</span></code>, <code class="docutils literal notranslate"><span class="pre">u8</span></code>, <code class="docutils literal notranslate"><span class="pre">u16</span></code>, <code class="docutils literal notranslate"><span class="pre">u32</span></code>, <code class="docutils literal notranslate"><span class="pre">u64</span></code>, <code class="docutils literal notranslate"><span class="pre">usize</span></code>, <code class="docutils literal notranslate"><span class="pre">bool</span></code>, <code class="docutils literal notranslate"><span class="pre">f16</span></code>, <code class="docutils literal notranslate"><span class="pre">bf16</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Value&lt;T&gt;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Partition&lt;Tensor&lt;T&gt;&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">Partition&lt;&amp;'a</span> <span class="pre">mut</span> <span class="pre">Tensor&lt;T&gt;&gt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Value&lt;Partition&lt;…&gt;&gt;</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">MappedLaunchPartition&lt;Partition&lt;…&gt;&gt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Value&lt;MappedLaunchPartition&lt;…&gt;&gt;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">DevicePointer&lt;T&gt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Value&lt;DevicePointer&lt;T&gt;&gt;</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="c1">// All of these work as inputs to a &amp;Tensor kernel param:</span>
+<span class="n">my_kernel</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="n">tensor</span><span class="p">);</span><span class="w">              </span><span class="c1">// Tensor&lt;T&gt;</span>
+<span class="n">my_kernel</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="n">arc_tensor</span><span class="p">);</span><span class="w">          </span><span class="c1">// Arc&lt;Tensor&lt;T&gt;&gt;</span>
+<span class="n">my_kernel</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">tensor</span><span class="p">);</span><span class="w">             </span><span class="c1">// &amp;Tensor&lt;T&gt;</span>
+<span class="n">my_kernel</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="n">api</span><span class="p">::</span><span class="n">ones</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">1024</span><span class="p">]));</span><span class="w">  </span><span class="c1">// DeviceOp&lt;Output=Tensor&lt;T&gt;&gt;</span>
+</pre></div>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="scheduling-model">
+<h2>Scheduling Model<a class="headerlink" href="#scheduling-model" title="Link to this heading">#</a></h2>
+<section id="stream-assignment">
+<h3>Stream assignment<a class="headerlink" href="#stream-assignment" title="Link to this heading">#</a></h3>
+<p>When you call <code class="docutils literal notranslate"><span class="pre">.sync()</span></code> or <code class="docutils literal notranslate"><span class="pre">.await</span></code>, the operation asks the <strong>default
+device’s scheduling policy</strong> for a stream. The default policy is
+<code class="docutils literal notranslate"><span class="pre">StreamPoolRoundRobin</span></code> with 4 streams:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>op_a.sync()  →  Stream 0
+op_b.sync()  →  Stream 1
+op_c.sync()  →  Stream 2
+op_d.sync()  →  Stream 3
+op_e.sync()  →  Stream 0  (wraps around)
+</pre></div>
+</div>
+<p>Consecutive independent operations land on different streams, enabling GPU
+overlap. Operations chained with <code class="docutils literal notranslate"><span class="pre">.then()</span></code> share the parent’s stream,
+preserving data-dependency ordering.</p>
+</section>
+<section id="explicit-stream-sync-on">
+<h3>Explicit Stream: <code class="docutils literal notranslate"><span class="pre">.sync_on()</span></code><a class="headerlink" href="#explicit-stream-sync-on" title="Link to this heading">#</a></h3>
+<p>Bypasses the policy entirely. All operations given the same stream execute
+in call order:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">stream</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">device</span><span class="p">.</span><span class="n">new_stream</span><span class="p">()</span><span class="o">?</span><span class="p">;</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">op_a</span><span class="p">.</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span><span class="w">  </span><span class="c1">// Stream X</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">op_b</span><span class="p">.</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span><span class="w">  </span><span class="c1">// Stream X — guaranteed after op_a</span>
+</pre></div>
+</div>
+</section>
+<section id="available-policies">
+<h3>Available Policies<a class="headerlink" href="#available-policies" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Policy</p></th>
+<th class="head"><p>Behavior</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">StreamPoolRoundRobin</span></code> (default)</p></td>
+<td><p>Rotates through N streams (default 4)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SingleStream</span></code></p></td>
+<td><p>All operations on one stream — strict ordering</p></td>
+</tr>
+<tr class="row-even"><td><p>Custom <code class="docutils literal notranslate"><span class="pre">impl</span> <span class="pre">SchedulingPolicy</span></code></p></td>
+<td><p>Implement <code class="docutils literal notranslate"><span class="pre">fn</span> <span class="pre">next_stream()</span></code> for your own strategy</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="then-guarantees">
+<h3><code class="docutils literal notranslate"><span class="pre">.then()</span></code> Guarantees<a class="headerlink" href="#then-guarantees" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">.then()</span></code> is the recommended way to express data dependencies. Both
+operations share a single stream, so the second is guaranteed to see the
+first’s output fully written — no manual synchronization needed:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">allocate_buffer</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="n">then</span><span class="p">(</span><span class="o">|</span><span class="n">buf</span><span class="o">|</span><span class="w"> </span><span class="n">fill_kernel</span><span class="p">(</span><span class="n">buf</span><span class="p">))</span><span class="w">      </span><span class="c1">// same stream</span>
+<span class="w">    </span><span class="p">.</span><span class="n">then</span><span class="p">(</span><span class="o">|</span><span class="n">buf</span><span class="o">|</span><span class="w"> </span><span class="n">process_kernel</span><span class="p">(</span><span class="n">buf</span><span class="p">))</span><span class="w">   </span><span class="c1">// same stream</span>
+<span class="w">    </span><span class="p">.</span><span class="n">sync</span><span class="p">()</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+<p><strong>Non-reentrancy:</strong> On any given thread, only one DeviceOp may be
+executing at a time. Calling <code class="docutils literal notranslate"><span class="pre">sync_on</span></code>, <code class="docutils literal notranslate"><span class="pre">sync</span></code>, or <code class="docutils literal notranslate"><span class="pre">.await</span></code> inside a
+<code class="docutils literal notranslate"><span class="pre">then</span></code> closure will return a runtime error. This prevents CUDA data
+races from cross-stream access to in-flight tensors. If you need
+nested execution and have verified there are no cross-stream data
+races, use <code class="docutils literal notranslate"><span class="pre">unsafe</span> <span class="pre">then_unchecked</span></code>.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="error-propagation">
+<h2>Error Propagation<a class="headerlink" href="#error-propagation" title="Link to this heading">#</a></h2>
+<p>All execution methods return <code class="docutils literal notranslate"><span class="pre">Result&lt;T,</span> <span class="pre">DeviceError&gt;</span></code>. Errors propagate
+through combinators: if any operation in a <code class="docutils literal notranslate"><span class="pre">.then()</span></code> chain fails, the
+error short-circuits to the caller.</p>
+<section id="deviceerror-variants">
+<h3>DeviceError Variants<a class="headerlink" href="#deviceerror-variants" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Variant</p></th>
+<th class="head"><p>When it occurs</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Driver(DriverError)</span></code></p></td>
+<td><p>CUDA driver call failed (OOM, invalid argument, etc.)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Context</span> <span class="pre">{</span> <span class="pre">device_id,</span> <span class="pre">message</span> <span class="pre">}</span></code></p></td>
+<td><p>Device context assertion failed</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">KernelCache(String)</span></code></p></td>
+<td><p>Declared, but no current code path constructs it</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Scheduling(String)</span></code></p></td>
+<td><p>No stream available or policy misconfigured</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Launch(String)</span></code></p></td>
+<td><p>A launcher-generated precondition failed (<code class="docutils literal notranslate"><span class="pre">kernel_launch_assert</span></code>: argument shapes, declared <code class="docutils literal notranslate"><span class="pre">preconditions</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Internal(String)</span></code></p></td>
+<td><p>Bug in cuda-async internals, or a nested execution attempt rejected by the non-reentrancy guard</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Anyhow(String)</span></code></p></td>
+<td><p>Converted from <code class="docutils literal notranslate"><span class="pre">anyhow::Error</span></code> or <code class="docutils literal notranslate"><span class="pre">cutile::error::Error</span></code>; JIT compilation, grid inference, and tensor errors arrive here</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="error-handling-patterns">
+<h3>Error Handling Patterns<a class="headerlink" href="#error-handling-patterns" title="Link to this heading">#</a></h3>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="c1">// Pattern 1: Propagate with ?</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">api</span><span class="p">::</span><span class="n">zeros</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">1024</span><span class="p">]).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+
+<span class="c1">// Pattern 2: Match specific errors</span>
+<span class="k">match</span><span class="w"> </span><span class="n">my_kernel</span><span class="p">(</span><span class="n">args</span><span class="p">).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nb">Ok</span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* use result */</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="nb">Err</span><span class="p">(</span><span class="n">DeviceError</span><span class="p">::</span><span class="n">Launch</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="fm">eprintln!</span><span class="p">(</span><span class="s">"launch precondition failed: {msg}"</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="nb">Err</span><span class="p">(</span><span class="n">DeviceError</span><span class="p">::</span><span class="n">Anyhow</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="fm">eprintln!</span><span class="p">(</span><span class="s">"compile, grid, or tensor error: {msg}"</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="nb">Err</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nb">Err</span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">into</span><span class="p">()),</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="cutile-error-error-vs-deviceerror">
+<h3>cutile::error::Error vs DeviceError<a class="headerlink" href="#cutile-error-error-vs-deviceerror" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">cutile::error::Error</span></code> is the top-level error type that wraps
+<code class="docutils literal notranslate"><span class="pre">DeviceError</span></code> alongside other error categories (I/O, shape mismatches,
+etc.). Functions that only do GPU work return <code class="docutils literal notranslate"><span class="pre">DeviceError</span></code>; functions
+that mix host and device work (like the examples) return
+<code class="docutils literal notranslate"><span class="pre">cutile::error::Error</span></code>.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="cuda-graph-integration">
+<h2>CUDA Graph Integration<a class="headerlink" href="#cuda-graph-integration" title="Link to this heading">#</a></h2>
+<section id="combinator-approach-graph-on-stream">
+<h3>Combinator approach: <code class="docutils literal notranslate"><span class="pre">.graph_on(stream)</span></code><a class="headerlink" href="#combinator-approach-graph-on-stream" title="Link to this heading">#</a></h3>
+<p>Any <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> can be captured into a replayable CUDA graph:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">forward_op</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">build_forward</span><span class="p">(</span><span class="o">&amp;</span><span class="n">cfg</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">weights</span><span class="p">,</span><span class="w"> </span><span class="n">input</span><span class="p">,</span><span class="w"> </span><span class="n">buffers</span><span class="p">);</span>
+<span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">graph</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">forward_op</span><span class="p">.</span><span class="n">graph_on</span><span class="p">(</span><span class="n">stream</span><span class="p">.</span><span class="n">clone</span><span class="p">())</span><span class="o">?</span><span class="p">;</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">graph</span><span class="p">.</span><span class="n">take_output</span><span class="p">().</span><span class="n">unwrap</span><span class="p">();</span>
+
+<span class="c1">// Replay loop — no graph rebuilding, no kernel re-compilation.</span>
+<span class="k">for</span><span class="w"> </span><span class="n">token</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">tokens</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">graph</span><span class="p">.</span><span class="n">update</span><span class="p">(</span><span class="n">api</span><span class="p">::</span><span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="n">input_buf</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">token</span><span class="p">))</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span><span class="n">graph</span><span class="p">.</span><span class="n">launch</span><span class="p">().</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This requires <code class="docutils literal notranslate"><span class="pre">Arc&lt;Tensor&lt;T&gt;&gt;</span></code> + <code class="docutils literal notranslate"><span class="pre">try_partition</span></code> for shared buffers.</p>
+</section>
+<section id="scope-approach-cudagraph-scope">
+<h3>Scope approach: <code class="docutils literal notranslate"><span class="pre">CudaGraph::scope</span></code><a class="headerlink" href="#scope-approach-cudagraph-scope" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">CudaGraph::scope</span></code> provides an imperative alternative using <code class="docutils literal notranslate"><span class="pre">&amp;mut</span></code> borrows
+instead of <code class="docutils literal notranslate"><span class="pre">Arc</span></code>. Each <code class="docutils literal notranslate"><span class="pre">s.record(op)</span></code> records a graph node and releases
+borrows immediately. A buffer written by one <code class="docutils literal notranslate"><span class="pre">record</span></code> call can be read
+by the next:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">api</span><span class="p">::</span><span class="n">zeros</span><span class="p">::</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="n">d</span><span class="p">]).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">weights</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">api</span><span class="p">::</span><span class="n">ones</span><span class="p">::</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="n">d</span><span class="p">]).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="n">graph</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CudaGraph</span><span class="p">::</span><span class="n">scope</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">,</span><span class="w"> </span><span class="o">|</span><span class="n">s</span><span class="o">|</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">s</span><span class="p">.</span><span class="n">record</span><span class="p">(</span><span class="n">kernel1</span><span class="p">((</span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="n">output</span><span class="p">).</span><span class="n">partition</span><span class="p">([</span><span class="mi">128</span><span class="p">]),</span><span class="w"> </span><span class="o">&amp;</span><span class="n">weights</span><span class="p">))</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span><span class="n">s</span><span class="p">.</span><span class="n">record</span><span class="p">(</span><span class="n">kernel2</span><span class="p">((</span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="n">output</span><span class="p">).</span><span class="n">partition</span><span class="p">([</span><span class="mi">64</span><span class="p">]),</span><span class="w"> </span><span class="o">&amp;</span><span class="n">weights</span><span class="p">))</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span><span class="nb">Ok</span><span class="p">(())</span>
+<span class="p">})</span><span class="o">?</span><span class="p">;</span>
+
+<span class="n">graph</span><span class="p">.</span><span class="n">launch</span><span class="p">().</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">record</span></code> only accepts operations that implement <code class="docutils literal notranslate"><span class="pre">GraphNode</span></code> — kernel
+launches and <code class="docutils literal notranslate"><span class="pre">memcpy</span></code>. Allocation ops (<code class="docutils literal notranslate"><span class="pre">zeros</span></code>, <code class="docutils literal notranslate"><span class="pre">ones</span></code>, <code class="docutils literal notranslate"><span class="pre">dup</span></code>) are
+rejected at compile time because their addresses may change on replay.</p>
+</section>
+<section id="graphnode-trait">
+<h3><code class="docutils literal notranslate"><span class="pre">GraphNode</span></code> trait<a class="headerlink" href="#graphnode-trait" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">GraphNode</span></code> is a marker trait for operations safe to record in a CUDA
+graph. Only operations that do not allocate or free device memory
+implement it:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Implements <code class="docutils literal notranslate"><span class="pre">GraphNode</span></code></p></th>
+<th class="head"><p>Why safe</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Macro-generated kernel launchers</p></td>
+<td><p>Kernel launch only — no alloc/free</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Memcpy</span></code> (<code class="docutils literal notranslate"><span class="pre">api::memcpy</span></code>)</p></td>
+<td><p>Copy between pre-allocated buffers</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Value&lt;T&gt;</span></code> (<code class="docutils literal notranslate"><span class="pre">value(x)</span></code>)</p></td>
+<td><p>No GPU work</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="cudagraph-methods">
+<h3>CudaGraph methods<a class="headerlink" href="#cudagraph-methods" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>What it does</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">.graph()</span></code> / <code class="docutils literal notranslate"><span class="pre">.graph_on(stream)</span></code></p></td>
+<td><p>Capture a <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> into a <code class="docutils literal notranslate"><span class="pre">CudaGraph&lt;T&gt;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">CudaGraph::scope(&amp;stream,</span> <span class="pre">|s|</span> <span class="pre">{</span> <span class="pre">…</span> <span class="pre">})</span></code></p></td>
+<td><p>Scoped capture with <code class="docutils literal notranslate"><span class="pre">&amp;mut</span></code> borrows</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">s.record(op:</span> <span class="pre">impl</span> <span class="pre">GraphNode)</span></code></p></td>
+<td><p>Record a graph node inside a scope</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">graph.take_output()</span></code></p></td>
+<td><p>Retrieve the output from the capture execution</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">graph.update(op)</span></code></p></td>
+<td><p>Run a <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> on the graph’s stream (e.g., copy new input)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">graph.launch()</span></code></p></td>
+<td><p>Returns a <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> that replays the captured graph</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>All device pointers are baked in at capture time. To vary inputs, pre-allocate
+a buffer, pass it into the operation, and <code class="docutils literal notranslate"><span class="pre">memcpy</span></code> new data before each
+launch. See <a class="reference internal" href="../tutorials/10-cuda-graphs.html"><span class="std std-doc">Tutorial 10</span></a> for a
+complete walkthrough.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="additional-public-api">
+<h2>Additional Public API<a class="headerlink" href="#additional-public-api" title="Link to this heading">#</a></h2>
+<p>Public host-side API not covered in the sections above:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>API</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">unsafe</span> <span class="pre">Tensor::from_foreign(owner:</span> <span class="pre">Arc&lt;dyn</span> <span class="pre">DeviceAllocation&gt;,</span> <span class="pre">shape,</span> <span class="pre">strides)</span></code></p></td>
+<td><p>Borrow device memory owned by an external framework (cudarc, torch, VMM ranges); the owner is held alive by refcount and the addressable extent is verified at construction</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">unsafe</span> <span class="pre">Tensor::borrow_raw_parts(dptr,</span> <span class="pre">device_id,</span> <span class="pre">shape,</span> <span class="pre">strides)</span></code></p></td>
+<td><p>Borrow a bare device pointer as a <code class="docutils literal notranslate"><span class="pre">Tensor&lt;T&gt;</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tensor.partition_prefix(shape)</span></code></p></td>
+<td><p>Output partition whose launch grid may cover a per-axis prefix of the block grid (<code class="docutils literal notranslate"><span class="pre">partition</span></code> keeps strict equality)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">partition.map(map_shape,</span> <span class="pre">num_tile_blocks)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MappedLaunchPartition</span></code> for persistent kernels that iterate <code class="docutils literal notranslate"><span class="pre">MappedPartitionMut</span></code> indices; the launch grid is <code class="docutils literal notranslate"><span class="pre">(num_tile_blocks,</span> <span class="pre">1,</span> <span class="pre">1)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cutile::jit_cache::{enable,</span> <span class="pre">enable_default,</span> <span class="pre">disable,</span> <span class="pre">is_enabled,</span> <span class="pre">stats}</span></code></p></td>
+<td><p>Opt-in persistent on-disk cubin cache; off by default</p></td>
+</tr>
+<tr class="row-odd"><td><p>launcher <code class="docutils literal notranslate"><span class="pre">.compile()</span></code> / <code class="docutils literal notranslate"><span class="pre">.compile_on(&amp;stream)</span></code></p></td>
+<td><p>JIT-compile and cache the specialization without launching</p></td>
+</tr>
+<tr class="row-even"><td><p>launcher <code class="docutils literal notranslate"><span class="pre">.specialize()</span></code>, <code class="docutils literal notranslate"><span class="pre">.l1_cache_key()</span></code>, <code class="docutils literal notranslate"><span class="pre">.l2_cache_key()</span></code></p></td>
+<td><p>Resolve the specialization identity and the in-memory / on-disk cache keys without compiling or launching</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">api::meta::&lt;T&gt;(&amp;shape)</span></code></p></td>
+<td><p>Placeholder tensor carrying shape and dtype without allocating, for <code class="docutils literal notranslate"><span class="pre">.compile()</span></code> warmups</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">CompileOptions::{opt_level,</span> <span class="pre">device_debug,</span> <span class="pre">lineinfo,</span> <span class="pre">sanitize_memcheck}</span></code></p></td>
+<td><p>Device compiler flags; each is part of the cache keys (see <a class="reference internal" href="../guide/debugging-and-profiling.html"><span class="std std-doc">Debugging and Profiling</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cutile::bench::{do_bench,</span> <span class="pre">do_bench_paired,</span> <span class="pre">BenchOptions,</span> <span class="pre">Measurement}</span></code></p></td>
+<td><p>Device-event kernel timing (see <a class="reference internal" href="../guide/performance.html"><span class="std std-doc">Performance</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cuda_async::device_context::{set_default_device,</span> <span class="pre">global_policy,</span> <span class="pre">with_device_policy}</span></code></p></td>
+<td><p>Set the thread’s default device; read or borrow a device’s scheduling policy</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../guide/device-operations.html"><span class="std std-doc">Device Operations</span></a> — tutorial-style guide to streams, scheduling, and composition patterns</p></li>
+<li><p><a class="reference internal" href="../tutorials/10-cuda-graphs.html"><span class="std std-doc">Tutorial 10</span></a> — end-to-end CUDA graph example</p></li>
+<li><p><a class="reference internal" href="../guide/interoperability.html"><span class="std std-doc">Interoperability</span></a> — integrating custom CUDA C++ kernels into the DeviceOp model</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="dsl-api.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">DSL API</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="compatibility.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">CUDA and Tile IR compatibility</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tensor-creation-and-views">Tensor Creation and Views</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#api-constructors"><code class="docutils literal notranslate"><span class="pre">api::*</span></code> constructors</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tensor-and-deviceop-shape-helpers">Tensor and <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> shape helpers</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tensor-metadata-and-reinterpretation">Tensor metadata and reinterpretation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tensorview-zero-copy-views-and-slices"><code class="docutils literal notranslate"><span class="pre">TensorView</span></code>: zero-copy views and slices</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#host-device-and-device-device-transfers">Host-Device and Device-Device Transfers</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#devices-and-streams">Devices and Streams</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#kernel-launch-configuration">Kernel Launch Configuration</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#programmatic-dependent-launch">Programmatic dependent launch</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-futures-analogy">The Futures Analogy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#combinator-reference">Combinator Reference</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#composition">Composition</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#selection">Selection</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sharing-and-erasure">Sharing and Erasure</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#execution">Execution</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#supported-kernel-parameter-types">Supported Kernel Parameter Types</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ownership-model">Ownership Model</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#read-only-inputs-tensor-params">Read-only inputs (<code class="docutils literal notranslate"><span class="pre">&amp;Tensor</span></code> params)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mutable-outputs-mut-tensor-params">Mutable outputs (<code class="docutils literal notranslate"><span class="pre">&amp;mut</span> <span class="pre">Tensor</span></code> params)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#owned-tensor-t">Owned: <code class="docutils literal notranslate"><span class="pre">Tensor&lt;T&gt;</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#shared-arc-tensor-t">Shared: <code class="docutils literal notranslate"><span class="pre">Arc&lt;Tensor&lt;T&gt;&gt;</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#borrowed-tensor-t">Borrowed: <code class="docutils literal notranslate"><span class="pre">&amp;Tensor&lt;T&gt;</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#shared-clone-execute-once"><code class="docutils literal notranslate"><span class="pre">.shared()</span></code>: Clone + Execute-Once</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#unwrap-arc"><code class="docutils literal notranslate"><span class="pre">.unwrap_arc()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#intodeviceop-automatic-wrapping">IntoDeviceOp: Automatic Wrapping</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scheduling-model">Scheduling Model</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#stream-assignment">Stream assignment</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#explicit-stream-sync-on">Explicit Stream: <code class="docutils literal notranslate"><span class="pre">.sync_on()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#available-policies">Available Policies</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#then-guarantees"><code class="docutils literal notranslate"><span class="pre">.then()</span></code> Guarantees</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#error-propagation">Error Propagation</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#deviceerror-variants">DeviceError Variants</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#error-handling-patterns">Error Handling Patterns</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cutile-error-error-vs-deviceerror">cutile::error::Error vs DeviceError</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cuda-graph-integration">CUDA Graph Integration</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#combinator-approach-graph-on-stream">Combinator approach: <code class="docutils literal notranslate"><span class="pre">.graph_on(stream)</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#scope-approach-cudagraph-scope">Scope approach: <code class="docutils literal notranslate"><span class="pre">CudaGraph::scope</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#graphnode-trait"><code class="docutils literal notranslate"><span class="pre">GraphNode</span></code> trait</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cudagraph-methods">CudaGraph methods</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#additional-public-api">Additional Public API</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#see-also">See Also</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+  
+    <div class="footer-items__center">
+      
+        <div class="footer-item"><footer class="bd-footer-content">
+  <div class="footer-container" style="padding: 1rem 0 2rem 0; border-top: 1px solid var(--pst-color-border); text-align: left;">
+    
+    <!-- NVIDIA Logo -->
+    <div style="margin-bottom: 1rem;">
+      <img src="../_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" 
+           alt="NVIDIA" 
+           style="height: 3.5rem; filter: brightness(0);"
+           class="only-light">
+      <img src="../_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" 
+           alt="NVIDIA" 
+           style="height: 3.5rem;"
+           class="only-dark pst-js-only">
+    </div>
+    
+    <!-- Footer Links - single line, left aligned -->
+    <div style="font-size: 0.8125rem; margin-bottom: 0.5rem; color: var(--pst-color-text-muted);">
+      <a href="https://www.nvidia.com/en-us/about-nvidia/privacy-policy/" target="_blank" style="color: inherit; text-decoration: none;">Privacy Policy</a> | 
+      <a href="https://www.nvidia.com/en-us/preferences/email-preferences/" target="_blank" style="color: inherit; text-decoration: none;">Your Privacy Choices</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/terms-of-service/" target="_blank" style="color: inherit; text-decoration: none;">Terms of Service</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/accessibility/" target="_blank" style="color: inherit; text-decoration: none;">Accessibility</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/company-policies/" target="_blank" style="color: inherit; text-decoration: none;">Corporate Policies</a> | 
+      <a href="https://www.nvidia.com/en-us/product-security/" target="_blank" style="color: inherit; text-decoration: none;">Product Security</a> | 
+      <a href="https://www.nvidia.com/en-us/contact/" target="_blank" style="color: inherit; text-decoration: none;">Contact</a>
+    </div>
+    
+    <!-- Copyright -->
+    <div style="font-size: 0.8125rem; color: var(--pst-color-text-muted);">
+      Copyright &copy; 2025, NVIDIA.
+    </div>
+    
+  </div>
+</footer></div>
+      
+    </div>
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

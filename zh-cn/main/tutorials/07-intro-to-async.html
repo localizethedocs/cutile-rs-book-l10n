@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>7. Intro to Async Execution &#8212; cuTile Rust</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/nvidia-sphinx-theme.css?v=933278ad" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=4011299f" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/lightbox.css?v=31fdf494" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../_static/documentation_options.js?v=d786bb5c"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/translations.js?v=540d3cec"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/07-intro-to-async';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <script src="../_static/js/lightbox.js?v=17028852"></script>
+    <link rel="canonical" href="https://projects.localizethedocs.org/cutile-rs-book-l10n/tutorials/07-intro-to-async.html" />
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="8. Data Parallel MLP" href="08-data-parallel-mlp.html" />
+    <link rel="prev" title="6. Fused Multihead Attention" href="06-flash-attention.html" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="zh-CN"/>
+  <meta name="docsearch:version" content="main" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+<script type="text/javascript" src="../ltd-provenance.js"></script>
+<script type="text/javascript" src="../ltd-current.js"></script>
+<script type="text/javascript" src="../../../ltd-config.js"></script>
+<script type="text/javascript" src="../../../ltd-flyout.js"></script>
+
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">跳转至主要内容</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>回到顶部</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="版本警告"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="网页导航">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" class="logo__image only-light" alt=""/>
+    <img src="../_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cuTile Rust</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item"><div class="github-links">
+  <!--
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/stargazers" target="_blank" rel="noopener">
+    <i class="fa-solid fa-star" aria-hidden="true"></i>
+    <span class="sr-only">Star</span>
+  </a>
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/fork" target="_blank" rel="noopener">
+    <i class="fa-solid fa-code-fork" aria-hidden="true"></i>
+    <span class="sr-only">Fork</span>
+  </a>
+  -->
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/NVIDIA/cuda-rust" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="搜索" aria-label="搜索" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button></div>
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="亮色"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="暗色"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>亮色</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>暗色</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="当前页面">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><div class="github-links">
+  <!--
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/stargazers" target="_blank" rel="noopener">
+    <i class="fa-solid fa-star" aria-hidden="true"></i>
+    <span class="sr-only">Star</span>
+  </a>
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/fork" target="_blank" rel="noopener">
+    <i class="fa-solid fa-code-fork" aria-hidden="true"></i>
+    <span class="sr-only">Fork</span>
+  </a>
+  -->
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/NVIDIA/cuda-rust" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="搜索" aria-label="搜索" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button></div>
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="亮色"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="暗色"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>亮色</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>暗色</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><div class="sidebar-tree">
+    <p class="sidebar-tree-title">
+        Table of Contents
+    </p>
+    <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="01-hello-world.html">1. Hello World</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02-vector-addition.html">2. Vector Addition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03-saxpy.html">3. SAXPY</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04-matrix-multiplication.html">4. Matrix Multiplication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05-fused-softmax.html">5. Fused Softmax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06-flash-attention.html">6. Fused Multihead Attention</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">7. Intro to Async Execution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08-data-parallel-mlp.html">8. Data Parallel MLP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="09-pointer-addition.html">9. Pointer Addition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10-cuda-graphs.html">10. CUDA Graphs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11-nvfp4-inference.html">11. Inference with NVFP4/MXFP8</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12-dgx-spark-inference.html">12. LLM Inference on DGX Spark</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guide/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/host-vs-device.html">Host vs. Device Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/tensors-and-tiles.html">Tensors and Tiles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/jit-compilation.html">Compilation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/device-operations.html">Device Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/performance.html">Performance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/autotuning.html">Autotuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/bounds-check-placement.html">Bounds-Check Placement</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/interoperability.html">Interoperability</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/debugging-and-profiling.html">Debugging and Profiling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/useful-mental-models.html">Useful Mental Models</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../reference/dsl-api.html">DSL API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/host-api.html">Host API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/compatibility.html">CUDA and Tile IR compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/glossary.html">Glossary</a></li>
+</ul>
+
+</div></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="初始页面">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">7. Intro to Async Execution</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="intro-to-async-execution">
+<h1>7. Intro to Async Execution<a class="headerlink" href="#intro-to-async-execution" title="链接到此标题。">#</a></h1>
+<blockquote>
+<div><p>Note: These examples use <code class="docutils literal notranslate"><span class="pre">tokio</span></code>, but cuTile works with other async runtimes.</p>
+</div></blockquote>
+<p>The sync API blocks the CPU until the GPU finishes:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">launcher</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hello_world_kernel</span><span class="p">();</span>
+<span class="n">launcher</span><span class="p">.</span><span class="n">grid</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span><span class="w">  </span><span class="c1">// CPU waits here!</span>
+<span class="c1">// CPU blocked until GPU finishes</span>
+</pre></div>
+</div>
+<p><img alt="Timeline showing sync execution (CPU waits) vs async execution (CPU works in parallel)" src="../_images/async-execution-timeline.svg" /></p>
+<p>With async, the CPU can do other work while the GPU computes:</p>
+<ul class="simple">
+<li><p>Preparing the next batch while the current one computes.</p></li>
+<li><p>Pipelining multiple operations.</p></li>
+<li><p>Overlapping data transfer with computation.</p></li>
+<li><p>Multi-GPU coordination.</p></li>
+</ul>
+<hr class="docutils" />
+<section id="deviceop">
+<h2>DeviceOp<a class="headerlink" href="#deviceop" title="链接到此标题。">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> describes GPU work without executing it. <code class="docutils literal notranslate"><span class="pre">.await</span></code> or <code class="docutils literal notranslate"><span class="pre">.sync_on(.)</span></code>
+executes the operation; <code class="docutils literal notranslate"><span class="pre">tokio::spawn</span></code> can run the future produced by
+<code class="docutils literal notranslate"><span class="pre">into_future()</span></code> or <code class="docutils literal notranslate"><span class="pre">.schedule(...)</span></code>.</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="c1">// This creates a DeviceOp, but doesn't execute yet!</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">tensor_op</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">api</span><span class="p">::</span><span class="n">ones</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">1024</span><span class="p">,</span><span class="w"> </span><span class="mi">1024</span><span class="p">]);</span><span class="w">  </span><span class="c1">// Returns impl DeviceOp</span>
+
+<span class="c1">// Nothing has happened on the GPU yet...</span>
+
+<span class="c1">// NOW it executes:</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">tensor</span><span class="p">:</span><span class="w"> </span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tensor_op</span><span class="p">.</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span><span class="w">  </span><span class="c1">// Sync API</span>
+<span class="c1">// or</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">tensor</span><span class="p">:</span><span class="w"> </span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tensor_op</span><span class="p">.</span><span class="k">await</span><span class="o">?</span><span class="p">;</span><span class="w">             </span><span class="c1">// Async API</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="sync-vs-async-apis">
+<h2>Sync vs Async APIs<a class="headerlink" href="#sync-vs-async-apis" title="链接到此标题。">#</a></h2>
+<p>In cutile, a <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> can be executed with either sync or async APIs. Given a particular operation <code class="docutils literal notranslate"><span class="pre">op</span></code>:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>API</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">op.sync()</span></code></p></td>
+<td><p>Immediately executes <code class="docutils literal notranslate"><span class="pre">op</span></code> on the default GPU device (device 0). Blocking. Callable outside of async context.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">op.sync_on(&amp;stream)</span></code></p></td>
+<td><p>Immediately executes <code class="docutils literal notranslate"><span class="pre">op</span></code> on <code class="docutils literal notranslate"><span class="pre">stream</span></code>. Blocking. Callable outside of async context.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">op.await</span></code></p></td>
+<td><p>Immediately executes <code class="docutils literal notranslate"><span class="pre">op</span></code> as part of the async context from which it is invoked. Blocks the enclosing async context but frees the executing thread, allowing the runtime to schedule other tasks on it. Can only be called from within an async context.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tokio::spawn(op.into_future())</span></code></p></td>
+<td><p>Submits the operation's future to the async runtime, returning a handle that can later be awaited. Non-blocking. Can only be called from within an async context.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<blockquote>
+<div><p>Note: An async context is any code appearing in a block defined with the <code class="docutils literal notranslate"><span class="pre">async</span></code> keyword, e.g. <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">fn</span> <span class="pre">...</span></code>, <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">}</span></code>, <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">||</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">}</span></code>.</p>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="async-vector-addition">
+<h2>Async Vector Addition<a class="headerlink" href="#async-vector-addition" title="链接到此标题。">#</a></h2>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">use</span><span class="w"> </span><span class="n">cutile</span><span class="p">::</span><span class="n">api</span><span class="p">::{</span><span class="n">ones</span><span class="p">,</span><span class="w"> </span><span class="n">zeros</span><span class="p">};</span>
+<span class="k">use</span><span class="w"> </span><span class="n">cutile</span><span class="p">::</span><span class="n">tensor</span><span class="p">::{</span><span class="n">Tensor</span><span class="p">,</span><span class="w"> </span><span class="n">ToHostVec</span><span class="p">,</span><span class="w"> </span><span class="n">Unpartition</span><span class="p">};</span>
+<span class="k">use</span><span class="w"> </span><span class="n">cutile</span><span class="p">::</span><span class="n">tile_kernel</span><span class="p">::{</span><span class="n">PartitionOp</span><span class="p">,</span><span class="w"> </span><span class="n">TileKernel</span><span class="p">,</span><span class="w"> </span><span class="n">ToHostVecOp</span><span class="p">};</span>
+<span class="k">use</span><span class="w"> </span><span class="n">cuda_async</span><span class="p">::</span><span class="n">device_operation</span><span class="p">::</span><span class="o">*</span><span class="p">;</span>
+<span class="k">use</span><span class="w"> </span><span class="n">cuda_async</span><span class="p">::</span><span class="n">error</span><span class="p">::</span><span class="n">DeviceError</span><span class="p">;</span>
+<span class="k">use</span><span class="w"> </span><span class="n">std</span><span class="p">::</span><span class="n">sync</span><span class="p">::</span><span class="n">Arc</span><span class="p">;</span>
+
+<span class="cp">#[cutile::module]</span>
+<span class="k">mod</span><span class="w"> </span><span class="nn">async_add_module</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">use</span><span class="w"> </span><span class="n">cutile</span><span class="p">::</span><span class="n">core</span><span class="p">::</span><span class="o">*</span><span class="p">;</span>
+
+<span class="w">    </span><span class="cp">#[cutile::entry()]</span>
+<span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">add</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">S</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="kt">i32</span><span class="p">;</span><span class="w"> </span><span class="mi">2</span><span class="p">]</span><span class="o">&gt;</span><span class="p">(</span>
+<span class="w">        </span><span class="n">z</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">mut</span><span class="w"> </span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="n">S</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">        </span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="p">{[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">]}</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">        </span><span class="n">y</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="p">{[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">]}</span><span class="o">&gt;</span>
+<span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">tile_x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="n">load_like</span><span class="p">(</span><span class="n">z</span><span class="p">);</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">tile_y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">y</span><span class="p">.</span><span class="n">load_like</span><span class="p">(</span><span class="n">z</span><span class="p">);</span>
+<span class="w">        </span><span class="n">z</span><span class="p">.</span><span class="n">store</span><span class="p">(</span><span class="n">tile_x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">tile_y</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">use</span><span class="w"> </span><span class="n">async_add_module</span><span class="p">::</span><span class="n">add</span><span class="p">;</span>
+
+<span class="cp">#[tokio::main]</span>
+<span class="k">async</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">Result</span><span class="o">&lt;</span><span class="p">(),</span><span class="w"> </span><span class="n">DeviceError</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ones</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">]).</span><span class="n">map</span><span class="p">(</span><span class="nb">Into</span><span class="p">::</span><span class="n">into</span><span class="p">).</span><span class="k">await</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">y</span><span class="p">:</span><span class="w"> </span><span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ones</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">]).</span><span class="n">map</span><span class="p">(</span><span class="nb">Into</span><span class="p">::</span><span class="n">into</span><span class="p">).</span><span class="k">await</span><span class="o">?</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// Unified launcher: pass output partition and inputs directly.</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">z_host</span><span class="p">:</span><span class="w"> </span><span class="nb">Vec</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">add</span><span class="p">(</span>
+<span class="w">        </span><span class="n">zeros</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">]).</span><span class="n">partition</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">]),</span><span class="w">  </span><span class="c1">// Output, partitioned into tiles</span>
+<span class="w">        </span><span class="n">x</span><span class="p">,</span><span class="w">                                    </span><span class="c1">// Input x (Arc&lt;Tensor&gt; via IntoDeviceOp)</span>
+<span class="w">        </span><span class="n">y</span><span class="p">,</span><span class="w">                                    </span><span class="c1">// Input y</span>
+<span class="w">    </span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">first</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="n">unpartition</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="n">to_host_vec</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="k">await</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">"z[0] = {} (expected 2.0)"</span><span class="p">,</span><span class="w"> </span><span class="n">z_host</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+<span class="w">    </span><span class="nb">Ok</span><span class="p">(())</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Output:</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>z[0] = 2 (expected 2.0)
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="overlapping-work-with-spawn">
+<h2>Overlapping Work with Spawn<a class="headerlink" href="#overlapping-work-with-spawn" title="链接到此标题。">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">.await</span></code> suspends the current task until the operation completes, freeing its
+thread to run other tasks. <code class="docutils literal notranslate"><span class="pre">tokio::spawn</span></code> starts a separate task and returns a
+handle immediately. Await that handle when you need the result.</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="cp">#[tokio::main]</span>
+<span class="k">async</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">Result</span><span class="o">&lt;</span><span class="p">(),</span><span class="w"> </span><span class="n">DeviceError</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">batch1_op</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">prepare_batch</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="w">  </span><span class="c1">// Returns DeviceOp</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">batch2_op</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">prepare_batch</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span><span class="w">  </span><span class="c1">// Returns DeviceOp</span>
+
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">batch1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">batch1_op</span><span class="p">.</span><span class="k">await</span><span class="o">?</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">result1_op</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">process_kernel</span><span class="p">(</span><span class="n">batch1</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">result1_handle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tokio</span><span class="p">::</span><span class="n">spawn</span><span class="p">(</span><span class="n">result1_op</span><span class="p">.</span><span class="n">into_future</span><span class="p">());</span><span class="w">  </span><span class="c1">// Non-blocking</span>
+
+<span class="w">    </span><span class="c1">// batch 2 data can be prepared while batch 1's kernel runs</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">batch2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">batch2_op</span><span class="p">.</span><span class="k">await</span><span class="o">?</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">result2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">process_kernel</span><span class="p">(</span><span class="n">batch2</span><span class="p">).</span><span class="k">await</span><span class="o">?</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">result1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">result1_handle</span><span class="p">.</span><span class="k">await</span><span class="p">.</span><span class="n">expect</span><span class="p">(</span><span class="s">"task panicked"</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span><span class="nb">Ok</span><span class="p">(())</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="composing-deviceops">
+<h2>Composing DeviceOps<a class="headerlink" href="#composing-deviceops" title="链接到此标题。">#</a></h2>
+<section id="unified-kernel-launcher">
+<h3>Unified Kernel Launcher<a class="headerlink" href="#unified-kernel-launcher" title="链接到此标题。">#</a></h3>
+<p>The kernel launcher accepts both <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code> and plain values directly — no <code class="docutils literal notranslate"><span class="pre">zip!</span></code> needed:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="c1">// Pass output partition and inputs directly.</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kernel</span><span class="p">(</span><span class="n">output_op</span><span class="p">.</span><span class="n">partition</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">]),</span><span class="w"> </span><span class="n">input1</span><span class="p">,</span><span class="w"> </span><span class="n">input2</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">first</span><span class="p">()</span><span class="w">           </span><span class="c1">// Extract the output</span>
+<span class="w">    </span><span class="p">.</span><span class="n">unpartition</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="k">await</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="zip-combine-operations-manually">
+<h3><code class="docutils literal notranslate"><span class="pre">zip!</span></code> — Combine Operations Manually<a class="headerlink" href="#zip-combine-operations-manually" title="链接到此标题。">#</a></h3>
+<p>For cases where you need explicit control, <code class="docutils literal notranslate"><span class="pre">zip!</span></code> combines multiple DeviceOps into a tuple:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">use</span><span class="w"> </span><span class="n">cuda_async</span><span class="p">::</span><span class="n">device_operation</span><span class="p">::</span><span class="o">*</span><span class="p">;</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="n">combined</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">zip</span><span class="o">!</span><span class="p">(</span><span class="n">op_a</span><span class="p">,</span><span class="w"> </span><span class="n">op_b</span><span class="p">,</span><span class="w"> </span><span class="n">op_c</span><span class="p">);</span>
+<span class="kd">let</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">combined</span><span class="p">.</span><span class="k">await</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="choosing-between-sync-and-async">
+<h2>Choosing between sync and async<a class="headerlink" href="#choosing-between-sync-and-async" title="链接到此标题。">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Scenario</p></th>
+<th class="head"><p>Use Sync</p></th>
+<th class="head"><p>Use Async</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Simple scripts</p></td>
+<td><p>✓</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>Interactive exploration</p></td>
+<td><p>✓</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>Production pipelines</p></td>
+<td><p></p></td>
+<td><p>✓</p></td>
+</tr>
+<tr class="row-odd"><td><p>Multi-batch processing</p></td>
+<td><p></p></td>
+<td><p>✓</p></td>
+</tr>
+<tr class="row-even"><td><p>Multi-GPU workloads</p></td>
+<td><p></p></td>
+<td><p>✓</p></td>
+</tr>
+<tr class="row-odd"><td><p>Overlapping compute/transfer</p></td>
+<td><p></p></td>
+<td><p>✓</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Start with sync. Use async when you have work to overlap.</p>
+</section>
+<hr class="docutils" />
+<section id="borrowed-inputs-and-spawn-safety">
+<h2>Borrowed Inputs and Spawn Safety<a class="headerlink" href="#borrowed-inputs-and-spawn-safety" title="链接到此标题。">#</a></h2>
+<p>Kernel <code class="docutils literal notranslate"><span class="pre">&amp;Tensor</span></code> params accept three input forms: <code class="docutils literal notranslate"><span class="pre">Tensor&lt;T&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">Arc&lt;Tensor&lt;T&gt;&gt;</span></code>,
+and <code class="docutils literal notranslate"><span class="pre">&amp;Tensor&lt;T&gt;</span></code>. Borrowed inputs (<code class="docutils literal notranslate"><span class="pre">&amp;Tensor&lt;T&gt;</span></code>) work with <code class="docutils literal notranslate"><span class="pre">.sync_on()</span></code> and
+<code class="docutils literal notranslate"><span class="pre">.await</span></code>, but the compiler rejects them with <code class="docutils literal notranslate"><span class="pre">tokio::spawn</span></code>:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">weights</span><span class="p">:</span><span class="w"> </span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">api</span><span class="p">::</span><span class="n">ones</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">1024</span><span class="p">]).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+
+<span class="c1">// OK — borrow is contained in the sync call.</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">my_kernel</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">weights</span><span class="p">).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+
+<span class="c1">// OK — borrow checker ensures weights outlives the await.</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">my_kernel</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">weights</span><span class="p">).</span><span class="k">await</span><span class="o">?</span><span class="p">;</span>
+
+<span class="c1">// COMPILE ERROR — &amp;weights is not 'static, so the future can't be spawned.</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">handle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tokio</span><span class="p">::</span><span class="n">spawn</span><span class="p">(</span><span class="n">my_kernel</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">weights</span><span class="p">).</span><span class="n">into_future</span><span class="p">());</span>
+<span class="c1">//                                       ^^^^^^^^ borrowed value does not live long enough</span>
+</pre></div>
+</div>
+<p>This is enforced at compile time by Rust's lifetime system. If you need to
+spawn, use <code class="docutils literal notranslate"><span class="pre">Arc&lt;Tensor&lt;T&gt;&gt;</span></code> instead:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">weights</span><span class="p">:</span><span class="w"> </span><span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">api</span><span class="p">::</span><span class="n">ones</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">1024</span><span class="p">]).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="n">into</span><span class="p">();</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">handle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tokio</span><span class="p">::</span><span class="n">spawn</span><span class="p">(</span><span class="n">my_kernel</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="w"> </span><span class="n">weights</span><span class="p">).</span><span class="n">into_future</span><span class="p">());</span><span class="w">  </span><span class="c1">// OK — Arc is 'static</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="key-takeaways">
+<h2>Key Takeaways<a class="headerlink" href="#key-takeaways" title="链接到此标题。">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Concept</p></th>
+<th class="head"><p>What It Means</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>DeviceOp</strong></p></td>
+<td><p>A description of GPU work, not yet executed</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>.await</strong></p></td>
+<td><p>Execute the operation and get the result</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Async enables overlap</strong></p></td>
+<td><p>CPU can do work while GPU computes</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Unified launcher</strong></p></td>
+<td><p>Kernel functions accept DeviceOps and plain values directly</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>zip!</strong></p></td>
+<td><p>Combine multiple operations into a tuple</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>.then()</strong></p></td>
+<td><p>Chain follow-up work on the same stream</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr class="docutils" />
+<section id="exercise-1-async-saxpy">
+<h3>Exercise 1: Async SAXPY<a class="headerlink" href="#exercise-1-async-saxpy" title="链接到此标题。">#</a></h3>
+<p>Convert the SAXPY kernel to use the async API.</p>
+</section>
+<section id="exercise-2-parallel-tensor-creation">
+<h3>Exercise 2: Parallel Tensor Creation<a class="headerlink" href="#exercise-2-parallel-tensor-creation" title="链接到此标题。">#</a></h3>
+<p>Use <code class="docutils literal notranslate"><span class="pre">zip!</span></code> to create 4 tensors in parallel.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-text">Answer</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="n">d</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">zip</span><span class="o">!</span><span class="p">(</span>
+<span class="w">    </span><span class="n">ones</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">]).</span><span class="n">map</span><span class="p">(</span><span class="nb">Into</span><span class="p">::</span><span class="n">into</span><span class="p">),</span>
+<span class="w">    </span><span class="n">zeros</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">]).</span><span class="n">map</span><span class="p">(</span><span class="nb">Into</span><span class="p">::</span><span class="n">into</span><span class="p">),</span>
+<span class="w">    </span><span class="n">randn</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">],</span><span class="w"> </span><span class="nb">None</span><span class="p">).</span><span class="n">map</span><span class="p">(</span><span class="nb">Into</span><span class="p">::</span><span class="n">into</span><span class="p">),</span>
+<span class="w">    </span><span class="n">arange</span><span class="p">(</span><span class="mi">10000</span><span class="p">).</span><span class="n">map</span><span class="p">(</span><span class="nb">Into</span><span class="p">::</span><span class="n">into</span><span class="p">)</span>
+<span class="p">).</span><span class="k">await</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+</details></section>
+<section id="exercise-3-measure-the-difference">
+<h3>Exercise 3: Measure the Difference<a class="headerlink" href="#exercise-3-measure-the-difference" title="链接到此标题。">#</a></h3>
+<p>Time a sync version vs. an async version with overlapped work. Use <code class="docutils literal notranslate"><span class="pre">std::time::Instant</span></code> to measure.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="see-also">
+<h2>See also<a class="headerlink" href="#see-also" title="链接到此标题。">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../guide/device-operations.html"><span class="std std-doc">Device Operations</span></a> — full treatment of <code class="docutils literal notranslate"><span class="pre">DeviceOp</span></code>, streams, and scheduling</p></li>
+<li><p><a class="reference internal" href="../reference/host-api.html"><span class="std std-doc">Host API</span></a> — combinator signatures (<code class="docutils literal notranslate"><span class="pre">.then()</span></code>, <code class="docutils literal notranslate"><span class="pre">.shared()</span></code>, <code class="docutils literal notranslate"><span class="pre">unzip</span></code>, <code class="docutils literal notranslate"><span class="pre">zip!</span></code>) and the full host-side API</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="06-flash-attention.html"
+       title="上一页">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">上一页</p>
+        <p class="prev-next-title">6. Fused Multihead Attention</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="08-data-parallel-mlp.html"
+       title="下一页">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">下一页</p>
+        <p class="prev-next-title">8. Data Parallel MLP</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> 当前页面
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#deviceop">DeviceOp</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sync-vs-async-apis">Sync vs Async APIs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#async-vector-addition">Async Vector Addition</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overlapping-work-with-spawn">Overlapping Work with Spawn</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#composing-deviceops">Composing DeviceOps</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#unified-kernel-launcher">Unified Kernel Launcher</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#zip-combine-operations-manually"><code class="docutils literal notranslate"><span class="pre">zip!</span></code> — Combine Operations Manually</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#choosing-between-sync-and-async">Choosing between sync and async</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#borrowed-inputs-and-spawn-safety">Borrowed Inputs and Spawn Safety</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-takeaways">Key Takeaways</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-1-async-saxpy">Exercise 1: Async SAXPY</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-2-parallel-tensor-creation">Exercise 2: Parallel Tensor Creation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-3-measure-the-difference">Exercise 3: Measure the Difference</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#see-also">See also</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+  
+    <div class="footer-items__center">
+      
+        <div class="footer-item"><footer class="bd-footer-content">
+  <div class="footer-container" style="padding: 1rem 0 2rem 0; border-top: 1px solid var(--pst-color-border); text-align: left;">
+    
+    <!-- NVIDIA Logo -->
+    <div style="margin-bottom: 1rem;">
+      <img src="../_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" 
+           alt="NVIDIA" 
+           style="height: 3.5rem; filter: brightness(0);"
+           class="only-light">
+      <img src="../_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" 
+           alt="NVIDIA" 
+           style="height: 3.5rem;"
+           class="only-dark pst-js-only">
+    </div>
+    
+    <!-- Footer Links - single line, left aligned -->
+    <div style="font-size: 0.8125rem; margin-bottom: 0.5rem; color: var(--pst-color-text-muted);">
+      <a href="https://www.nvidia.com/en-us/about-nvidia/privacy-policy/" target="_blank" style="color: inherit; text-decoration: none;">Privacy Policy</a> | 
+      <a href="https://www.nvidia.com/en-us/preferences/email-preferences/" target="_blank" style="color: inherit; text-decoration: none;">Your Privacy Choices</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/terms-of-service/" target="_blank" style="color: inherit; text-decoration: none;">Terms of Service</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/accessibility/" target="_blank" style="color: inherit; text-decoration: none;">Accessibility</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/company-policies/" target="_blank" style="color: inherit; text-decoration: none;">Corporate Policies</a> | 
+      <a href="https://www.nvidia.com/en-us/product-security/" target="_blank" style="color: inherit; text-decoration: none;">Product Security</a> | 
+      <a href="https://www.nvidia.com/en-us/contact/" target="_blank" style="color: inherit; text-decoration: none;">Contact</a>
+    </div>
+    
+    <!-- Copyright -->
+    <div style="font-size: 0.8125rem; color: var(--pst-color-text-muted);">
+      Copyright &copy; 2025, NVIDIA.
+    </div>
+    
+  </div>
+</footer></div>
+      
+    </div>
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-TW" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Bounds-Check Placement &#8212; cuTile Rust</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/nvidia-sphinx-theme.css?v=933278ad" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=4011299f" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/lightbox.css?v=31fdf494" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../_static/documentation_options.js?v=a7999bab"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/translations.js?v=cbf116e0"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'guide/bounds-check-placement';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <script src="../_static/js/lightbox.js?v=17028852"></script>
+    <link rel="canonical" href="https://projects.localizethedocs.org/cutile-rs-book-l10n/guide/bounds-check-placement.html" />
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜尋" href="../search.html" />
+    <link rel="next" title="Interoperability" href="interoperability.html" />
+    <link rel="prev" title="Autotuning" href="autotuning.html" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="zh-TW"/>
+  <meta name="docsearch:version" content="main" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+<script type="text/javascript" src="../ltd-provenance.js"></script>
+<script type="text/javascript" src="../ltd-current.js"></script>
+<script type="text/javascript" src="../../../ltd-config.js"></script>
+<script type="text/javascript" src="../../../ltd-flyout.js"></script>
+
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">跳转至主要内容</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>回到顶部</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="版本警告"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="网页导航">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" class="logo__image only-light" alt=""/>
+    <img src="../_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cuTile Rust</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item"><div class="github-links">
+  <!--
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/stargazers" target="_blank" rel="noopener">
+    <i class="fa-solid fa-star" aria-hidden="true"></i>
+    <span class="sr-only">Star</span>
+  </a>
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/fork" target="_blank" rel="noopener">
+    <i class="fa-solid fa-code-fork" aria-hidden="true"></i>
+    <span class="sr-only">Fork</span>
+  </a>
+  -->
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/NVIDIA/cuda-rust" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="搜尋" aria-label="搜尋" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button></div>
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="亮色"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="暗色"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>亮色</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>暗色</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="当前页面">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><div class="github-links">
+  <!--
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/stargazers" target="_blank" rel="noopener">
+    <i class="fa-solid fa-star" aria-hidden="true"></i>
+    <span class="sr-only">Star</span>
+  </a>
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/fork" target="_blank" rel="noopener">
+    <i class="fa-solid fa-code-fork" aria-hidden="true"></i>
+    <span class="sr-only">Fork</span>
+  </a>
+  -->
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/NVIDIA/cuda-rust" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="搜尋" aria-label="搜尋" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button></div>
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="亮色"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="暗色"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>亮色</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>暗色</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><div class="sidebar-tree">
+    <p class="sidebar-tree-title">
+        Table of Contents
+    </p>
+    <p aria-level="2" class="caption" role="heading"><span class="caption-text">教學課程</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/01-hello-world.html">1. Hello World</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/02-vector-addition.html">2. Vector Addition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/03-saxpy.html">3. SAXPY</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/04-matrix-multiplication.html">4. Matrix Multiplication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/05-fused-softmax.html">5. Fused Softmax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/06-flash-attention.html">6. Fused Multihead Attention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/07-intro-to-async.html">7. Intro to Async Execution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/08-data-parallel-mlp.html">8. Data Parallel MLP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/09-pointer-addition.html">9. Pointer Addition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/10-cuda-graphs.html">10. CUDA Graphs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/11-nvfp4-inference.html">11. Inference with NVFP4/MXFP8</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/12-dgx-spark-inference.html">12. LLM Inference on DGX Spark</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">使用者指南</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="host-vs-device.html">Host vs. Device Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tensors-and-tiles.html">Tensors and Tiles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jit-compilation.html">Compilation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="device-operations.html">Device Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="performance.html">Performance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autotuning.html">Autotuning</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Bounds-Check Placement</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interoperability.html">Interoperability</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debugging-and-profiling.html">Debugging and Profiling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="useful-mental-models.html">Useful Mental Models</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">參考</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../reference/dsl-api.html">DSL API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/host-api.html">Host API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/compatibility.html">CUDA and Tile IR compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/glossary.html">Glossary</a></li>
+</ul>
+
+</div></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="初始页面">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Bounds-Check Placement</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="bounds-check-placement">
+<h1>Bounds-Check Placement<a class="headerlink" href="#bounds-check-placement" title="連結到這個標頭">#</a></h1>
+<p>The safe partition API checks accesses by default. A check inside a hot loop
+can disrupt software pipelining between loads and computation, even when the
+kernel has few checks. The compiler removes checks it can prove unnecessary
+and moves others out of loops where it can.</p>
+<p>Each checked dimension has one of three outcomes:</p>
+<ul class="simple">
+<li><p><strong>Discharged:</strong> no check remains in the kernel. This includes stores through
+<code class="docutils literal notranslate"><span class="pre">iter_indices()</span></code>, loads using a partition's own coordinates, constant indices
+into static shapes, and accesses covered by declared <code class="docutils literal notranslate"><span class="pre">preconditions</span></code> or
+cross-tensor facts verified at launch.</p></li>
+<li><p><strong>Hoisted:</strong> the check runs once before the loop, or before an outer loop
+if the compiler can prove it safe to move there.</p></li>
+<li><p><strong>In place:</strong> the check runs at the access on every iteration.</p></li>
+</ul>
+<p>Set <code class="docutils literal notranslate"><span class="pre">deny_in_kernel_checks</span> <span class="pre">=</span> <span class="pre">true</span></code> on the entry to reject checks that remain
+in the kernel. The diagnostic identifies the access and suggests how to
+restructure it.</p>
+<section id="when-a-check-hoists">
+<h2>When a Check Hoists<a class="headerlink" href="#when-a-check-hoists" title="連結到這個標頭">#</a></h2>
+<p>A check on an access inside a loop is hoisted to before the loop when all of
+the following hold, per index coordinate:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Index coordinate form</p></th>
+<th class="head"><p>Placement</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Value computed before the loop</p></td>
+<td><p>Hoisted</p></td>
+</tr>
+<tr class="row-odd"><td><p>Compile-time constant, or value with known constant bounds</p></td>
+<td><p>Hoisted (or discharged against static shapes)</p></td>
+</tr>
+<tr class="row-even"><td><p>The loop variable <code class="docutils literal notranslate"><span class="pre">j</span></code> of a <code class="docutils literal notranslate"><span class="pre">for</span> <span class="pre">j</span> <span class="pre">in</span> <span class="pre">lo..hi</span></code> loop</p></td>
+<td><p>Hoisted, checked at <code class="docutils literal notranslate"><span class="pre">hi</span> <span class="pre">-</span> <span class="pre">1</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">*</span> <span class="pre">j</span> <span class="pre">+</span> <span class="pre">b</span></code> with constant <code class="docutils literal notranslate"><span class="pre">a</span></code>, <code class="docutils literal notranslate"><span class="pre">b</span></code></p></td>
+<td><p>Hoisted at the extreme iteration, when that extreme provably fits <code class="docutils literal notranslate"><span class="pre">i32</span></code>; otherwise in place</p></td>
+</tr>
+<tr class="row-even"><td><p>Loop variable of a <code class="docutils literal notranslate"><span class="pre">(lo..hi).step_by(k)</span></code> loop</p></td>
+<td><p>Hoisted, checked at the <em>last attained</em> index <code class="docutils literal notranslate"><span class="pre">lo</span> <span class="pre">+</span> <span class="pre">k</span> <span class="pre">*</span> <span class="pre">floor((hi</span> <span class="pre">-</span> <span class="pre">1</span> <span class="pre">-</span> <span class="pre">lo)</span> <span class="pre">/</span> <span class="pre">k)</span></code>, when <code class="docutils literal notranslate"><span class="pre">lo</span></code>, <code class="docutils literal notranslate"><span class="pre">hi</span></code>, and <code class="docutils literal notranslate"><span class="pre">k</span></code> are compile-time constants; otherwise in place</p></td>
+</tr>
+<tr class="row-odd"><td><p>Value computed <em>inside</em> the loop body (other than the forms above)</p></td>
+<td><p>In place</p></td>
+</tr>
+<tr class="row-even"><td><p>Any access written inside an <code class="docutils literal notranslate"><span class="pre">if</span></code>/<code class="docutils literal notranslate"><span class="pre">else</span></code> in the loop</p></td>
+<td><p>In place</p></td>
+</tr>
+<tr class="row-odd"><td><p>Any access in a loop body that contains a <code class="docutils literal notranslate"><span class="pre">continue</span></code></p></td>
+<td><p>In place</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Additionally, a hoisted check keeps climbing outward through directly
+nested loops whose trip counts are statically non-zero and whose bodies
+contain no <code class="docutils literal notranslate"><span class="pre">continue</span></code>, stopping at the first loop whose bound it depends
+on. Hoisted checks are guarded so that a loop which executes zero times can
+never trap. Hoisting does change <em>when</em> a violation is reported: a hoisted
+check traps before the loop starts, so the iterations that precede the
+offending one — and any stores they would have made — do not run. It never
+changes <em>whether</em> a kernel traps: a hoisted check tests only index values
+the loop actually attains, which is why a body with <code class="docutils literal notranslate"><span class="pre">continue</span></code> (some
+iterations skip the access) or a stepped loop with a runtime step (the
+attained set is unknown) keeps its check in place.</p>
+<p>To help the compiler move checks out of a hot loop:</p>
+<ul class="simple">
+<li><p><strong>Compute index arithmetic above the innermost loop.</strong> <code class="docutils literal notranslate"><span class="pre">let</span> <span class="pre">kv_head</span> <span class="pre">=</span> <span class="pre">q_head</span> <span class="pre">/</span> <span class="pre">group;</span></code> written before the K/V loop hoists every check that uses
+it; the same expression written inside the loop body does not (the
+compiler does not currently chase invariant arithmetic through the loop
+body — it proves invariance by position).</p></li>
+<li><p><strong>Index hot-loop accesses with the loop variable directly</strong>, or an
+affine expression of it, and write the loop as <code class="docutils literal notranslate"><span class="pre">for</span> <span class="pre">j</span> <span class="pre">in</span> <span class="pre">lo..hi</span></code>; a
+<code class="docutils literal notranslate"><span class="pre">step_by(k)</span></code> loop hoists only when <code class="docutils literal notranslate"><span class="pre">lo</span></code>, <code class="docutils literal notranslate"><span class="pre">hi</span></code>, and <code class="docutils literal notranslate"><span class="pre">k</span></code> are all
+compile-time constants.</p></li>
+<li><p><strong>Keep hot-loop accesses unconditional.</strong> A load under an <code class="docutils literal notranslate"><span class="pre">if</span></code> may
+execute on no iteration, so its check cannot move; lift the condition out
+of the loop or accept the in-place check. The same holds for a body with
+a <code class="docutils literal notranslate"><span class="pre">continue</span></code>: every access after it is conditional.</p></li>
+<li><p><strong>Keep index arithmetic wrap-free.</strong> A range fact survives an operation
+only when the operation provably cannot overflow <code class="docutils literal notranslate"><span class="pre">i32</span></code>; an expression
+that can wrap forfeits its facts (even if later <code class="docutils literal notranslate"><span class="pre">max</span></code>/<code class="docutils literal notranslate"><span class="pre">%</span></code> steps pull the
+mathematical range back in bounds), and the access pays an in-place check
+over the actual runtime value.</p></li>
+</ul>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">for</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">out</span><span class="p">.</span><span class="n">iter_indices</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="p">(</span><span class="n">q_tile</span><span class="p">,</span><span class="w"> </span><span class="n">q_head</span><span class="p">,</span><span class="w"> </span><span class="n">_</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">index</span><span class="p">.</span><span class="n">components</span><span class="p">();</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">kv_head</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">q_head</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">GROUP</span><span class="p">;</span><span class="w">          </span><span class="c1">// above the loop: hoists</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="mi">0</span><span class="k">i32</span><span class="o">..</span><span class="n">kv_tiles</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">k_part</span><span class="p">.</span><span class="n">load_pipelined</span><span class="p">::</span><span class="o">&lt;</span><span class="n">L</span><span class="o">&gt;</span><span class="p">([</span><span class="n">kv_head</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="k">i32</span><span class="p">]);</span>
+<span class="w">        </span><span class="c1">//                                  ^ hoisted  ^ hoisted (checked at kv_tiles - 1)</span>
+<span class="w">        </span><span class="c1">// ...</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="checks-that-leave-the-kernel-entirely">
+<h2>Checks That Leave the Kernel Entirely<a class="headerlink" href="#checks-that-leave-the-kernel-entirely" title="連結到這個標頭">#</a></h2>
+<p>A check whose operands are known at launch can run in the generated host
+launcher. Tensor extents qualify; loop variables and loaded values do not.
+The launcher checks the actual shapes and refuses an invalid launch with an
+error naming the check. No device registers or instructions are needed.</p>
+<p>For example, an index from <code class="docutils literal notranslate"><span class="pre">for</span> <span class="pre">j</span> <span class="pre">in</span> <span class="pre">0..num_tiles(&amp;p,</span> <span class="pre">a)</span></code> or a mapped
+partition's <code class="docutils literal notranslate"><span class="pre">iter_indices()</span></code> carries bounds from that tensor. Using it to
+index another tensor produces a launch check over tile counts, such as
+<code class="docutils literal notranslate"><span class="pre">ceil(dim(x,</span> <span class="pre">1)/BK)</span> <span class="pre">&lt;=</span> <span class="pre">ceil(dim(y,</span> <span class="pre">0)/BK)</span></code>.</p>
+<p>The persistent GEMM in <code class="docutils literal notranslate"><span class="pre">cutile-examples/examples/persistent_gemm.rs</span></code> uses
+these derived checks. Its mapped components index <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code>, and its K-loop
+iterates over <code class="docutils literal notranslate"><span class="pre">num_tiles</span></code>. All shape checks run at launch, so it builds with
+<code class="docutils literal notranslate"><span class="pre">deny_in_kernel_checks</span> <span class="pre">=</span> <span class="pre">true</span></code> without annotations or extra const generics.</p>
+<p>Declared <code class="docutils literal notranslate"><span class="pre">preconditions</span></code> go one step further: the launcher already verifies
+each declared fact against the real shapes, so the compiler assumes it and
+discharges the matching checks at compile time. A kernel that declares
+<code class="docutils literal notranslate"><span class="pre">dim(x,</span> <span class="pre">1)</span> <span class="pre">%</span> <span class="pre">64</span> <span class="pre">==</span> <span class="pre">0</span></code> emits nothing anywhere for the matching binding, and
+<code class="docutils literal notranslate"><span class="pre">dim(a,</span> <span class="pre">i)</span> <span class="pre">==</span> <span class="pre">dim(b,</span> <span class="pre">j)</span></code> relates two tensors' axes exactly as the derived
+form does. Declare a precondition when you want the contract visible in the
+signature or need a fact the walk cannot derive; note the declared equality
+is stricter than the derived comparison (<code class="docutils literal notranslate"><span class="pre">==</span></code> on extents versus <code class="docutils literal notranslate"><span class="pre">&lt;=</span></code> on
+tile counts), so it rejects some launches the derived form accepts.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">with_bounds</span></code>/<code class="docutils literal notranslate"><span class="pre">Dim</span></code> annotation family is deprecated: everything it
+proved is subsumed by the derived facts and declared preconditions above,
+with the checks landing at launch instead of possibly in the kernel.</p>
+</section>
+<section id="reading-the-compiler-s-decision">
+<h2>Reading the Compiler's Decision<a class="headerlink" href="#reading-the-compiler-s-decision" title="連結到這個標頭">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">CUTILE_JIT_TIMING=1</span></code> reports per-kernel totals on each compile line:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>CUTILE_JIT_TIMING module=kernels function=fmha_prefill ... \
+    checks_discharged=3 checks_hoisted=4 checks_in_place=2
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">CUTILE_JIT_LOG=1</span></code> explains each check that stays in a loop body:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[cutile::jit] bounds check for dim 1 stays in the loop body: index is
+computed inside the loop body
+</pre></div>
+</div>
+<p>Compare the emitted Tile IR with an unchecked version to see the effect on
+scheduling. Set <code class="docutils literal notranslate"><span class="pre">unchecked_accesses</span> <span class="pre">=</span> <span class="pre">true</span></code> on the entry, mark the kernel
+<code class="docutils literal notranslate"><span class="pre">unsafe</span></code>, and wrap the launch in <code class="docutils literal notranslate"><span class="pre">unsafe</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">}</span></code>. Dump both variants to
+stderr and compare them:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>dump<span class="o">()</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="nv">CUTILE_DUMP</span><span class="o">=</span>ir<span class="w"> </span><span class="nv">CUTILE_DUMP_FILTER</span><span class="o">=</span>kernels::fmha_prefill<span class="w"> </span>./my_app<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="se">\</span>
+<span class="w">         </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span>-n<span class="w"> </span><span class="s1">'/=== CUTILE DUMP: ir/,/^}/p'</span><span class="p">;</span><span class="w"> </span><span class="o">}</span>
+dump<span class="w"> </span>&gt;<span class="w"> </span>safe.ir
+<span class="c1"># flip the kernel to its unsafe twin, then:</span>
+dump<span class="w"> </span>&gt;<span class="w"> </span>raw.ir
+diff<span class="w"> </span>safe.ir<span class="w"> </span>raw.ir
+</pre></div>
+</div>
+<p>The persistent GEMM example emits identical IR for its safe and unsafe
+variants: 103 ops with the same loop bodies. Its checks all run in the launcher.</p>
+<p>In other kernels, an <code class="docutils literal notranslate"><span class="pre">assert</span></code> means a check remains on the device. If you
+expect all checks to leave the kernel, <code class="docutils literal notranslate"><span class="pre">grep</span> <span class="pre">-c</span> <span class="pre">assert</span> <span class="pre">safe.ir</span></code> should return
+zero; <code class="docutils literal notranslate"><span class="pre">deny_in_kernel_checks</span> <span class="pre">=</span> <span class="pre">true</span></code> enforces this during compilation.
+Extra comparisons, selects, or branches between loads and <code class="docutils literal notranslate"><span class="pre">mma</span></code> operations
+inside a loop can disrupt pipelining. A hoisted check before the loop does
+not have that cost.</p>
+<p>If the IR matches but performance differs, compare register counts. They
+should match when all checks have left the kernel.</p>
+<p>Two ablation knobs let you measure placement with the same binary, no
+rebuild: <code class="docutils literal notranslate"><span class="pre">CUTILE_DISABLE_CHECK_HOISTING=1</span></code> pins every residual check at its
+access site, and <code class="docutils literal notranslate"><span class="pre">CUTILE_FORCE_DEVICE_CHECKS=1</span></code> additionally suppresses
+every proof, checking each access two-sided over its actual values — the
+reference semantics the test suite diffs placement against.</p>
+</section>
+<section id="when-to-reach-for-unsafe">
+<h2>When to Reach for <code class="docutils literal notranslate"><span class="pre">unsafe</span></code><a class="headerlink" href="#when-to-reach-for-unsafe" title="連結到這個標頭">#</a></h2>
+<p>Measure the effect of <code class="docutils literal notranslate"><span class="pre">unchecked_accesses</span> <span class="pre">=</span> <span class="pre">true</span></code>. On the flash-attention
+prefill kernel used to develop check hoisting (RTX 5090,
+<code class="docutils literal notranslate"><span class="pre">checks_in_place=2</span></code>), the fully checked kernel runs at 55.0 µs/call against
+a 53.6 µs floor with all checks disabled — about 2.5%, all of it from the
+two in-place checks on schedule-derived coordinates that execute once per
+persistent index, not per inner-loop iteration. The unsafe twin of the same
+kernel runs at 56.7 µs; the checked version is faster.</p>
+<p>Unchecked accesses can help when checks remain in a hot loop: stepped-loop indices,
+data-dependent indices (values loaded from memory), conditional accesses,
+and index arithmetic the compiler cannot prove wrap-free. If
+<code class="docutils literal notranslate"><span class="pre">CUTILE_JIT_LOG</span></code> shows in-place checks in your inner loop and restructuring
+can't move them, measure whether <code class="docutils literal notranslate"><span class="pre">unchecked_accesses</span> <span class="pre">=</span> <span class="pre">true</span></code> helps.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="autotuning.html"
+       title="上一页">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">上一頁</p>
+        <p class="prev-next-title">Autotuning</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="interoperability.html"
+       title="下一页">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">下一頁</p>
+        <p class="prev-next-title">Interoperability</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> 当前页面
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#when-a-check-hoists">When a Check Hoists</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#checks-that-leave-the-kernel-entirely">Checks That Leave the Kernel Entirely</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reading-the-compiler-s-decision">Reading the Compiler's Decision</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#when-to-reach-for-unsafe">When to Reach for <code class="docutils literal notranslate"><span class="pre">unsafe</span></code></a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+  
+    <div class="footer-items__center">
+      
+        <div class="footer-item"><footer class="bd-footer-content">
+  <div class="footer-container" style="padding: 1rem 0 2rem 0; border-top: 1px solid var(--pst-color-border); text-align: left;">
+    
+    <!-- NVIDIA Logo -->
+    <div style="margin-bottom: 1rem;">
+      <img src="../_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" 
+           alt="NVIDIA" 
+           style="height: 3.5rem; filter: brightness(0);"
+           class="only-light">
+      <img src="../_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" 
+           alt="NVIDIA" 
+           style="height: 3.5rem;"
+           class="only-dark pst-js-only">
+    </div>
+    
+    <!-- Footer Links - single line, left aligned -->
+    <div style="font-size: 0.8125rem; margin-bottom: 0.5rem; color: var(--pst-color-text-muted);">
+      <a href="https://www.nvidia.com/en-us/about-nvidia/privacy-policy/" target="_blank" style="color: inherit; text-decoration: none;">Privacy Policy</a> | 
+      <a href="https://www.nvidia.com/en-us/preferences/email-preferences/" target="_blank" style="color: inherit; text-decoration: none;">Your Privacy Choices</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/terms-of-service/" target="_blank" style="color: inherit; text-decoration: none;">Terms of Service</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/accessibility/" target="_blank" style="color: inherit; text-decoration: none;">Accessibility</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/company-policies/" target="_blank" style="color: inherit; text-decoration: none;">Corporate Policies</a> | 
+      <a href="https://www.nvidia.com/en-us/product-security/" target="_blank" style="color: inherit; text-decoration: none;">Product Security</a> | 
+      <a href="https://www.nvidia.com/en-us/contact/" target="_blank" style="color: inherit; text-decoration: none;">Contact</a>
+    </div>
+    
+    <!-- Copyright -->
+    <div style="font-size: 0.8125rem; color: var(--pst-color-text-muted);">
+      Copyright &copy; 2025, NVIDIA.
+    </div>
+    
+  </div>
+</footer></div>
+      
+    </div>
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

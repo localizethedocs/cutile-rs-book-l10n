@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>4. Matrix Multiplication &#8212; cuTile Rust</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/nvidia-sphinx-theme.css?v=933278ad" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=4011299f" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/lightbox.css?v=31fdf494" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../_static/documentation_options.js?v=d786bb5c"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/translations.js?v=540d3cec"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/04-matrix-multiplication';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <script src="../_static/js/lightbox.js?v=17028852"></script>
+    <link rel="canonical" href="https://projects.localizethedocs.org/cutile-rs-book-l10n/tutorials/04-matrix-multiplication.html" />
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="5. Fused Softmax" href="05-fused-softmax.html" />
+    <link rel="prev" title="3. SAXPY" href="03-saxpy.html" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="zh-CN"/>
+  <meta name="docsearch:version" content="main" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+<script type="text/javascript" src="../ltd-provenance.js"></script>
+<script type="text/javascript" src="../ltd-current.js"></script>
+<script type="text/javascript" src="../../../ltd-config.js"></script>
+<script type="text/javascript" src="../../../ltd-flyout.js"></script>
+
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">跳转至主要内容</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>回到顶部</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="版本警告"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="网页导航">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" class="logo__image only-light" alt=""/>
+    <img src="../_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">cuTile Rust</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item"><div class="github-links">
+  <!--
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/stargazers" target="_blank" rel="noopener">
+    <i class="fa-solid fa-star" aria-hidden="true"></i>
+    <span class="sr-only">Star</span>
+  </a>
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/fork" target="_blank" rel="noopener">
+    <i class="fa-solid fa-code-fork" aria-hidden="true"></i>
+    <span class="sr-only">Fork</span>
+  </a>
+  -->
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/NVIDIA/cuda-rust" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="搜索" aria-label="搜索" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button></div>
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="亮色"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="暗色"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>亮色</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>暗色</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="当前页面">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><div class="github-links">
+  <!--
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/stargazers" target="_blank" rel="noopener">
+    <i class="fa-solid fa-star" aria-hidden="true"></i>
+    <span class="sr-only">Star</span>
+  </a>
+  <a class="nav-link nav-external" href="https://github.com/NVIDIA/cuda-rust/fork" target="_blank" rel="noopener">
+    <i class="fa-solid fa-code-fork" aria-hidden="true"></i>
+    <span class="sr-only">Fork</span>
+  </a>
+  -->
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/NVIDIA/cuda-rust" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="搜索" aria-label="搜索" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button></div>
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="亮色"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="暗色"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>亮色</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>暗色</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><div class="sidebar-tree">
+    <p class="sidebar-tree-title">
+        Table of Contents
+    </p>
+    <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="01-hello-world.html">1. Hello World</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02-vector-addition.html">2. Vector Addition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03-saxpy.html">3. SAXPY</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">4. Matrix Multiplication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05-fused-softmax.html">5. Fused Softmax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06-flash-attention.html">6. Fused Multihead Attention</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07-intro-to-async.html">7. Intro to Async Execution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08-data-parallel-mlp.html">8. Data Parallel MLP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="09-pointer-addition.html">9. Pointer Addition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10-cuda-graphs.html">10. CUDA Graphs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11-nvfp4-inference.html">11. Inference with NVFP4/MXFP8</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12-dgx-spark-inference.html">12. LLM Inference on DGX Spark</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guide/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/host-vs-device.html">Host vs. Device Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/tensors-and-tiles.html">Tensors and Tiles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/jit-compilation.html">Compilation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/device-operations.html">Device Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/performance.html">Performance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/autotuning.html">Autotuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/bounds-check-placement.html">Bounds-Check Placement</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/interoperability.html">Interoperability</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/debugging-and-profiling.html">Debugging and Profiling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/useful-mental-models.html">Useful Mental Models</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../reference/dsl-api.html">DSL API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/host-api.html">Host API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/compatibility.html">CUDA and Tile IR compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/glossary.html">Glossary</a></li>
+</ul>
+
+</div></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="初始页面">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">4. Matrix Multiplication</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="matrix-multiplication">
+<h1>4. Matrix Multiplication<a class="headerlink" href="#matrix-multiplication" title="链接到此标题。">#</a></h1>
+<!-- TODO: This tutorial has grown to cover basic GEMM, const generic inference,
+mapped persistent GEMM, unsafe optimization hints, and fully static GEMM. Split
+or streamline it when there is bandwidth: keep this page focused on the first
+GEMM path and move advanced performance variants to separate pages. -->
+<p>Matrix multiplication (GEMM, or General Matrix Multiply) is used in:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Application</p></th>
+<th class="head"><p>Where GEMM is Used</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Transformers</strong></p></td>
+<td><p>Attention and Fully Connected layers — 90%+ of compute</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>CNNs</strong></p></td>
+<td><p>Convolutions expressed as matrix multiplications</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Scientific Computing</strong></p></td>
+<td><p>Simulations and solvers</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Graphics</strong></p></td>
+<td><p>Transformations, lighting calculations</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr class="docutils" />
+<section id="naive-gemm-is-memory-bound">
+<h2>Naive GEMM is Memory-Bound<a class="headerlink" href="#naive-gemm-is-memory-bound" title="链接到此标题。">#</a></h2>
+<p>The naive algorithm for C = A × B is:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>for each output element C[i,j]:
+    sum = 0
+    for k in 0..K:
+        sum += A[i,k] * B[k,j]
+    C[i,j] = sum
+</pre></div>
+</div>
+<p><img alt="Memory bandwidth problem showing the mismatch between naive GEMM and GPU capabilities" src="../_images/gemm-memory-bandwidth.svg" /></p>
+<p>Each element of A and B is loaded from global memory repeatedly. To get good performance, we need to load data once and reuse it many times.</p>
+</section>
+<hr class="docutils" />
+<section id="tiled-matrix-multiplication">
+<h2>Tiled Matrix Multiplication<a class="headerlink" href="#tiled-matrix-multiplication" title="链接到此标题。">#</a></h2>
+<p>Instead of computing one element at a time, we compute <strong>tiles</strong> of elements:</p>
+<p><img alt="Tiled GEMM showing how tiles from A and B combine to form output tile C" src="../_images/gemm-tiled-strategy.svg" /></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Per output TILE (BM × BN elements):
+  - Load BM × K elements from A (once per row group)
+  - Load K × BN elements from B (once per column group)
+  - Do BM × BN × K multiply-adds
+
+Memory loads: BM×K + K×BN    Compute: BM×BN×K ops
+Ratio: With BM=BN=BK=16: ~16× better data reuse!
+</pre></div>
+</div>
+<p>Each loaded element of A is reused BN times, and each element of B is reused
+BM times. This reduces global-memory traffic.</p>
+<hr class="docutils" />
+<p><a id="the-code"></a></p>
+</section>
+<section id="gemm-kernel">
+<h2>GEMM kernel<a class="headerlink" href="#gemm-kernel" title="链接到此标题。">#</a></h2>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">use</span><span class="w"> </span><span class="n">cuda_async</span><span class="p">::</span><span class="n">device_operation</span><span class="p">::</span><span class="n">DeviceOp</span><span class="p">;</span>
+<span class="k">use</span><span class="w"> </span><span class="n">cuda_core</span><span class="p">::</span><span class="n">Device</span><span class="p">;</span>
+<span class="k">use</span><span class="w"> </span><span class="n">std</span><span class="p">::</span><span class="n">sync</span><span class="p">::</span><span class="n">Arc</span><span class="p">;</span>
+<span class="k">use</span><span class="w"> </span><span class="n">cutile</span><span class="p">;</span>
+<span class="k">use</span><span class="w"> </span><span class="n">cutile</span><span class="p">::</span><span class="n">api</span><span class="p">;</span>
+<span class="k">use</span><span class="w"> </span><span class="n">cutile</span><span class="p">::</span><span class="n">DType</span><span class="p">;</span>
+<span class="k">use</span><span class="w"> </span><span class="n">cutile</span><span class="p">::</span><span class="n">error</span><span class="p">::</span><span class="n">Error</span><span class="p">;</span>
+<span class="k">use</span><span class="w"> </span><span class="n">cutile</span><span class="p">::</span><span class="n">tensor</span><span class="p">::{</span><span class="n">IntoPartition</span><span class="p">,</span><span class="w"> </span><span class="n">Tensor</span><span class="p">,</span><span class="w"> </span><span class="n">ToHostVec</span><span class="p">,</span><span class="w"> </span><span class="n">Unpartition</span><span class="p">};</span>
+<span class="k">use</span><span class="w"> </span><span class="n">cutile</span><span class="p">::</span><span class="n">tile_kernel</span><span class="p">::</span><span class="n">TileKernel</span><span class="p">;</span>
+
+<span class="cp">#[cutile::module]</span>
+<span class="k">mod</span><span class="w"> </span><span class="nn">my_module</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">use</span><span class="w"> </span><span class="n">cutile</span><span class="p">::</span><span class="n">core</span><span class="p">::</span><span class="o">*</span><span class="p">;</span>
+
+<span class="w">    </span><span class="cp">#[cutile::entry()]</span>
+<span class="w">    </span><span class="k">fn</span><span class="w"> </span><span class="nf">gemm</span><span class="o">&lt;</span><span class="n">E</span><span class="p">:</span><span class="w"> </span><span class="nc">ElementType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">BM</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">BN</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">BK</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">K</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="o">&gt;</span><span class="p">(</span>
+<span class="w">        </span><span class="n">z</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">mut</span><span class="w"> </span><span class="n">Tensor</span><span class="o">&lt;</span><span class="n">E</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="n">BM</span><span class="p">,</span><span class="w"> </span><span class="n">BN</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="p">,</span><span class="w">   </span><span class="c1">// Output tile</span>
+<span class="w">        </span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="n">E</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">K</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="p">,</span><span class="w">        </span><span class="c1">// A matrix</span>
+<span class="w">        </span><span class="n">y</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="n">E</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="p">,</span><span class="w">        </span><span class="c1">// B matrix</span>
+<span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">part_x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="n">partition</span><span class="p">(</span><span class="n">shape</span><span class="o">!</span><span class="p">[</span><span class="n">BM</span><span class="p">,</span><span class="w"> </span><span class="n">BK</span><span class="p">]);</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">part_y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">y</span><span class="p">.</span><span class="n">partition</span><span class="p">(</span><span class="n">shape</span><span class="o">!</span><span class="p">[</span><span class="n">BK</span><span class="p">,</span><span class="w"> </span><span class="n">BN</span><span class="p">]);</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">pid_m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">program_id</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">pid_n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">program_id</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">tile_z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">load_tile_mut</span><span class="p">(</span><span class="n">z</span><span class="p">);</span>
+
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="mi">0</span><span class="k">i32</span><span class="o">..</span><span class="p">(</span><span class="n">K</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">BK</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="kd">let</span><span class="w"> </span><span class="n">tile_x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">part_x</span><span class="p">.</span><span class="n">load</span><span class="p">([</span><span class="n">pid_m</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">]);</span>
+<span class="w">            </span><span class="kd">let</span><span class="w"> </span><span class="n">tile_y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">part_y</span><span class="p">.</span><span class="n">load</span><span class="p">([</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">pid_n</span><span class="p">]);</span>
+<span class="w">            </span><span class="n">tile_z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mma</span><span class="p">(</span><span class="n">tile_x</span><span class="p">,</span><span class="w"> </span><span class="n">tile_y</span><span class="p">,</span><span class="w"> </span><span class="n">tile_z</span><span class="p">);</span><span class="w">  </span><span class="c1">// C += A @ B</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="n">z</span><span class="p">.</span><span class="n">store</span><span class="p">(</span><span class="n">tile_z</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">use</span><span class="w"> </span><span class="n">my_module</span><span class="p">::</span><span class="n">gemm</span><span class="p">;</span>
+
+<span class="k">fn</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">Result</span><span class="o">&lt;</span><span class="p">(),</span><span class="w"> </span><span class="n">Error</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Device</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">stream</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">device</span><span class="p">.</span><span class="n">new_stream</span><span class="p">()</span><span class="o">?</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="p">(</span><span class="n">bm</span><span class="p">,</span><span class="w"> </span><span class="n">bn</span><span class="p">,</span><span class="w"> </span><span class="n">bk</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mi">16</span><span class="k">usize</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="k">usize</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="k">usize</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mi">64</span><span class="k">usize</span><span class="p">,</span><span class="w"> </span><span class="mi">64</span><span class="k">usize</span><span class="p">,</span><span class="w"> </span><span class="mi">64</span><span class="k">usize</span><span class="p">);</span>
+
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">generics</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="fm">vec!</span><span class="p">[</span>
+<span class="w">        </span><span class="kt">f32</span><span class="p">::</span><span class="n">DTYPE</span><span class="p">.</span><span class="n">as_str</span><span class="p">().</span><span class="n">to_string</span><span class="p">(),</span>
+<span class="w">        </span><span class="n">bm</span><span class="p">.</span><span class="n">to_string</span><span class="p">(),</span><span class="w"> </span><span class="n">bn</span><span class="p">.</span><span class="n">to_string</span><span class="p">(),</span><span class="w"> </span><span class="n">bk</span><span class="p">.</span><span class="n">to_string</span><span class="p">(),</span><span class="w"> </span><span class="n">k</span><span class="p">.</span><span class="n">to_string</span><span class="p">()</span>
+<span class="w">    </span><span class="p">];</span>
+
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">api</span><span class="p">::</span><span class="n">zeros</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">]).</span><span class="n">partition</span><span class="p">([</span><span class="n">bm</span><span class="p">,</span><span class="w"> </span><span class="n">bn</span><span class="p">]).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">api</span><span class="p">::</span><span class="n">ones</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">]).</span><span class="n">map</span><span class="p">(</span><span class="nb">Into</span><span class="p">::</span><span class="n">into</span><span class="p">).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">y</span><span class="p">:</span><span class="w"> </span><span class="nc">Arc</span><span class="o">&lt;</span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">api</span><span class="p">::</span><span class="n">ones</span><span class="p">(</span><span class="o">&amp;</span><span class="p">[</span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">]).</span><span class="n">map</span><span class="p">(</span><span class="nb">Into</span><span class="p">::</span><span class="n">into</span><span class="p">).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">_x</span><span class="p">,</span><span class="w"> </span><span class="n">_y</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gemm</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">).</span><span class="n">generics</span><span class="p">(</span><span class="n">generics</span><span class="p">).</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">z_host</span><span class="p">:</span><span class="w"> </span><span class="nb">Vec</span><span class="o">&lt;</span><span class="kt">f32</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">z</span><span class="p">.</span><span class="n">unpartition</span><span class="p">().</span><span class="n">to_host_vec</span><span class="p">().</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">"z[0] = {} (expected {})"</span><span class="p">,</span><span class="w"> </span><span class="n">z_host</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="n">k</span><span class="p">);</span>
+
+
+<span class="w">    </span><span class="nb">Ok</span><span class="p">(())</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Output:</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>z[0] = 64 (expected 64)
+</pre></div>
+</div>
+<p>Each output element is the dot product of a row of ones with a column of ones, which equals K. With K=64, every output element is 64.</p>
+</section>
+<hr class="docutils" />
+<section id="the-k-loop">
+<h2>The K-Loop<a class="headerlink" href="#the-k-loop" title="链接到此标题。">#</a></h2>
+<p>The K-loop iterates over pairs of tiles from A and B, accumulating partial products into the output tile:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">for</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="mi">0</span><span class="k">i32</span><span class="o">..</span><span class="p">(</span><span class="n">K</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">BK</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">tile_x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">part_x</span><span class="p">.</span><span class="n">load</span><span class="p">([</span><span class="n">pid_m</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">]);</span><span class="w">  </span><span class="c1">// Load A[row_group, i]</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">tile_y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">part_y</span><span class="p">.</span><span class="n">load</span><span class="p">([</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">pid_n</span><span class="p">]);</span><span class="w">  </span><span class="c1">// Load B[i, col_group]</span>
+<span class="w">    </span><span class="n">tile_z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mma</span><span class="p">(</span><span class="n">tile_x</span><span class="p">,</span><span class="w"> </span><span class="n">tile_y</span><span class="p">,</span><span class="w"> </span><span class="n">tile_z</span><span class="p">);</span><span class="w">  </span><span class="c1">// Accumulate: C += A @ B</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><img alt="K-loop showing how partial products accumulate across iterations" src="../_images/gemm-kloop.svg" /></p>
+</section>
+<hr class="docutils" />
+<section id="the-mma-intrinsic">
+<h2>The <code class="docutils literal notranslate"><span class="pre">mma()</span></code> Intrinsic<a class="headerlink" href="#the-mma-intrinsic" title="链接到此标题。">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">mma</span></code> stands for <strong>Matrix Multiply-Accumulate</strong>:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="n">tile_z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mma</span><span class="p">(</span><span class="n">tile_x</span><span class="p">,</span><span class="w"> </span><span class="n">tile_y</span><span class="p">,</span><span class="w"> </span><span class="n">tile_z</span><span class="p">);</span>
+<span class="c1">// Equivalent to: tile_z = tile_x @ tile_y + tile_z</span>
+</pre></div>
+</div>
+<p>On modern GPUs (Volta and later), this maps directly to <strong>Tensor Cores</strong> — specialized hardware that can multiply small matrices (like 16×16×16) in a single operation.</p>
+</section>
+<hr class="docutils" />
+<section id="const-generics-and-jit-recompilation">
+<h2>Const Generics and JIT Recompilation<a class="headerlink" href="#const-generics-and-jit-recompilation" title="链接到此标题。">#</a></h2>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">fn</span><span class="w"> </span><span class="nf">gemm</span><span class="o">&lt;</span><span class="n">E</span><span class="p">:</span><span class="w"> </span><span class="nc">ElementType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">BM</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">BN</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">BK</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">K</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>These are <strong>const generics</strong> — values known at compile time:</p>
+<ol class="arabic simple">
+<li><p><strong>Loop unrolling:</strong> <code class="docutils literal notranslate"><span class="pre">for</span> <span class="pre">i</span> <span class="pre">in</span> <span class="pre">0..(K/BK)</span></code> can be fully unrolled.</p></li>
+<li><p><strong>Register allocation:</strong> The compiler knows exactly how many registers are needed.</p></li>
+<li><p><strong>Tensor Core mapping:</strong> The hardware requires specific tile sizes.</p></li>
+</ol>
+<p>They are passed via <code class="docutils literal notranslate"><span class="pre">.generics()</span></code>:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">generics</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="fm">vec!</span><span class="p">[</span><span class="s">"f32"</span><span class="p">.</span><span class="n">to_string</span><span class="p">(),</span><span class="w"> </span><span class="s">"16"</span><span class="p">.</span><span class="n">to_string</span><span class="p">(),</span><span class="w"> </span><span class="s">"16"</span><span class="p">.</span><span class="n">to_string</span><span class="p">(),</span><span class="w"> </span><span class="s">"8"</span><span class="p">.</span><span class="n">to_string</span><span class="p">(),</span><span class="w"> </span><span class="s">"64"</span><span class="p">.</span><span class="n">to_string</span><span class="p">()];</span>
+<span class="n">gemm</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">).</span><span class="n">generics</span><span class="p">(</span><span class="n">generics</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Changing a type parameter or const generic in the entry function signature creates a new compiled variant. The first time a variant is launched, cuTile compiles the kernel through Tile IR bytecode → cubin. The resulting binary is cached, so subsequent launches that resolve to the same variant reuse it. Launching with different generics — for example, switching from <code class="docutils literal notranslate"><span class="pre">K=64</span></code> to <code class="docutils literal notranslate"><span class="pre">K=128</span></code> — produces a new compilation. The full cache rules, including compile options and specialization hints, are covered in <a class="reference internal" href="../guide/jit-compilation.html"><span class="std std-doc">Compilation</span></a>.</p>
+<p>This is the tradeoff between <strong>static</strong> and <strong>dynamic</strong> shape dimensions. In the GEMM signature above, <code class="docutils literal notranslate"><span class="pre">K</span></code> is a const generic while the M and N dimensions of <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> are dynamic (<code class="docutils literal notranslate"><span class="pre">-1</span></code>):</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="n">E</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">K</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="p">,</span><span class="w">   </span><span class="c1">// M is dynamic (-1), K is static</span>
+<span class="n">y</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="n">E</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="p">,</span><span class="w">   </span><span class="c1">// K is static, N is dynamic (-1)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>Static dimensions</strong> (const generics) enable aggressive optimization but trigger recompilation when they change.</p></li>
+<li><p><strong>Dynamic dimensions</strong> (<code class="docutils literal notranslate"><span class="pre">-1</span></code>) carry no optimization benefit but can vary freely across launches without creating a new compiled variant.</p></li>
+</ul>
+<p>As a rule, make tile sizes (<code class="docutils literal notranslate"><span class="pre">BM</span></code>, <code class="docutils literal notranslate"><span class="pre">BN</span></code>, <code class="docutils literal notranslate"><span class="pre">BK</span></code>) static — they are fixed for a given kernel variant and the compiler needs them for register allocation and Tensor Core mapping. Make problem dimensions that change often (such as sequence length or batch size) dynamic.</p>
+<p><img alt="Performance comparison between naive and tiled GEMM" src="../_images/gemm-performance-comparison.svg" /></p>
+<p>With larger tiles (like 128×128), you can achieve even better ratios, approaching the GPU's theoretical peak.</p>
+</section>
+<hr class="docutils" />
+<section id="const-generic-inference">
+<h2>Const Generic Inference<a class="headerlink" href="#const-generic-inference" title="链接到此标题。">#</a></h2>
+<p>SAXPY needs no <code class="docutils literal notranslate"><span class="pre">.generics()</span></code> call: cuTile infers the const generics from the
+host-side output partition.</p>
+<p>Consider SAXPY's kernel signature:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">fn</span><span class="w"> </span><span class="nf">saxpy</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">S</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="kt">i32</span><span class="p">;</span><span class="w"> </span><span class="mi">2</span><span class="p">]</span><span class="o">&gt;</span><span class="p">(</span>
+<span class="w">    </span><span class="n">y</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">mut</span><span class="w"> </span><span class="n">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="n">S</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">a</span><span class="p">:</span><span class="w"> </span><span class="kt">f32</span><span class="p">,</span>
+<span class="w">    </span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="kt">f32</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>On the host side, <code class="docutils literal notranslate"><span class="pre">y</span></code> is a <code class="docutils literal notranslate"><span class="pre">Partition&lt;Tensor&lt;f32&gt;&gt;</span></code> created by calling <code class="docutils literal notranslate"><span class="pre">.partition([2,</span> <span class="pre">2])</span></code>. The <code class="docutils literal notranslate"><span class="pre">partition_shape</span></code> of that <code class="docutils literal notranslate"><span class="pre">Partition</span></code> — <code class="docutils literal notranslate"><span class="pre">[2,</span> <span class="pre">2]</span></code> — is used to infer <code class="docutils literal notranslate"><span class="pre">S</span></code>. Since <code class="docutils literal notranslate"><span class="pre">S</span></code> is the only const generic and it appears directly in the <code class="docutils literal notranslate"><span class="pre">&amp;mut</span> <span class="pre">Tensor&lt;f32,</span> <span class="pre">S&gt;</span></code> parameter, cutile can infer everything it needs from the host-side types alone. No <code class="docutils literal notranslate"><span class="pre">.generics()</span></code> call required.</p>
+<p>The inference rule is the same as Rust: const generics that appear in the shape of a <code class="docutils literal notranslate"><span class="pre">&amp;mut</span> <span class="pre">Tensor</span></code> are read from the <code class="docutils literal notranslate"><span class="pre">Partition</span></code>'s <code class="docutils literal notranslate"><span class="pre">partition_shape</span></code>, and const generics that appear in the shape of a <code class="docutils literal notranslate"><span class="pre">&amp;Tensor</span></code> are read from the tensor's <code class="docutils literal notranslate"><span class="pre">shape</span></code>. Type parameters like <code class="docutils literal notranslate"><span class="pre">E:</span> <span class="pre">ElementType</span></code> are inferred from the tensor's <code class="docutils literal notranslate"><span class="pre">dtype()</span></code>.</p>
+<p>For GEMM, this inference is <strong>partial</strong>:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">fn</span><span class="w"> </span><span class="nf">gemm</span><span class="o">&lt;</span><span class="n">E</span><span class="p">:</span><span class="w"> </span><span class="nc">ElementType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">BM</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">BN</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">BK</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">K</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="o">&gt;</span><span class="p">(</span>
+<span class="w">    </span><span class="n">z</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">mut</span><span class="w"> </span><span class="n">Tensor</span><span class="o">&lt;</span><span class="n">E</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="n">BM</span><span class="p">,</span><span class="w"> </span><span class="n">BN</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="p">,</span><span class="w">   </span><span class="c1">// BM, BN inferred from z's partition_shape</span>
+<span class="w">    </span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="n">E</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">K</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="p">,</span><span class="w">        </span><span class="c1">// K inferred from x's shape[1]</span>
+<span class="w">    </span><span class="n">y</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="n">E</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="p">,</span><span class="w">        </span><span class="c1">// K also available from y's shape[0]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Generic</p></th>
+<th class="head"><p>Appears in</p></th>
+<th class="head"><p>Inferred from</p></th>
+<th class="head"><p>Inferable?</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">E</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">z</span></code>, <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">z.dtype()</span></code></p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">BM</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">z</span></code> (<code class="docutils literal notranslate"><span class="pre">&amp;mut</span></code>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">z.partition_shape[0]</span></code></p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">BN</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">z</span></code> (<code class="docutils literal notranslate"><span class="pre">&amp;mut</span></code>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">z.partition_shape[1]</span></code></p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">K</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">x.shape()[1]</span></code></p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">BK</span></code></p></td>
+<td><p>—</p></td>
+<td><p>—</p></td>
+<td><p>No</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">BM</span></code> and <code class="docutils literal notranslate"><span class="pre">BN</span></code> are known at kernel launch time because they are embedded in the <code class="docutils literal notranslate"><span class="pre">Partition</span></code> created by <code class="docutils literal notranslate"><span class="pre">.partition([bm,</span> <span class="pre">bn])</span></code>. <code class="docutils literal notranslate"><span class="pre">K</span></code> is known because it appears as a dimension of the input tensors <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code>. But <code class="docutils literal notranslate"><span class="pre">BK</span></code> does not appear in the type of any kernel argument — it is only used <em>inside</em> the kernel body when partitioning <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> into tiles:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">part_x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="n">partition</span><span class="p">(</span><span class="n">shape</span><span class="o">!</span><span class="p">[</span><span class="n">BM</span><span class="p">,</span><span class="w"> </span><span class="n">BK</span><span class="p">]);</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">part_y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">y</span><span class="p">.</span><span class="n">partition</span><span class="p">(</span><span class="n">shape</span><span class="o">!</span><span class="p">[</span><span class="n">BK</span><span class="p">,</span><span class="w"> </span><span class="n">BN</span><span class="p">]);</span>
+</pre></div>
+</div>
+<p>The launcher cannot infer <code class="docutils literal notranslate"><span class="pre">BK</span></code> from a tensor or partition, so GEMM needs an
+explicit <code class="docutils literal notranslate"><span class="pre">.generics()</span></code> call.</p>
+<p>As a general rule: if every const generic appears somewhere in the kernel's <code class="docutils literal notranslate"><span class="pre">&amp;Tensor</span></code> or <code class="docutils literal notranslate"><span class="pre">&amp;mut</span> <span class="pre">Tensor</span></code> parameter types, inference will work and <code class="docutils literal notranslate"><span class="pre">.generics()</span></code> is optional. If any const generic is used only inside the kernel body (like <code class="docutils literal notranslate"><span class="pre">BK</span></code>), you must pass all generics explicitly.</p>
+<hr class="docutils" />
+</section>
+<section id="gemm-optimization">
+<span id="optimization-achieving-speed-of-light-performance"></span><h2>GEMM optimization<a class="headerlink" href="#gemm-optimization" title="链接到此标题。">#</a></h2>
+<p>The GEMM kernel above is correct but does not reach the GPU's theoretical peak
+(speed-of-light, or SoL) throughput. The recommended safe path is mapped
+persistent GEMM: the output partition produces bounded, disjoint indices, and
+the compiler derives the input bounds from the loops that produce each index.
+This avoids <code class="docutils literal notranslate"><span class="pre">unsafe</span></code> and does not require making full tensor dimensions const
+generics.</p>
+<section id="approach-1-mapped-persistent-gemm-safe-recommended">
+<h3>Approach 1: Mapped Persistent GEMM (Safe, Recommended)<a class="headerlink" href="#approach-1-mapped-persistent-gemm-safe-recommended" title="链接到此标题。">#</a></h3>
+<p>Mapped output partitions expose an iterator over output tile indices. The
+indices are produced by the partition itself, so stores are bounded and
+disjoint. The K-loop iterates <code class="docutils literal notranslate"><span class="pre">0..num_tiles(&amp;part_x,</span> <span class="pre">1)</span></code> and indexes the input
+partitions with plain arrays; the compiler infers the same bounds from the loop
+and the mapped components, and verifies the cross-tensor ties (for example
+<code class="docutils literal notranslate"><span class="pre">ceil(dim(x,</span> <span class="pre">1)/BK)</span> <span class="pre">&lt;=</span> <span class="pre">ceil(dim(y,</span> <span class="pre">0)/BK)</span></code>) as launch checks before any GPU
+work. <code class="docutils literal notranslate"><span class="pre">deny_in_kernel_checks</span> <span class="pre">=</span> <span class="pre">true</span></code> turns any check that would remain in the
+kernel into a compile error, so the body is assert-free by construction:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="cp">#[cutile::entry(</span>
+<span class="cp">    optimization_hints = (</span>
+<span class="cp">        sm_120 = (num_cta_in_cga = 2,),</span>
+<span class="cp">        sm_100 = (num_cta_in_cga = 2,),</span>
+<span class="cp">    ),</span>
+<span class="cp">    deny_in_kernel_checks = true,</span>
+<span class="cp">)]</span>
+<span class="k">fn</span><span class="w"> </span><span class="nf">gemm_persistent</span><span class="o">&lt;</span>
+<span class="w">    </span><span class="n">T</span><span class="p">:</span><span class="w"> </span><span class="nc">ElementType</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">BM</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">BN</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">BK</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">MAP_SHAPE</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="kt">i32</span><span class="p">;</span><span class="w"> </span><span class="mi">2</span><span class="p">],</span>
+<span class="o">&gt;</span><span class="p">(</span>
+<span class="w">    </span><span class="k">mut</span><span class="w"> </span><span class="n">z</span><span class="p">:</span><span class="w"> </span><span class="nc">MappedPartitionMut</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="n">BM</span><span class="p">,</span><span class="w"> </span><span class="n">BN</span><span class="p">]</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="n">MAP_SHAPE</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">y</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">part_x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="n">partition</span><span class="p">(</span><span class="n">shape</span><span class="o">!</span><span class="p">[</span><span class="n">BM</span><span class="p">,</span><span class="w"> </span><span class="n">BK</span><span class="p">]);</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">part_y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">y</span><span class="p">.</span><span class="n">partition</span><span class="p">(</span><span class="n">shape</span><span class="o">!</span><span class="p">[</span><span class="n">BK</span><span class="p">,</span><span class="w"> </span><span class="n">BN</span><span class="p">]);</span>
+
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="n">out_idx</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">z</span><span class="p">.</span><span class="n">iter_indices</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="p">(</span><span class="n">bid_m</span><span class="p">,</span><span class="w"> </span><span class="n">bid_n</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">out_idx</span><span class="p">.</span><span class="n">components</span><span class="p">();</span>
+
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">tile_z</span><span class="p">:</span><span class="w"> </span><span class="nc">Tile</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="n">BM</span><span class="p">,</span><span class="w"> </span><span class="n">BN</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">constant</span><span class="p">(</span><span class="n">T</span><span class="p">::</span><span class="n">ZERO</span><span class="p">,</span><span class="w"> </span><span class="n">shape</span><span class="o">!</span><span class="p">[</span><span class="n">BM</span><span class="p">,</span><span class="w"> </span><span class="n">BN</span><span class="p">]);</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">k_tile</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="mi">0</span><span class="k">i32</span><span class="o">..</span><span class="n">num_tiles</span><span class="p">(</span><span class="o">&amp;</span><span class="n">part_x</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="kd">let</span><span class="w"> </span><span class="n">tile_x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">part_x</span><span class="p">.</span><span class="n">load</span><span class="p">([</span><span class="n">bid_m</span><span class="p">,</span><span class="w"> </span><span class="n">k_tile</span><span class="p">]);</span>
+<span class="w">            </span><span class="kd">let</span><span class="w"> </span><span class="n">tile_y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">part_y</span><span class="p">.</span><span class="n">load</span><span class="p">([</span><span class="n">k_tile</span><span class="p">,</span><span class="w"> </span><span class="n">bid_n</span><span class="p">]);</span>
+<span class="w">            </span><span class="n">tile_z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mma</span><span class="p">(</span><span class="n">tile_x</span><span class="p">,</span><span class="w"> </span><span class="n">tile_y</span><span class="p">,</span><span class="w"> </span><span class="n">tile_z</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="n">z</span><span class="p">.</span><span class="n">store</span><span class="p">(</span><span class="n">tile_z</span><span class="p">,</span><span class="w"> </span><span class="n">out_idx</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">with_bounds(...)</span></code>, <code class="docutils literal notranslate"><span class="pre">Dim::new(...)</span></code>, and <code class="docutils literal notranslate"><span class="pre">coord(...)</span></code> from earlier versions of
+this kernel are deprecated since 0.3.0; see
+<a class="reference internal" href="../guide/bounds-check-placement.html"><span class="std std-doc">Bounds-Check Placement</span></a> for the placement
+rules.</p>
+<p>On the host side, <code class="docutils literal notranslate"><span class="pre">.map(...)</span></code> selects the mapped output traversal and the launch
+grid is inferred from the mapped partition:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">z</span><span class="p">.</span><span class="n">partition</span><span class="p">([</span><span class="n">BM</span><span class="p">,</span><span class="w"> </span><span class="n">BN</span><span class="p">]).</span><span class="n">map</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="n">num_tile_blocks</span><span class="p">);</span>
+<span class="kd">let</span><span class="w"> </span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">_x</span><span class="p">,</span><span class="w"> </span><span class="n">_y</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gemm_persistent</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">generics</span><span class="p">(</span><span class="n">generics</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Changing the full runtime tensor dimensions does not require recompilation.
+Only the type-level parameters, such as tile sizes and the map shape, specialize
+the JIT compilation.</p>
+<p>See <a class="reference external" href="https://github.com/NVIDIA/cuda-rust/blob/main/cutile-rs/cutile-examples/examples/persistent_gemm.rs"><code class="docutils literal notranslate"><span class="pre">cutile-examples/examples/persistent_gemm.rs</span></code></a> for the complete example.</p>
+</section>
+<section id="approach-2-disabling-bounds-checks-unsafe">
+<h3>Approach 2: Disabling Bounds Checks (Unsafe)<a class="headerlink" href="#approach-2-disabling-bounds-checks-unsafe" title="链接到此标题。">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">#[cutile::entry()]</span></code> attribute accepts <code class="docutils literal notranslate"><span class="pre">unchecked_accesses</span></code> and
+<code class="docutils literal notranslate"><span class="pre">optimization_hints</span></code>. Setting <code class="docutils literal notranslate"><span class="pre">unchecked_accesses</span> <span class="pre">=</span> <span class="pre">true</span></code> disables runtime
+bounds checks on all tensor loads and stores and requires an <code class="docutils literal notranslate"><span class="pre">unsafe</span></code> entry
+point. <code class="docutils literal notranslate"><span class="pre">optimization_hints</span></code> supplies architecture-specific tuning parameters:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="cp">#[cutile::entry(</span>
+<span class="cp">    unchecked_accesses = true,</span>
+<span class="cp">    optimization_hints = (</span>
+<span class="cp">        sm_120 = (num_cta_in_cga = 2, max_divisibility = 16,),</span>
+<span class="cp">    )</span>
+<span class="cp">)]</span>
+<span class="k">unsafe</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="nf">gemm</span><span class="o">&lt;</span><span class="n">T</span><span class="p">:</span><span class="w"> </span><span class="nc">ElementType</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">BM</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">BN</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">BK</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="o">&gt;</span><span class="p">(</span>
+<span class="w">    </span><span class="n">z</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">mut</span><span class="w"> </span><span class="n">Tensor</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="n">BM</span><span class="p">,</span><span class="w"> </span><span class="n">BN</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">y</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">k</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">part_x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="n">partition</span><span class="p">(</span><span class="n">shape</span><span class="o">!</span><span class="p">[</span><span class="n">BM</span><span class="p">,</span><span class="w"> </span><span class="n">BK</span><span class="p">]);</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">part_y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">y</span><span class="p">.</span><span class="n">partition</span><span class="p">(</span><span class="n">shape</span><span class="o">!</span><span class="p">[</span><span class="n">BK</span><span class="p">,</span><span class="w"> </span><span class="n">BN</span><span class="p">]);</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">pid_m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">program_id</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">pid_n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">program_id</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">tile_z</span><span class="p">:</span><span class="w"> </span><span class="nc">Tile</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="n">BM</span><span class="p">,</span><span class="w"> </span><span class="n">BN</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">z</span><span class="p">.</span><span class="n">load</span><span class="p">();</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="mi">0</span><span class="k">i32</span><span class="o">..</span><span class="p">(</span><span class="n">k</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">BK</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">tile_x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">part_x</span><span class="p">.</span><span class="n">load</span><span class="p">([</span><span class="n">pid_m</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">]);</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">tile_y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">part_y</span><span class="p">.</span><span class="n">load</span><span class="p">([</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">pid_n</span><span class="p">]);</span>
+<span class="w">        </span><span class="n">tile_z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mma</span><span class="p">(</span><span class="n">tile_x</span><span class="p">,</span><span class="w"> </span><span class="n">tile_y</span><span class="p">,</span><span class="w"> </span><span class="n">tile_z</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">z</span><span class="p">.</span><span class="n">store</span><span class="p">(</span><span class="n">tile_z</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This version changes three parts of the kernel:</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">unchecked_accesses</span> <span class="pre">=</span> <span class="pre">true</span></code></strong> removes bounds-checking overhead on every <code class="docutils literal notranslate"><span class="pre">load</span></code> and <code class="docutils literal notranslate"><span class="pre">store</span></code> call.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">sm_120</span> <span class="pre">=</span> <span class="pre">(num_cta_in_cga</span> <span class="pre">=</span> <span class="pre">2,</span> <span class="pre">max_divisibility</span> <span class="pre">=</span> <span class="pre">16,)</span></code></strong> is an architecture-specific hint for Blackwell (SM 120) that groups two CTAs into a CGA for better inter-SM data sharing and caps auto-inferred alignment at 16.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">k</span></code> is passed as a runtime <code class="docutils literal notranslate"><span class="pre">i32</span></code></strong> rather than a const generic, so changing the K dimension does not create a new compiled variant.</p></li>
+</ul>
+<p>The compiler still checks tile shapes, <code class="docutils literal notranslate"><span class="pre">mma</span></code> dimensions, and element types.
+<code class="docutils literal notranslate"><span class="pre">unchecked_accesses</span></code> disables only runtime bounds checks.</p>
+<p>The call site must also use an <code class="docutils literal notranslate"><span class="pre">unsafe</span></code> block:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">unsafe</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">_</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gemm</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="kt">i32</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="n">generics</span><span class="p">(</span><span class="n">generics</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>See <a class="reference external" href="https://github.com/NVIDIA/cuda-rust/blob/main/cutile-rs/cutile-benchmarks/benches/gemm.rs"><code class="docutils literal notranslate"><span class="pre">cutile-benchmarks/benches/gemm.rs</span></code></a> for a full benchmark comparing optimized and unoptimized variants.</p>
+</section>
+<section id="approach-3-fully-static-gemm-safe-legacy">
+<h3>Approach 3: Fully Static GEMM (Safe, Legacy)<a class="headerlink" href="#approach-3-fully-static-gemm-safe-legacy" title="链接到此标题。">#</a></h3>
+<p>The older safe performance path is to make <strong>all</strong> tensor dimensions static const
+generics. When the compiler knows every dimension and the launch grid at JIT
+time, it can prove direct <code class="docutils literal notranslate"><span class="pre">program_id(axis)</span></code> partition accesses are in bounds
+and optimize the checks away entirely - no <code class="docutils literal notranslate"><span class="pre">unsafe</span></code> required:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="cp">#[cutile::entry()]</span>
+<span class="k">fn</span><span class="w"> </span><span class="nf">gemm</span><span class="o">&lt;</span>
+<span class="w">    </span><span class="n">E</span><span class="p">:</span><span class="w"> </span><span class="nc">ElementType</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">BM</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">BN</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">BK</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">M</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">N</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">K</span><span class="p">:</span><span class="w"> </span><span class="kt">i32</span><span class="p">,</span>
+<span class="o">&gt;</span><span class="p">(</span>
+<span class="w">    </span><span class="n">z</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">mut</span><span class="w"> </span><span class="n">Tensor</span><span class="o">&lt;</span><span class="n">E</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="n">BM</span><span class="p">,</span><span class="w"> </span><span class="n">BN</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="n">E</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="n">M</span><span class="p">,</span><span class="w"> </span><span class="n">K</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">y</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="nc">Tensor</span><span class="o">&lt;</span><span class="n">E</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">part_x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="n">partition</span><span class="p">(</span><span class="n">shape</span><span class="o">!</span><span class="p">[</span><span class="n">BM</span><span class="p">,</span><span class="w"> </span><span class="n">BK</span><span class="p">]);</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">part_y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">y</span><span class="p">.</span><span class="n">partition</span><span class="p">(</span><span class="n">shape</span><span class="o">!</span><span class="p">[</span><span class="n">BK</span><span class="p">,</span><span class="w"> </span><span class="n">BN</span><span class="p">]);</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">tile_z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">load_tile_mut</span><span class="p">(</span><span class="n">z</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">pid_m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">program_id</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">pid_n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">program_id</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="mi">0</span><span class="k">i32</span><span class="o">..</span><span class="p">(</span><span class="n">K</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">BK</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">tile_x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">part_x</span><span class="p">.</span><span class="n">load</span><span class="p">([</span><span class="n">pid_m</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">]);</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">tile_y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">part_y</span><span class="p">.</span><span class="n">load</span><span class="p">([</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">pid_n</span><span class="p">]);</span>
+<span class="w">        </span><span class="n">tile_z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mma</span><span class="p">(</span><span class="n">tile_x</span><span class="p">,</span><span class="w"> </span><span class="n">tile_y</span><span class="p">,</span><span class="w"> </span><span class="n">tile_z</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">z</span><span class="p">.</span><span class="n">store</span><span class="p">(</span><span class="n">tile_z</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>In this version:</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">x:</span> <span class="pre">&amp;Tensor&lt;E,</span> <span class="pre">{</span> <span class="pre">[M,</span> <span class="pre">K]</span> <span class="pre">}&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">y:</span> <span class="pre">&amp;Tensor&lt;E,</span> <span class="pre">{</span> <span class="pre">[K,</span> <span class="pre">N]</span> <span class="pre">}&gt;</span></code></strong> — input dimensions are fully static instead of dynamic (<code class="docutils literal notranslate"><span class="pre">-1</span></code>). The compiler sees the exact shape of every tensor.</p></li>
+<li><p><strong>No <code class="docutils literal notranslate"><span class="pre">unsafe</span></code>, no <code class="docutils literal notranslate"><span class="pre">unchecked_accesses</span></code></strong> — bounds checks are present in the source but the JIT compiler proves they are redundant and eliminates them during optimization.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">M</span></code>, <code class="docutils literal notranslate"><span class="pre">N</span></code>, <code class="docutils literal notranslate"><span class="pre">K</span></code> are const generics</strong> — they must be passed via <code class="docutils literal notranslate"><span class="pre">.generics()</span></code> at launch time, and every new combination creates a new compiled variant.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">.const_grid(grid)</span></code></strong> — optional. The launch grid is inferred from the output partition as usual; <code class="docutils literal notranslate"><span class="pre">.const_grid()</span></code> additionally passes the grid as a compile-time constant, which gives the compiler exact bounds for <code class="docutils literal notranslate"><span class="pre">program_id(axis)</span></code> / <code class="docutils literal notranslate"><span class="pre">num_programs(axis)</span></code> and makes the grid part of the specialization key (each distinct grid is its own compiled variant). The grid is computed from the output partition (<code class="docutils literal notranslate"><span class="pre">let</span> <span class="pre">grid</span> <span class="pre">=</span> <span class="pre">z.grid()?</span></code>):</p></li>
+</ul>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="n">grid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">z</span><span class="p">.</span><span class="n">grid</span><span class="p">()</span><span class="o">?</span><span class="p">;</span>
+<span class="kd">let</span><span class="w"> </span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">_x</span><span class="p">,</span><span class="w"> </span><span class="n">_y</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gemm</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">const_grid</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">generics</span><span class="p">(</span><span class="n">generics</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">sync_on</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">)</span><span class="o">?</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>See <a class="reference external" href="https://github.com/NVIDIA/cuda-rust/blob/main/cutile-rs/cutile-examples/examples/gemm_static.rs"><code class="docutils literal notranslate"><span class="pre">cutile-examples/examples/gemm_static.rs</span></code></a> for the legacy static example.</p>
+</section>
+<section id="choosing-between-the-approaches">
+<h3>Choosing Between the Approaches<a class="headerlink" href="#choosing-between-the-approaches" title="链接到此标题。">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p></p></th>
+<th class="head"><p>Mapped Persistent</p></th>
+<th class="head"><p>Unsafe + Hints</p></th>
+<th class="head"><p>Fully Static</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Safety</strong></p></td>
+<td><p>Safe bounded/disjoint output iteration</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">unsafe</span></code> - programmer must ensure correct dimensions</p></td>
+<td><p>Safe - compiler verifies direct static accesses</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Compilation behavior</strong></p></td>
+<td><p>Tile sizes and map shape create new compiled variants</p></td>
+<td><p>Tile sizes create new compiled variants</p></td>
+<td><p>Every full tensor shape creates a new compiled variant</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Flexibility</strong></p></td>
+<td><p>Problem sizes can change at runtime</p></td>
+<td><p>Problem sizes can change at runtime</p></td>
+<td><p>Each new problem size is a new compilation</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Compile-time checks</strong></p></td>
+<td><p>Tile shapes, types, and mapped index proofs</p></td>
+<td><p>Tile shapes and types still checked</p></td>
+<td><p>All shapes and types checked</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Best for</strong></p></td>
+<td><p>Default high-performance safe GEMM</p></td>
+<td><p>Escape hatch for manually proven kernels</p></td>
+<td><p>Legacy fixed-size kernels</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Start with mapped persistent GEMM. An unsafe kernel requires a manual proof of
+its access pattern and is useful when that pattern cannot yet be expressed in
+the safe DSL. Fully static GEMM suits older kernels or a small, fixed set of
+tensor shapes.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="key-takeaways">
+<h2>Key Takeaways<a class="headerlink" href="#key-takeaways" title="链接到此标题。">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Concept</p></th>
+<th class="head"><p>What It Means</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Tiling</strong></p></td>
+<td><p>Process data in blocks to maximize data reuse</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>K-loop</strong></p></td>
+<td><p>Iterate over tile pairs, accumulating partial results</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>mma()</strong></p></td>
+<td><p>Matrix multiply-accumulate, maps to Tensor Cores</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Const generics</strong></p></td>
+<td><p>Tile sizes known at compile time for optimization; changing them creates a new compiled variant</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Const generic inference</strong></p></td>
+<td><p>Generics appearing in <code class="docutils literal notranslate"><span class="pre">&amp;mut</span> <span class="pre">Tensor</span></code> / <code class="docutils literal notranslate"><span class="pre">&amp;Tensor</span></code> parameter types are inferred from host-side <code class="docutils literal notranslate"><span class="pre">Partition</span></code> shapes and tensor shapes; generics used only inside the kernel body (like <code class="docutils literal notranslate"><span class="pre">BK</span></code>) must be passed explicitly</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Dynamic dimensions (<code class="docutils literal notranslate"><span class="pre">-1</span></code>)</strong></p></td>
+<td><p>Can vary across launches without creating a new compiled variant</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Arithmetic intensity</strong></p></td>
+<td><p>Ratio of compute to memory ops — higher is better</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Mapped output iteration</strong></p></td>
+<td><p>Recommended safe performance path for persistent GEMM</p></td>
+</tr>
+<tr class="row-even"><td><p><strong><code class="docutils literal notranslate"><span class="pre">unchecked_accesses</span></code></strong></p></td>
+<td><p>Disables runtime bounds checks for peak performance; requires <code class="docutils literal notranslate"><span class="pre">unsafe</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Fully static shapes</strong></p></td>
+<td><p>Legacy safe path that lets the compiler eliminate direct block-id bounds checks</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr class="docutils" />
+<section id="exercise-1-change-tile-sizes">
+<h3>Exercise 1: Change Tile Sizes<a class="headerlink" href="#exercise-1-change-tile-sizes" title="链接到此标题。">#</a></h3>
+<p>Experiment with different <code class="docutils literal notranslate"><span class="pre">(BM,</span> <span class="pre">BN,</span> <span class="pre">BK)</span></code> values:</p>
+<ul class="simple">
+<li><p>Try <code class="docutils literal notranslate"><span class="pre">(32,</span> <span class="pre">32,</span> <span class="pre">16)</span></code> — larger tiles.</p></li>
+<li><p>Try <code class="docutils literal notranslate"><span class="pre">(8,</span> <span class="pre">8,</span> <span class="pre">4)</span></code> — smaller tiles.</p></li>
+</ul>
+<p>Measure each configuration over multiple runs. Which is faster?</p>
+</section>
+<section id="exercise-2-non-square-matrices">
+<h3>Exercise 2: Non-Square Matrices<a class="headerlink" href="#exercise-2-non-square-matrices" title="链接到此标题。">#</a></h3>
+<p>Modify to multiply <code class="docutils literal notranslate"><span class="pre">[M,</span> <span class="pre">K]</span> <span class="pre">&#64;</span> <span class="pre">[K,</span> <span class="pre">N]</span></code> where M ≠ N:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="kd">let</span><span class="w"> </span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mi">128</span><span class="p">,</span><span class="w"> </span><span class="mi">256</span><span class="p">,</span><span class="w"> </span><span class="mi">64</span><span class="p">);</span><span class="w">  </span><span class="c1">// Non-square output</span>
+</pre></div>
+</div>
+<p>Does the code need changes?</p>
+</section>
+<section id="exercise-3-mixed-precision">
+<h3>Exercise 3: Mixed Precision<a class="headerlink" href="#exercise-3-mixed-precision" title="链接到此标题。">#</a></h3>
+<p>Try using <code class="docutils literal notranslate"><span class="pre">f16</span></code> (half precision) for inputs and <code class="docutils literal notranslate"><span class="pre">f32</span></code> for the accumulator. This is common in ML for faster compute.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="see-also">
+<h2>See also<a class="headerlink" href="#see-also" title="链接到此标题。">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../guide/tensors-and-tiles.html#tiled-matrix-multiply"><span class="std std-ref">Tensors and Tiles</span></a> — <code class="docutils literal notranslate"><span class="pre">mma</span></code> usage and the accumulate pattern</p></li>
+<li><p><a class="reference internal" href="../guide/useful-mental-models.html"><span class="std std-doc">Useful Mental Models</span></a> — 2D partitioning and grid mapping</p></li>
+<li><p><a class="reference internal" href="../guide/performance.html"><span class="std std-doc">Performance</span></a> — Tensor Core usage and tile-size selection</p></li>
+<li><p><a class="reference internal" href="../reference/dsl-api.html#matrix-multiply"><span class="std std-ref">DSL API</span></a> — <code class="docutils literal notranslate"><span class="pre">mma</span></code> signature and element-type constraints</p></li>
+<li><p><a class="reference internal" href="11-nvfp4-inference.html"><span class="std std-doc">Inference with NVFP4/MXFP8</span></a> — packed FP4, FP8 data, and block-scaled MMA</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="03-saxpy.html"
+       title="上一页">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">上一页</p>
+        <p class="prev-next-title">3. SAXPY</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="05-fused-softmax.html"
+       title="下一页">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">下一页</p>
+        <p class="prev-next-title">5. Fused Softmax</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> 当前页面
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#naive-gemm-is-memory-bound">Naive GEMM is Memory-Bound</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tiled-matrix-multiplication">Tiled Matrix Multiplication</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gemm-kernel">GEMM kernel</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-k-loop">The K-Loop</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-mma-intrinsic">The <code class="docutils literal notranslate"><span class="pre">mma()</span></code> Intrinsic</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#const-generics-and-jit-recompilation">Const Generics and JIT Recompilation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#const-generic-inference">Const Generic Inference</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gemm-optimization">GEMM optimization</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#approach-1-mapped-persistent-gemm-safe-recommended">Approach 1: Mapped Persistent GEMM (Safe, Recommended)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#approach-2-disabling-bounds-checks-unsafe">Approach 2: Disabling Bounds Checks (Unsafe)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#approach-3-fully-static-gemm-safe-legacy">Approach 3: Fully Static GEMM (Safe, Legacy)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#choosing-between-the-approaches">Choosing Between the Approaches</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-takeaways">Key Takeaways</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-1-change-tile-sizes">Exercise 1: Change Tile Sizes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-2-non-square-matrices">Exercise 2: Non-Square Matrices</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-3-mixed-precision">Exercise 3: Mixed Precision</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#see-also">See also</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+  
+    <div class="footer-items__center">
+      
+        <div class="footer-item"><footer class="bd-footer-content">
+  <div class="footer-container" style="padding: 1rem 0 2rem 0; border-top: 1px solid var(--pst-color-border); text-align: left;">
+    
+    <!-- NVIDIA Logo -->
+    <div style="margin-bottom: 1rem;">
+      <img src="../_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" 
+           alt="NVIDIA" 
+           style="height: 3.5rem; filter: brightness(0);"
+           class="only-light">
+      <img src="../_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" 
+           alt="NVIDIA" 
+           style="height: 3.5rem;"
+           class="only-dark pst-js-only">
+    </div>
+    
+    <!-- Footer Links - single line, left aligned -->
+    <div style="font-size: 0.8125rem; margin-bottom: 0.5rem; color: var(--pst-color-text-muted);">
+      <a href="https://www.nvidia.com/en-us/about-nvidia/privacy-policy/" target="_blank" style="color: inherit; text-decoration: none;">Privacy Policy</a> | 
+      <a href="https://www.nvidia.com/en-us/preferences/email-preferences/" target="_blank" style="color: inherit; text-decoration: none;">Your Privacy Choices</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/terms-of-service/" target="_blank" style="color: inherit; text-decoration: none;">Terms of Service</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/accessibility/" target="_blank" style="color: inherit; text-decoration: none;">Accessibility</a> | 
+      <a href="https://www.nvidia.com/en-us/about-nvidia/company-policies/" target="_blank" style="color: inherit; text-decoration: none;">Corporate Policies</a> | 
+      <a href="https://www.nvidia.com/en-us/product-security/" target="_blank" style="color: inherit; text-decoration: none;">Product Security</a> | 
+      <a href="https://www.nvidia.com/en-us/contact/" target="_blank" style="color: inherit; text-decoration: none;">Contact</a>
+    </div>
+    
+    <!-- Copyright -->
+    <div style="font-size: 0.8125rem; color: var(--pst-color-text-muted);">
+      Copyright &copy; 2025, NVIDIA.
+    </div>
+    
+  </div>
+</footer></div>
+      
+    </div>
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>
