@@ -36,8 +36,8 @@ msgstr "cutile = { version = \"...\", features = [\"experimental-tune\"] }\n"
 #: ../../../guide/autotuning.md:12
 msgid ""
 "Use a closure to tune an individual kernel, or implement `Objective` to "
-"measure a whole request. The `autotune` example uses a closure: `cargo run -"
-"p cutile-examples --example autotune --features experimental-tune`."
+"measure a whole request. The `autotune` example uses a closure: `cargo run "
+"-p cutile-examples --example autotune --features experimental-tune`."
 msgstr ""
 
 #: ../../../guide/autotuning.md:16
@@ -220,8 +220,8 @@ msgid ""
 "and `samples` are the winner's measured median latency and the number of "
 "timed reps behind it — provenance for a human reading the committed file, "
 "not inputs to verification. The `l2_key` is the winner's persistent-cache "
-"key, computed from the composed builder without compiling or launching (`."
-"l2_cache_key()`)."
+"key, computed from the composed builder without compiling or launching "
+"(`.l2_cache_key()`)."
 msgstr ""
 
 #: ../../../guide/autotuning.md:136

@@ -327,8 +327,8 @@ msgstr ""
 
 #: ../../../guide/tensors-and-tiles.md:0
 msgid ""
-"`load_like` (method form of `load_tile_like`), `load_tile_mut`, `Partition::"
-"load`, `Tensor::store`"
+"`load_like` (method form of `load_tile_like`), `load_tile_mut`, "
+"`Partition::load`, `Tensor::store`"
 msgstr ""
 
 #: ../../../guide/tensors-and-tiles.md:0

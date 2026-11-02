@@ -177,8 +177,8 @@ msgstr ""
 
 #: ../../../tutorials/02-vector-addition.md:91
 msgid ""
-"Instead, read-only tensors can be partitioned **inside the kernel** using `."
-"partition(shape![M, N])`:"
+"Instead, read-only tensors can be partitioned **inside the kernel** using "
+"`.partition(shape![M, N])`:"
 msgstr ""
 
 #: ../../../tutorials/02-vector-addition.md:93

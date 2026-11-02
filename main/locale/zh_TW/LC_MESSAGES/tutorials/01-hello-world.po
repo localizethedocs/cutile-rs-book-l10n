@@ -171,8 +171,8 @@ msgstr ""
 #: ../../../tutorials/01-hello-world.md:107
 msgid ""
 "Each tile program is assigned an ID along each axis of the 3-dimensional "
-"launch grid, following Triton's `tl.program_id(axis)` / `tl."
-"num_programs(axis)`:"
+"launch grid, following Triton's `tl.program_id(axis)` / "
+"`tl.num_programs(axis)`:"
 msgstr ""
 
 #: ../../../tutorials/01-hello-world.md:109

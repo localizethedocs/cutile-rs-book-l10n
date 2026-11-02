@@ -87,9 +87,9 @@ msgstr ""
 
 #: ../../../guide/introduction.md:46
 msgid ""
-"`main` runs on the CPU and launches `add` on the GPU. The `#[cutile::"
-"module]` macro generates the host-side launcher for `add`, whose `#[cutile::"
-"entry()]` attribute marks it as a kernel entry point."
+"`main` runs on the CPU and launches `add` on the GPU. The "
+"`#[cutile::module]` macro generates the host-side launcher for `add`, whose "
+"`#[cutile::entry()]` attribute marks it as a kernel entry point."
 msgstr ""
 
 #: ../../../guide/introduction.md:50
