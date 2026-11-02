@@ -1,0 +1,274 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2025-2026, NVIDIA Corporation
+# This file is distributed under the same license as the cuTile Rust package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: cuTile Rust main\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-21 16:36+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: zh_TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../tutorials/09-pointer-addition.md:1
+msgid "9. Pointer Addition"
+msgstr ""
+
+#: ../../../tutorials/09-pointer-addition.md:3
+msgid ""
+"Raw device pointers give kernels direct access to memory. This vector "
+"addition example uses them with async execution, where the caller must keep "
+"the memory alive until the kernel finishes."
+msgstr ""
+
+#: ../../../tutorials/09-pointer-addition.md:7
+msgid ""
+"**Warning:** Working with raw pointers bypasses cutile's safety guarantees. "
+"Use them only when there is no other way to implement a kernel or further "
+"improve performance."
+msgstr ""
+
+#: ../../../tutorials/09-pointer-addition.md:11
+msgid ""
+"use std::future::IntoFuture;\n"
+"use cutile;\n"
+"use cutile::api::{arange, ones, zeros};\n"
+"use cutile::tensor::{Tensor, ToHostVec};\n"
+"use cutile::tile_kernel::TileKernel;\n"
+"\n"
+"#[cutile::module]\n"
+"mod my_module {\n"
+"\n"
+"    use cutile::core::*;\n"
+"\n"
+"    unsafe fn get_tensor<T: ElementType>(ptr: *mut T, len: i32) -> Tensor<T, "
+"{ [-1] }> {\n"
+"        let shape: Shape<{ [-1] }> = Shape::<{ [-1] }> { dims: &[len] };\n"
+"        let strides: Array<{ [-1] }> = Array::<{ [-1] }> { dims: &[1i32] };\n"
+"        let ptr_tile: PointerTile<*mut T, { [] }> = pointer_to_tile(ptr);\n"
+"        let tensor = unsafe { make_tensor_view(ptr_tile, shape, strides, "
+"new_token_unordered()) };\n"
+"        tensor\n"
+"    }\n"
+"\n"
+"    #[cutile::entry()]\n"
+"    unsafe fn add_ptr<T: ElementType>(z_ptr: *mut T, x_ptr: *mut T, y_ptr: "
+"*mut T, len: i32) {\n"
+"        let mut z_tensor: Tensor<T, { [-1] }> = unsafe { get_tensor(z_ptr, "
+"len) };\n"
+"        let x_tensor: Tensor<T, { [-1] }> = unsafe { get_tensor(x_ptr, "
+"len) };\n"
+"        let y_tensor: Tensor<T, { [-1] }> = unsafe { get_tensor(y_ptr, "
+"len) };\n"
+"        let pid = program_id(0);\n"
+"        let tile_shape = shape![4i32];\n"
+"        let tile_x = x_tensor.partition(tile_shape).load([pid]);\n"
+"        let tile_y = y_tensor.partition(tile_shape).load([pid]);\n"
+"        z_tensor\n"
+"            .partition_mut(tile_shape)\n"
+"            .store(tile_x + tile_y, [pid]);\n"
+"    }\n"
+"}\n"
+"\n"
+"use my_module::add_ptr;\n"
+"\n"
+"#[tokio::main]\n"
+"async fn main() -> Result<(), cutile::error::Error> {\n"
+"    let len = 2usize.pow(5);\n"
+"    let tile_size = 4usize;\n"
+"\n"
+"    // Initialize tensors.\n"
+"    let z: Tensor<f32> = zeros(&[len]).await?;\n"
+"    let x: Tensor<f32> = ones(&[len]).await?;\n"
+"    let y: Tensor<f32> = ones(&[len]).await?;\n"
+"\n"
+"    // Extract device pointers.\n"
+"    let z_ptr = z.device_pointer();\n"
+"    let x_ptr = x.device_pointer();\n"
+"    let y_ptr = y.device_pointer();\n"
+"\n"
+"    // Prepare kernel launch. Note that, since we're passing in pointers, "
+"unsafe is required.\n"
+"    let op = unsafe { add_ptr(z_ptr, x_ptr, y_ptr, len as i32) }.grid((\n"
+"        (len / tile_size) as u32,\n"
+"        1,\n"
+"        1,\n"
+"    ));\n"
+"\n"
+"    // Spawn an asynchronous task to compute this operation.\n"
+"    let op_handle = tokio::spawn(op.into_future());\n"
+"\n"
+"    // Note that, while the device operates on these tensors, the programmer "
+"is not protected from UB!\n"
+"    // We do not need the results. Device pointers are Copy (they are copied "
+"to device memory).\n"
+"    let _ = op_handle.await.expect(\"Failed to execute tokio task.\")?;\n"
+"\n"
+"    let x_host = x.to_host_vec().await?;\n"
+"    let y_host = y.to_host_vec().await?;\n"
+"    let z_host = z.to_host_vec().await?;\n"
+"    for i in 0..z_host.len() {\n"
+"        let x_i: f32 = x_host[i];\n"
+"        let y_i: f32 = y_host[i];\n"
+"        let answer = x_i + y_i;\n"
+"        println!(\"{} + {} = {}\", x_i, y_i, z_host[i]);\n"
+"        assert_eq!(answer, z_host[i], \"{} != {} ?\", answer, z_host[i]);\n"
+"    }\n"
+"    Ok(())\n"
+"}\n"
+msgstr ""
+
+#: ../../../tutorials/09-pointer-addition.md:91
+msgid "**Output:**"
+msgstr ""
+
+#: ../../../tutorials/09-pointer-addition.md:93
+msgid ""
+"1 + 1 = 2\n"
+"1 + 1 = 2\n"
+"... (32 lines total)\n"
+msgstr ""
+
+#: ../../../tutorials/09-pointer-addition.md:101
+msgid "Kernel walkthrough"
+msgstr ""
+
+#: ../../../tutorials/09-pointer-addition.md:103
+msgid ""
+"The helper function `get_tensor` constructs a `Tensor` view from a raw "
+"device pointer, a length, and a stride. Because the compiler has no way to "
+"verify that the pointer is valid or that the memory it references outlives "
+"the kernel, the function — and the kernel entry point — must be marked "
+"`unsafe`."
+msgstr ""
+
+#: ../../../tutorials/09-pointer-addition.md:105
+msgid ""
+"Inside the kernel, the hand-built tensors are partitioned and loaded exactly "
+"like their safe counterparts. The only difference is how they were created."
+msgstr ""
+
+#: ../../../tutorials/09-pointer-addition.md:107
+msgid ""
+"On the host side, `device_pointer()` returns a typed `DevicePointer<T>` "
+"handle for an existing tensor. Kernel launchers convert that handle to the "
+"raw device pointer expected by the unsafe kernel. After the kernel "
+"completes, the original tensors still own the underlying memory, so we can "
+"read back the results with `to_host_vec()`."
+msgstr ""
+
+#: ../../../tutorials/09-pointer-addition.md:112
+msgid "Pointer lifetimes with async execution"
+msgstr ""
+
+#: ../../../tutorials/09-pointer-addition.md:114
+msgid ""
+"`tokio::spawn` returns before the kernel finishes. Dropping or reallocating "
+"a tensor during that time can leave the kernel accessing freed memory, "
+"causing undefined behavior. Await the task handle before releasing the "
+"tensors."
+msgstr ""
+
+#: ../../../tutorials/09-pointer-addition.md:120
+msgid "Key Takeaways"
+msgstr ""
+
+#: ../../../tutorials/09-pointer-addition.md:0
+msgid "Concept"
+msgstr ""
+
+#: ../../../tutorials/09-pointer-addition.md:0
+msgid "What It Means"
+msgstr ""
+
+#: ../../../tutorials/09-pointer-addition.md:0
+msgid "**`device_pointer()`**"
+msgstr ""
+
+#: ../../../tutorials/09-pointer-addition.md:0
+msgid "Returns a typed device pointer handle for a tensor."
+msgstr ""
+
+#: ../../../tutorials/09-pointer-addition.md:0
+msgid "**`make_tensor_view`**"
+msgstr ""
+
+#: ../../../tutorials/09-pointer-addition.md:0
+msgid "Constructs a tensor from a pointer, shape, and strides inside a kernel."
+msgstr ""
+
+#: ../../../tutorials/09-pointer-addition.md:0
+msgid "**`unsafe` kernels**"
+msgstr ""
+
+#: ../../../tutorials/09-pointer-addition.md:0
+msgid "Required whenever raw pointers bypass the type system's guarantees."
+msgstr ""
+
+#: ../../../tutorials/09-pointer-addition.md:0
+msgid "**Lifetime responsibility**"
+msgstr ""
+
+#: ../../../tutorials/09-pointer-addition.md:0
+msgid "The programmer must ensure pointed-to memory outlives the kernel."
+msgstr ""
+
+#: ../../../tutorials/09-pointer-addition.md:131
+msgid "Exercise 1: Add Bounds Checking"
+msgstr ""
+
+#: ../../../tutorials/09-pointer-addition.md:133
+msgid ""
+"What happens if `len` is not evenly divisible by the tile size? Add a guard "
+"in the kernel to handle the remainder."
+msgstr ""
+
+#: ../../../tutorials/09-pointer-addition.md:135
+msgid "Exercise 2: In-Place Scaling"
+msgstr ""
+
+#: ../../../tutorials/09-pointer-addition.md:137
+msgid ""
+"Modify the kernel to scale the output by a constant factor passed as an "
+"additional scalar argument."
+msgstr ""
+
+#: ../../../tutorials/09-pointer-addition.md:139
+msgid "Exercise 3: Safe Wrapper"
+msgstr ""
+
+#: ../../../tutorials/09-pointer-addition.md:141
+msgid ""
+"Write a safe Rust wrapper function around the unsafe kernel that validates "
+"the pointer lengths at the host level before launching."
+msgstr ""
+
+#: ../../../tutorials/09-pointer-addition.md:145
+msgid "See also"
+msgstr ""
+
+#: ../../../tutorials/09-pointer-addition.md:147
+msgid ""
+"[Interoperability](../guide/interoperability.md) — a structured approach to "
+"pre-compiled CUDA C++ kernels using `AsyncKernelLaunch` instead of raw "
+"pointers"
+msgstr ""
+
+#: ../../../tutorials/09-pointer-addition.md:148
+msgid ""
+"[Tensors and Tiles](../guide/tensors-and-tiles.md) — tensor and tile basics "
+"before using pointer-based kernels"
+msgstr ""
+
+#: ../../../tutorials/09-pointer-addition.md:149
+msgid ""
+"[DSL API](../reference/dsl-api.md#low-level-memory-ops) — pointer tiles, "
+"tensor views, pointer loads/stores, and atomic operations"
+msgstr ""
