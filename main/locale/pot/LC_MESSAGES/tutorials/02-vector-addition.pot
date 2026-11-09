@@ -8,10 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cuTile Rust main\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-21 16:36+0000\n"
+"POT-Creation-Date: 2026-11-09 18:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -42,7 +43,7 @@ msgstr ""
 #: ../../../tutorials/02-vector-addition.md:9
 msgid ""
 "use cuda_async::device_operation::DeviceOp;\n"
-"use cuda_core::Device;\n"
+"use cuda_core::Context;\n"
 "use std::sync::Arc;\n"
 "use cutile;\n"
 "use cutile::api::{ones, zeros};\n"
@@ -74,7 +75,7 @@ msgid ""
 "use my_module::add;\n"
 "\n"
 "fn main() -> Result<(), Error> {\n"
-"    let device = Device::new(0)?;\n"
+"    let device = Context::new(0)?;\n"
 "    let stream = device.new_stream()?;\n"
 "    \n"
 "    // Create input tensors: 32×32 matrices filled with 1.0\n"
@@ -163,7 +164,7 @@ msgid ""
 msgstr ""
 
 #: ../../../tutorials/02-vector-addition.md:87
-msgid "Device-Side Partitioning (Available for `&Tensor`)"
+msgid "Context-Side Partitioning (Available for `&Tensor`)"
 msgstr ""
 
 #: ../../../tutorials/02-vector-addition.md:89
@@ -176,13 +177,13 @@ msgstr ""
 
 #: ../../../tutorials/02-vector-addition.md:91
 msgid ""
-"Instead, read-only tensors can be partitioned **inside the kernel** using `."
-"partition(shape![M, N])`:"
+"Instead, read-only tensors can be partitioned **inside the kernel** using "
+"`.partition(shape![M, N])`:"
 msgstr ""
 
 #: ../../../tutorials/02-vector-addition.md:93
 msgid ""
-"// Device-side: partition a read-only tensor inside the kernel.\n"
+"// Context-side: partition a read-only tensor inside the kernel.\n"
 "let part_x = x.partition(shape![BM, BK]);\n"
 "let tile = part_x.load([i, j]);\n"
 msgstr ""
@@ -368,7 +369,7 @@ msgid ""
 msgstr ""
 
 #: ../../../tutorials/02-vector-addition.md:0
-msgid "**Device-side partitioning**"
+msgid "**Context-side partitioning**"
 msgstr ""
 
 #: ../../../tutorials/02-vector-addition.md:0
