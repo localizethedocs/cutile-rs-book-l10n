@@ -8,10 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cuTile Rust main\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-21 16:36+0000\n"
+"POT-Creation-Date: 2026-11-16 18:47+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -74,8 +75,8 @@ msgstr ""
 
 #: ../../../tutorials/07-intro-to-async.md:26
 msgid ""
-"`DeviceOp` describes GPU work without executing it. `.await` or `."
-"sync_on(.)` executes the operation; `tokio::spawn` can run the future "
+"`DeviceOp` describes GPU work without executing it. `.await` or "
+"`.sync_on(.)` executes the operation; `tokio::spawn` can run the future "
 "produced by `into_future()` or `.schedule(...)`."
 msgstr ""
 
@@ -102,39 +103,39 @@ msgid ""
 "Given a particular operation `op`:"
 msgstr ""
 
-#: ../../../tutorials/07-intro-to-async.md:0
+#: ../../../tutorials/07-intro-to-async.md:48
 msgid "API"
 msgstr ""
 
-#: ../../../tutorials/07-intro-to-async.md:0
+#: ../../../tutorials/07-intro-to-async.md:48
 msgid "Description"
 msgstr ""
 
-#: ../../../tutorials/07-intro-to-async.md:0
+#: ../../../tutorials/07-intro-to-async.md:48
 msgid "`op.sync()`"
 msgstr ""
 
-#: ../../../tutorials/07-intro-to-async.md:0
+#: ../../../tutorials/07-intro-to-async.md:50
 msgid ""
 "Immediately executes `op` on the default GPU device (device 0). Blocking. "
 "Callable outside of async context."
 msgstr ""
 
-#: ../../../tutorials/07-intro-to-async.md:0
+#: ../../../tutorials/07-intro-to-async.md:50
 msgid "`op.sync_on(&stream)`"
 msgstr ""
 
-#: ../../../tutorials/07-intro-to-async.md:0
+#: ../../../tutorials/07-intro-to-async.md:51
 msgid ""
 "Immediately executes `op` on `stream`. Blocking. Callable outside of async "
 "context."
 msgstr ""
 
-#: ../../../tutorials/07-intro-to-async.md:0
+#: ../../../tutorials/07-intro-to-async.md:51
 msgid "`op.await`"
 msgstr ""
 
-#: ../../../tutorials/07-intro-to-async.md:0
+#: ../../../tutorials/07-intro-to-async.md:52
 msgid ""
 "Immediately executes `op` as part of the async context from which it is "
 "invoked. Blocks the enclosing async context but frees the executing thread, "
@@ -142,11 +143,11 @@ msgid ""
 "within an async context."
 msgstr ""
 
-#: ../../../tutorials/07-intro-to-async.md:0
+#: ../../../tutorials/07-intro-to-async.md:52
 msgid "`tokio::spawn(op.into_future())`"
 msgstr ""
 
-#: ../../../tutorials/07-intro-to-async.md:0
+#: ../../../tutorials/07-intro-to-async.md:53
 msgid ""
 "Submits the operation's future to the async runtime, returning a handle that "
 "can later be awaited. Non-blocking. Can only be called from within an async "
@@ -299,43 +300,43 @@ msgstr ""
 msgid "Choosing between sync and async"
 msgstr ""
 
-#: ../../../tutorials/07-intro-to-async.md:0
+#: ../../../tutorials/07-intro-to-async.md:173
 msgid "Scenario"
 msgstr ""
 
-#: ../../../tutorials/07-intro-to-async.md:0
+#: ../../../tutorials/07-intro-to-async.md:173
 msgid "Use Sync"
 msgstr ""
 
-#: ../../../tutorials/07-intro-to-async.md:0
+#: ../../../tutorials/07-intro-to-async.md:173
 msgid "Use Async"
 msgstr ""
 
-#: ../../../tutorials/07-intro-to-async.md:0
+#: ../../../tutorials/07-intro-to-async.md:173
 msgid "Simple scripts"
 msgstr ""
 
-#: ../../../tutorials/07-intro-to-async.md:0
+#: ../../../tutorials/07-intro-to-async.md:173
 msgid "✓"
 msgstr ""
 
-#: ../../../tutorials/07-intro-to-async.md:0
+#: ../../../tutorials/07-intro-to-async.md:173
 msgid "Interactive exploration"
 msgstr ""
 
-#: ../../../tutorials/07-intro-to-async.md:0
+#: ../../../tutorials/07-intro-to-async.md:173
 msgid "Production pipelines"
 msgstr ""
 
-#: ../../../tutorials/07-intro-to-async.md:0
+#: ../../../tutorials/07-intro-to-async.md:173
 msgid "Multi-batch processing"
 msgstr ""
 
-#: ../../../tutorials/07-intro-to-async.md:0
+#: ../../../tutorials/07-intro-to-async.md:173
 msgid "Multi-GPU workloads"
 msgstr ""
 
-#: ../../../tutorials/07-intro-to-async.md:0
+#: ../../../tutorials/07-intro-to-async.md:173
 msgid "Overlapping compute/transfer"
 msgstr ""
 
@@ -378,8 +379,8 @@ msgstr ""
 
 #: ../../../tutorials/07-intro-to-async.md:209
 msgid ""
-"let weights: Arc<Tensor<f32>> = api::ones(&[1024]).sync_on(&stream)?."
-"into();\n"
+"let weights: Arc<Tensor<f32>> = "
+"api::ones(&[1024]).sync_on(&stream)?.into();\n"
 "let handle = tokio::spawn(my_kernel(out, weights).into_future());  // OK — "
 "Arc is 'static\n"
 msgstr ""
@@ -388,59 +389,59 @@ msgstr ""
 msgid "Key Takeaways"
 msgstr ""
 
-#: ../../../tutorials/07-intro-to-async.md:0
+#: ../../../tutorials/07-intro-to-async.md:218
 msgid "Concept"
 msgstr ""
 
-#: ../../../tutorials/07-intro-to-async.md:0
+#: ../../../tutorials/07-intro-to-async.md:218
 msgid "What It Means"
 msgstr ""
 
-#: ../../../tutorials/07-intro-to-async.md:0
+#: ../../../tutorials/07-intro-to-async.md:218
 msgid "**DeviceOp**"
 msgstr ""
 
-#: ../../../tutorials/07-intro-to-async.md:0
+#: ../../../tutorials/07-intro-to-async.md:220
 msgid "A description of GPU work, not yet executed"
 msgstr ""
 
-#: ../../../tutorials/07-intro-to-async.md:0
+#: ../../../tutorials/07-intro-to-async.md:220
 msgid "**.await**"
 msgstr ""
 
-#: ../../../tutorials/07-intro-to-async.md:0
+#: ../../../tutorials/07-intro-to-async.md:221
 msgid "Execute the operation and get the result"
 msgstr ""
 
-#: ../../../tutorials/07-intro-to-async.md:0
+#: ../../../tutorials/07-intro-to-async.md:221
 msgid "**Async enables overlap**"
 msgstr ""
 
-#: ../../../tutorials/07-intro-to-async.md:0
+#: ../../../tutorials/07-intro-to-async.md:222
 msgid "CPU can do work while GPU computes"
 msgstr ""
 
-#: ../../../tutorials/07-intro-to-async.md:0
+#: ../../../tutorials/07-intro-to-async.md:222
 msgid "**Unified launcher**"
 msgstr ""
 
-#: ../../../tutorials/07-intro-to-async.md:0
+#: ../../../tutorials/07-intro-to-async.md:223
 msgid "Kernel functions accept DeviceOps and plain values directly"
 msgstr ""
 
-#: ../../../tutorials/07-intro-to-async.md:0
+#: ../../../tutorials/07-intro-to-async.md:223
 msgid "**zip!**"
 msgstr ""
 
-#: ../../../tutorials/07-intro-to-async.md:0
+#: ../../../tutorials/07-intro-to-async.md:224
 msgid "Combine multiple operations into a tuple"
 msgstr ""
 
-#: ../../../tutorials/07-intro-to-async.md:0
+#: ../../../tutorials/07-intro-to-async.md:224
 msgid "**.then()**"
 msgstr ""
 
-#: ../../../tutorials/07-intro-to-async.md:0
+#: ../../../tutorials/07-intro-to-async.md:225
 msgid "Chain follow-up work on the same stream"
 msgstr ""
 
@@ -480,8 +481,8 @@ msgstr ""
 
 #: ../../../tutorials/07-intro-to-async.md:250
 msgid ""
-"Time a sync version vs. an async version with overlapped work. Use `std::"
-"time::Instant` to measure."
+"Time a sync version vs. an async version with overlapped work. Use "
+"`std::time::Instant` to measure."
 msgstr ""
 
 #: ../../../tutorials/07-intro-to-async.md:254
@@ -496,6 +497,6 @@ msgstr ""
 
 #: ../../../tutorials/07-intro-to-async.md:257
 msgid ""
-"[Host API](../reference/host-api.md) — combinator signatures (`.then()`, `."
-"shared()`, `unzip`, `zip!`) and the full host-side API"
+"[Host API](../reference/host-api.md) — combinator signatures (`.then()`, "
+"`.shared()`, `unzip`, `zip!`) and the full host-side API"
 msgstr ""

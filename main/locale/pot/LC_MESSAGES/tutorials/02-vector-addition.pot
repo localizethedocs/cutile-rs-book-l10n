@@ -8,10 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cuTile Rust main\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-21 16:36+0000\n"
+"POT-Creation-Date: 2026-11-16 18:47+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -42,7 +43,7 @@ msgstr ""
 #: ../../../tutorials/02-vector-addition.md:9
 msgid ""
 "use cuda_async::device_operation::DeviceOp;\n"
-"use cuda_core::Device;\n"
+"use cuda_core::Context;\n"
 "use std::sync::Arc;\n"
 "use cutile;\n"
 "use cutile::api::{ones, zeros};\n"
@@ -74,7 +75,7 @@ msgid ""
 "use my_module::add;\n"
 "\n"
 "fn main() -> Result<(), Error> {\n"
-"    let device = Device::new(0)?;\n"
+"    let device = Context::new(0)?;\n"
 "    let stream = device.new_stream()?;\n"
 "    \n"
 "    // Create input tensors: 32×32 matrices filled with 1.0\n"
@@ -163,7 +164,7 @@ msgid ""
 msgstr ""
 
 #: ../../../tutorials/02-vector-addition.md:87
-msgid "Device-Side Partitioning (Available for `&Tensor`)"
+msgid "Context-Side Partitioning (Available for `&Tensor`)"
 msgstr ""
 
 #: ../../../tutorials/02-vector-addition.md:89
@@ -176,13 +177,13 @@ msgstr ""
 
 #: ../../../tutorials/02-vector-addition.md:91
 msgid ""
-"Instead, read-only tensors can be partitioned **inside the kernel** using `."
-"partition(shape![M, N])`:"
+"Instead, read-only tensors can be partitioned **inside the kernel** using "
+"`.partition(shape![M, N])`:"
 msgstr ""
 
 #: ../../../tutorials/02-vector-addition.md:93
 msgid ""
-"// Device-side: partition a read-only tensor inside the kernel.\n"
+"// Context-side: partition a read-only tensor inside the kernel.\n"
 "let part_x = x.partition(shape![BM, BK]);\n"
 "let tile = part_x.load([i, j]);\n"
 msgstr ""
@@ -262,63 +263,63 @@ msgstr ""
 msgid "Compare to CUDA C++:"
 msgstr ""
 
-#: ../../../tutorials/02-vector-addition.md:0
+#: ../../../tutorials/02-vector-addition.md:132
 msgid "Task"
 msgstr ""
 
-#: ../../../tutorials/02-vector-addition.md:0
+#: ../../../tutorials/02-vector-addition.md:132
 msgid "CUDA C++"
 msgstr ""
 
-#: ../../../tutorials/02-vector-addition.md:0
+#: ../../../tutorials/02-vector-addition.md:132
 msgid "cuTile Rust"
 msgstr ""
 
-#: ../../../tutorials/02-vector-addition.md:0
+#: ../../../tutorials/02-vector-addition.md:132
 msgid "Calculate thread index"
 msgstr ""
 
-#: ../../../tutorials/02-vector-addition.md:0
+#: ../../../tutorials/02-vector-addition.md:132
 msgid "`int i = blockIdx.x * blockDim.x + threadIdx.x;`"
 msgstr ""
 
-#: ../../../tutorials/02-vector-addition.md:0
+#: ../../../tutorials/02-vector-addition.md:134
 msgid "Not needed"
 msgstr ""
 
-#: ../../../tutorials/02-vector-addition.md:0
+#: ../../../tutorials/02-vector-addition.md:134
 msgid "Calculate global offset"
 msgstr ""
 
-#: ../../../tutorials/02-vector-addition.md:0
+#: ../../../tutorials/02-vector-addition.md:134
 msgid "Manual pointer arithmetic"
 msgstr ""
 
-#: ../../../tutorials/02-vector-addition.md:0
+#: ../../../tutorials/02-vector-addition.md:134
 msgid "`x.load_like(z)`"
 msgstr ""
 
-#: ../../../tutorials/02-vector-addition.md:0
+#: ../../../tutorials/02-vector-addition.md:135
 msgid "Bounds checking"
 msgstr ""
 
-#: ../../../tutorials/02-vector-addition.md:0
+#: ../../../tutorials/02-vector-addition.md:135
 msgid "`if (i < n) { ... }`"
 msgstr ""
 
-#: ../../../tutorials/02-vector-addition.md:0
+#: ../../../tutorials/02-vector-addition.md:136
 msgid "Built-in"
 msgstr ""
 
-#: ../../../tutorials/02-vector-addition.md:0
+#: ../../../tutorials/02-vector-addition.md:136
 msgid "Coalesced memory access"
 msgstr ""
 
-#: ../../../tutorials/02-vector-addition.md:0
+#: ../../../tutorials/02-vector-addition.md:136
 msgid "Manual, error-prone"
 msgstr ""
 
-#: ../../../tutorials/02-vector-addition.md:0
+#: ../../../tutorials/02-vector-addition.md:136
 msgid "Automatic"
 msgstr ""
 
@@ -349,57 +350,57 @@ msgstr ""
 msgid "Key Takeaways"
 msgstr ""
 
-#: ../../../tutorials/02-vector-addition.md:0
+#: ../../../tutorials/02-vector-addition.md:163
 msgid "Concept"
 msgstr ""
 
-#: ../../../tutorials/02-vector-addition.md:0
+#: ../../../tutorials/02-vector-addition.md:163
 msgid "What It Means"
 msgstr ""
 
-#: ../../../tutorials/02-vector-addition.md:0
+#: ../../../tutorials/02-vector-addition.md:163
 msgid "**Host-side partitioning**"
 msgstr ""
 
-#: ../../../tutorials/02-vector-addition.md:0
+#: ../../../tutorials/02-vector-addition.md:165
 msgid ""
 "`.partition([M, N])` on the host — required for `&mut Tensor` to ensure "
 "exclusive write access and determine the launch grid"
 msgstr ""
 
-#: ../../../tutorials/02-vector-addition.md:0
-msgid "**Device-side partitioning**"
+#: ../../../tutorials/02-vector-addition.md:165
+msgid "**Context-side partitioning**"
 msgstr ""
 
-#: ../../../tutorials/02-vector-addition.md:0
+#: ../../../tutorials/02-vector-addition.md:166
 msgid ""
 "`.partition(shape![M, N])` inside the kernel — available for `&Tensor`, "
 "flexible access patterns"
 msgstr ""
 
-#: ../../../tutorials/02-vector-addition.md:0
+#: ../../../tutorials/02-vector-addition.md:166
 msgid "**Static shape `S`**"
 msgstr ""
 
-#: ../../../tutorials/02-vector-addition.md:0
+#: ../../../tutorials/02-vector-addition.md:167
 msgid "The tile shape carried in the compiled variant"
 msgstr ""
 
-#: ../../../tutorials/02-vector-addition.md:0
+#: ../../../tutorials/02-vector-addition.md:167
 msgid "**Dynamic shape `[-1, -1]`**"
 msgstr ""
 
-#: ../../../tutorials/02-vector-addition.md:0
+#: ../../../tutorials/02-vector-addition.md:168
 msgid ""
 "Dynamic tensor shape; does not create a new compiled variant when tensor "
 "shape changes"
 msgstr ""
 
-#: ../../../tutorials/02-vector-addition.md:0
+#: ../../../tutorials/02-vector-addition.md:168
 msgid "**load_like**"
 msgstr ""
 
-#: ../../../tutorials/02-vector-addition.md:0
+#: ../../../tutorials/02-vector-addition.md:169
 msgid ""
 "Convenience for element-wise ops: loads from the input using the same "
 "partitioning and mapping as the output (also available as the free function "
@@ -408,11 +409,11 @@ msgid ""
 "and the output must be a partitioned mutable tensor"
 msgstr ""
 
-#: ../../../tutorials/02-vector-addition.md:0
+#: ../../../tutorials/02-vector-addition.md:169
 msgid "**Load/Store pattern**"
 msgstr ""
 
-#: ../../../tutorials/02-vector-addition.md:0
+#: ../../../tutorials/02-vector-addition.md:170
 msgid "Load → Compute → Store is the GPU kernel idiom"
 msgstr ""
 

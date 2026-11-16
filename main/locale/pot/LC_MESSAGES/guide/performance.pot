@@ -8,10 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cuTile Rust main\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-21 16:36+0000\n"
+"POT-Creation-Date: 2026-11-16 18:47+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -50,43 +51,43 @@ msgid ""
 "Start with powers of two or dimensions that align with the compute operation:"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:19
 msgid "Workload"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:19
 msgid "Starting point"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:19
 msgid "Elementwise 1D"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:19
 msgid "`[128]`, `[256]`, `[512]`"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:21
 msgid "Elementwise 2D"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:21
 msgid "`[16, 16]`, `[32, 32]`, `[64, 16]`"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:22
 msgid "GEMM"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:22
 msgid "Tile shapes compatible with Tensor Core MMA dimensions"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:22
 msgid "Reductions"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:22
 msgid "Axis sizes that avoid excessive register pressure"
 msgstr ""
 
@@ -143,67 +144,67 @@ msgid ""
 "a kernel more likely to be compute-bound instead of bandwidth-bound."
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:56
 msgid "Operation"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:56
 msgid "Typical intensity"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:56
 msgid "Common bottleneck"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:56
 msgid "Vector add"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:56
 msgid "Low"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:56
 msgid "Memory bandwidth"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:56
 msgid "Elementwise activation"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:56
 msgid "Low to medium"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:56
 msgid "Matrix-vector multiply"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:56
 msgid "Medium"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:56
 msgid "Memory bandwidth or compute"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:56
 msgid "Matrix-matrix multiply"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:56
 msgid "High"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:56
 msgid "Tensor Core throughput"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:56
 msgid "Fused attention"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:56
 msgid "Compute, memory, or occupancy depending on shape"
 msgstr ""
 

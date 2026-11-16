@@ -8,10 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cuTile Rust main\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-21 16:36+0000\n"
+"POT-Creation-Date: 2026-11-16 18:47+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -179,43 +180,43 @@ msgstr ""
 msgid "Key Takeaways"
 msgstr ""
 
-#: ../../../tutorials/09-pointer-addition.md:0
+#: ../../../tutorials/09-pointer-addition.md:122
 msgid "Concept"
 msgstr ""
 
-#: ../../../tutorials/09-pointer-addition.md:0
+#: ../../../tutorials/09-pointer-addition.md:122
 msgid "What It Means"
 msgstr ""
 
-#: ../../../tutorials/09-pointer-addition.md:0
+#: ../../../tutorials/09-pointer-addition.md:122
 msgid "**`device_pointer()`**"
 msgstr ""
 
-#: ../../../tutorials/09-pointer-addition.md:0
+#: ../../../tutorials/09-pointer-addition.md:124
 msgid "Returns a typed device pointer handle for a tensor."
 msgstr ""
 
-#: ../../../tutorials/09-pointer-addition.md:0
+#: ../../../tutorials/09-pointer-addition.md:124
 msgid "**`make_tensor_view`**"
 msgstr ""
 
-#: ../../../tutorials/09-pointer-addition.md:0
+#: ../../../tutorials/09-pointer-addition.md:125
 msgid "Constructs a tensor from a pointer, shape, and strides inside a kernel."
 msgstr ""
 
-#: ../../../tutorials/09-pointer-addition.md:0
+#: ../../../tutorials/09-pointer-addition.md:125
 msgid "**`unsafe` kernels**"
 msgstr ""
 
-#: ../../../tutorials/09-pointer-addition.md:0
+#: ../../../tutorials/09-pointer-addition.md:126
 msgid "Required whenever raw pointers bypass the type system's guarantees."
 msgstr ""
 
-#: ../../../tutorials/09-pointer-addition.md:0
+#: ../../../tutorials/09-pointer-addition.md:126
 msgid "**Lifetime responsibility**"
 msgstr ""
 
-#: ../../../tutorials/09-pointer-addition.md:0
+#: ../../../tutorials/09-pointer-addition.md:127
 msgid "The programmer must ensure pointed-to memory outlives the kernel."
 msgstr ""
 
@@ -256,8 +257,8 @@ msgstr ""
 #: ../../../tutorials/09-pointer-addition.md:147
 msgid ""
 "[Interoperability](../guide/interoperability.md) — a structured approach to "
-"pre-compiled CUDA C++ kernels using `AsyncKernelLaunch` instead of raw "
-"pointers"
+"pre-compiled CUDA C++ kernels using `AsyncKernelLaunchBuilder` instead of "
+"raw pointers"
 msgstr ""
 
 #: ../../../tutorials/09-pointer-addition.md:148
