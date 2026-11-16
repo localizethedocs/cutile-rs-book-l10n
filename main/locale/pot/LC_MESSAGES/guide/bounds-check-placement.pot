@@ -8,10 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cuTile Rust main\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-21 16:36+0000\n"
+"POT-Creation-Date: 2026-11-16 18:47+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -67,72 +68,74 @@ msgid ""
 "the following hold, per index coordinate:"
 msgstr ""
 
-#: ../../../guide/bounds-check-placement.md:0
+#: ../../../guide/bounds-check-placement.md:27
 msgid "Index coordinate form"
 msgstr ""
 
-#: ../../../guide/bounds-check-placement.md:0
+#: ../../../guide/bounds-check-placement.md:27
 msgid "Placement"
 msgstr ""
 
-#: ../../../guide/bounds-check-placement.md:0
+#: ../../../guide/bounds-check-placement.md:27
 msgid "Value computed before the loop"
 msgstr ""
 
-#: ../../../guide/bounds-check-placement.md:0
+#: ../../../guide/bounds-check-placement.md:27
 msgid "Hoisted"
 msgstr ""
 
-#: ../../../guide/bounds-check-placement.md:0
+#: ../../../guide/bounds-check-placement.md:27
 msgid "Compile-time constant, or value with known constant bounds"
 msgstr ""
 
-#: ../../../guide/bounds-check-placement.md:0
+#: ../../../guide/bounds-check-placement.md:27
 msgid "Hoisted (or discharged against static shapes)"
 msgstr ""
 
-#: ../../../guide/bounds-check-placement.md:0
+#: ../../../guide/bounds-check-placement.md:27
 msgid "The loop variable `j` of a `for j in lo..hi` loop"
 msgstr ""
 
-#: ../../../guide/bounds-check-placement.md:0
+#: ../../../guide/bounds-check-placement.md:31
 msgid "Hoisted, checked at `hi - 1`"
 msgstr ""
 
-#: ../../../guide/bounds-check-placement.md:0
+#: ../../../guide/bounds-check-placement.md:31
 msgid "`a * j + b` with constant `a`, `b`"
 msgstr ""
 
-#: ../../../guide/bounds-check-placement.md:0
+#: ../../../guide/bounds-check-placement.md:32
 msgid ""
 "Hoisted at the extreme iteration, when that extreme provably fits `i32`; "
 "otherwise in place"
 msgstr ""
 
-#: ../../../guide/bounds-check-placement.md:0
+#: ../../../guide/bounds-check-placement.md:32
 msgid "Loop variable of a `(lo..hi).step_by(k)` loop"
 msgstr ""
 
-#: ../../../guide/bounds-check-placement.md:0
+#: ../../../guide/bounds-check-placement.md:33
 msgid ""
 "Hoisted, checked at the *last attained* index `lo + k * floor((hi - 1 - "
 "lo) / k)`, when `lo`, `hi`, and `k` are compile-time constants; otherwise in "
 "place"
 msgstr ""
 
-#: ../../../guide/bounds-check-placement.md:0
+#: ../../../guide/bounds-check-placement.md:33
 msgid "Value computed *inside* the loop body (other than the forms above)"
 msgstr ""
 
-#: ../../../guide/bounds-check-placement.md:0
+#: ../../../guide/bounds-check-placement.md:34
+#: ../../../guide/bounds-check-placement.md:35
+#: ../../../guide/bounds-check-placement.md:36
 msgid "In place"
 msgstr ""
 
-#: ../../../guide/bounds-check-placement.md:0
+#: ../../../guide/bounds-check-placement.md:34
 msgid "Any access written inside an `if`/`else` in the loop"
 msgstr ""
 
-#: ../../../guide/bounds-check-placement.md:0
+#: ../../../guide/bounds-check-placement.md:35
 msgid "Any access in a loop body that contains a `continue`"
 msgstr ""
 
