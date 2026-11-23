@@ -8,10 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cuTile Rust main\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-21 16:36+0000\n"
+"POT-Creation-Date: 2026-11-23 20:48+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -35,62 +36,152 @@ msgid ""
 msgstr ""
 
 #: ../../../guide/performance.md:13
-msgid "Tile Shape"
+msgid "Start from a comparable kernel"
 msgstr ""
 
 #: ../../../guide/performance.md:15
+msgid ""
+"Start with the same algorithm, tensor layouts, dtypes, accumulation "
+"precision, and output contract as the workload you need. The [reusable "
+"kernel catalog](https://github.com/NVIDIA/cuda-rust/tree/main/cutile-rs/"
+"cutile-kernels) includes GEMM memory-access variants, causal FP16 attention "
+"and routed FP16 MoE, as well as fused QKV and block-scaled NVFP4 MoE. Its "
+"examples demonstrate launch contracts and correctness checks. Published "
+"implementations such as [NVIDIA TileGym](https://github.com/NVIDIA/TileGym) "
+"are also useful algorithmic starting points. Check licenses before adapting "
+"source; use APIs from the docs matching your installed cuTile Rust version."
+msgstr ""
+
+#: ../../../guide/performance.md:25
+msgid ""
+"Choose a relevant implementation rather than copying a configuration table "
+"for another device. A short-sequence attention kernel can avoid a streaming "
+"loop; a small MoE batch can gather routed rows directly, while larger "
+"batches may benefit from materializing a packed input. Include routing, "
+"packing and combine costs when comparing complete operations."
+msgstr ""
+
+#: ../../../guide/performance.md:31
+msgid "Memory access and IR structure"
+msgstr ""
+
+#: ../../../guide/performance.md:33
+msgid ""
+"Tensor partitions provide bounds handling and layout metadata. A tensor-"
+"derived loop bound such as `num_tiles(&part_a, 1i32)` also expresses how the "
+"traversal relates to its input. Prefer this over separately calculating the "
+"tile count when both describe the same loop."
+msgstr ""
+
+#: ../../../guide/performance.md:38
+msgid "Existing APIs expose several independent choices:"
+msgstr ""
+
+#: ../../../guide/performance.md:40
+msgid ""
+"`load_view_tko` can select `tma::Disabled` for non-TMA tensor loads while "
+"retaining tensor padding. Establish partition access with "
+"`check_partition_access` when calling this low-level operation directly."
+msgstr ""
+
+#: ../../../guide/performance.md:43
+msgid ""
+"`load_ptr_tko` supports masked gathers with scalar padding, including "
+"multidimensional pointer tiles. See [pointer loads](masked-pointer-loads)."
+msgstr ""
+
+#: ../../../guide/performance.md:45
+msgid ""
+"`permute` can express transposed MMA accumulation, followed by an output "
+"transpose. This changes the tile layout and can change the generated "
+"schedule."
+msgstr ""
+
+#: ../../../guide/performance.md:47
+msgid ""
+"Load-latency hints and `CompileOptions::num_cta_in_cga` expose scheduling "
+"choices on supported targets. They are candidates to measure, not universal "
+"defaults."
+msgstr ""
+
+#: ../../../guide/performance.md:50
+msgid ""
+"Hoist invariant pointer bases, row offsets and masks out of inner loops "
+"where possible. Widen integer operands before multiplying offsets. Preserve "
+"masks for partial tiles and use actual strides; a contiguous row-major "
+"formula is valid only under that layout contract. Raw pointers transfer "
+"these obligations to the caller, including synchronization and lifetime "
+"requirements."
+msgstr ""
+
+#: ../../../guide/performance.md:56
+msgid ""
+"The shape of a gather, intermediate reshapes, padding, and placement of "
+"address arithmetic can affect backend scheduling. Inspect the emitted Tile "
+"IR rather than assuming two equivalent formulas produce the same "
+"instructions. Measure both forms before preferring a flat or "
+"multidimensional gather. Removing checks or adding `in_bounds` assertions is "
+"not a general optimization: every such assertion needs a proof for all "
+"supported shapes, including tails."
+msgstr ""
+
+#: ../../../guide/performance.md:63
+msgid "Tile Shape"
+msgstr ""
+
+#: ../../../guide/performance.md:65
 msgid ""
 "Tile size controls how much work each tile block performs. Larger tiles "
 "improve data reuse and reduce launch overhead per element, but they also "
 "consume more registers and can reduce occupancy."
 msgstr ""
 
-#: ../../../guide/performance.md:17
+#: ../../../guide/performance.md:67
 msgid ""
 "Start with powers of two or dimensions that align with the compute operation:"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:69
 msgid "Workload"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:69
 msgid "Starting point"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:69
 msgid "Elementwise 1D"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:69
 msgid "`[128]`, `[256]`, `[512]`"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:71
 msgid "Elementwise 2D"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:71
 msgid "`[16, 16]`, `[32, 32]`, `[64, 16]`"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:72
 msgid "GEMM"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:72
 msgid "Tile shapes compatible with Tensor Core MMA dimensions"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:72
 msgid "Reductions"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:72
 msgid "Axis sizes that avoid excessive register pressure"
 msgstr ""
 
-#: ../../../guide/performance.md:26
+#: ../../../guide/performance.md:76
 msgid ""
 "Use profiling to tune from there, or search the candidates automatically "
 "with [autotuning](autotuning.md). Very small tiles spend too much time on "
@@ -98,16 +189,16 @@ msgid ""
 "resident tile blocks."
 msgstr ""
 
-#: ../../../guide/performance.md:28
+#: ../../../guide/performance.md:78
 msgid "Memory Traffic and Fusion"
 msgstr ""
 
-#: ../../../guide/performance.md:30
+#: ../../../guide/performance.md:80
 msgid ""
 "Keep intermediate results in tiles to avoid repeated global-memory access:"
 msgstr ""
 
-#: ../../../guide/performance.md:32
+#: ../../../guide/performance.md:82
 msgid ""
 "#[cutile::entry()]\n"
 "fn fused<const BM: i32, const BN: i32>(\n"
@@ -126,104 +217,104 @@ msgid ""
 "}\n"
 msgstr ""
 
-#: ../../../guide/performance.md:50
+#: ../../../guide/performance.md:100
 msgid ""
 "Kernel fusion applies this pattern across a pipeline. Three unfused kernels "
 "often read and write intermediate tensors several times. One fused kernel "
 "can keep those intermediates in registers."
 msgstr ""
 
-#: ../../../guide/performance.md:52
+#: ../../../guide/performance.md:102
 msgid "Arithmetic Intensity"
 msgstr ""
 
-#: ../../../guide/performance.md:54
+#: ../../../guide/performance.md:104
 msgid ""
 "Arithmetic intensity is compute per byte transferred. Higher intensity makes "
 "a kernel more likely to be compute-bound instead of bandwidth-bound."
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:106
 msgid "Operation"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:106
 msgid "Typical intensity"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:106
 msgid "Common bottleneck"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:106
 msgid "Vector add"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:106
 msgid "Low"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:106
 msgid "Memory bandwidth"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:106
 msgid "Elementwise activation"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:106
 msgid "Low to medium"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:106
 msgid "Matrix-vector multiply"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:106
 msgid "Medium"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:106
 msgid "Memory bandwidth or compute"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:106
 msgid "Matrix-matrix multiply"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:106
 msgid "High"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:106
 msgid "Tensor Core throughput"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:106
 msgid "Fused attention"
 msgstr ""
 
-#: ../../../guide/performance.md:8
+#: ../../../guide/performance.md:106
 msgid "Compute, memory, or occupancy depending on shape"
 msgstr ""
 
-#: ../../../guide/performance.md:64
+#: ../../../guide/performance.md:114
 msgid ""
 "Increase arithmetic intensity by reusing loaded tiles, fusing adjacent "
 "operations, and avoiding unnecessary host readbacks or intermediate tensors."
 msgstr ""
 
-#: ../../../guide/performance.md:66
+#: ../../../guide/performance.md:116
 msgid "Tensor Cores"
 msgstr ""
 
-#: ../../../guide/performance.md:68
+#: ../../../guide/performance.md:118
 msgid ""
 "Use `mma` and `mmaf_scaled` for matrix multiply paths. The compiler lowers "
 "supported dtype and shape combinations to Tensor Core instructions:"
 msgstr ""
 
-#: ../../../guide/performance.md:70
+#: ../../../guide/performance.md:120
 msgid ""
 "let mut acc = constant(0.0f32, shape![BM, BN]);\n"
 "for k_tile in 0i32..k_tiles {\n"
@@ -234,18 +325,18 @@ msgid ""
 "z.store(acc);\n"
 msgstr ""
 
-#: ../../../guide/performance.md:80
+#: ../../../guide/performance.md:130
 msgid ""
 "For block-scaled formats such as NVFP4 and MXFP8, `mmaf_scaled` consumes low-"
 "precision input tiles plus per-block scale tiles. See [Tutorial 11: "
 "Inference with NVFP4/MXFP8](../tutorials/11-nvfp4-inference.md)."
 msgstr ""
 
-#: ../../../guide/performance.md:82
+#: ../../../guide/performance.md:132
 msgid "Bounds and Mapped Partitions"
 msgstr ""
 
-#: ../../../guide/performance.md:84
+#: ../../../guide/performance.md:134
 msgid ""
 "The preferred safe performance path for persistent or mapped traversal is a "
 "mapped output partition. The output partition produces bounded, disjoint "
@@ -254,7 +345,7 @@ msgid ""
 "index:"
 msgstr ""
 
-#: ../../../guide/performance.md:86
+#: ../../../guide/performance.md:136
 msgid ""
 "fn gemm_persistent<\n"
 "    T: ElementType,\n"
@@ -283,20 +374,20 @@ msgid ""
 "}\n"
 msgstr ""
 
-#: ../../../guide/performance.md:112
+#: ../../../guide/performance.md:162
 msgid ""
 "`with_bounds(...)`, `Dim::new(...)`, and `coord(...)` are deprecated since "
 "0.3.0; [Bounds-Check Placement](bounds-check-placement.md) describes where "
 "the remaining checks are placed."
 msgstr ""
 
-#: ../../../guide/performance.md:114
+#: ../../../guide/performance.md:164
 msgid ""
 "`unchecked_accesses = true` remains available when the programmer wants to "
 "opt out of runtime bounds checks explicitly:"
 msgstr ""
 
-#: ../../../guide/performance.md:116
+#: ../../../guide/performance.md:166
 msgid ""
 "#[cutile::entry(unchecked_accesses = true)]\n"
 "unsafe fn fast_kernel<const S: [i32; 2]>(...) {\n"
@@ -304,21 +395,21 @@ msgid ""
 "}\n"
 msgstr ""
 
-#: ../../../guide/performance.md:123
+#: ../../../guide/performance.md:173
 msgid ""
 "Use the unsafe path only when the launch shape and tensor sizes are "
 "guaranteed by surrounding code."
 msgstr ""
 
-#: ../../../guide/performance.md:125
+#: ../../../guide/performance.md:175
 msgid "Compile-Time Hints"
 msgstr ""
 
-#: ../../../guide/performance.md:127
+#: ../../../guide/performance.md:177
 msgid "Optimization hints guide code generation for a target architecture:"
 msgstr ""
 
-#: ../../../guide/performance.md:129
+#: ../../../guide/performance.md:179
 msgid ""
 "#[cutile::entry(\n"
 "    optimization_hints = (\n"
@@ -335,7 +426,7 @@ msgid ""
 "fn kernel<const S: [i32; 2]>(...) { ... }\n"
 msgstr ""
 
-#: ../../../guide/performance.md:144
+#: ../../../guide/performance.md:194
 msgid ""
 "Runtime `CompileOptions` can override entry-level hints, which makes them a "
 "tunable axis: put the candidate values in a `Config` and apply them in the "
@@ -348,58 +439,58 @@ msgid ""
 "of candidates instead of generating many one-off specializations."
 msgstr ""
 
-#: ../../../guide/performance.md:146
+#: ../../../guide/performance.md:196
 msgid "Common Pitfalls"
 msgstr ""
 
-#: ../../../guide/performance.md:148
+#: ../../../guide/performance.md:198
 msgid "Tile shape too small: overhead dominates useful work."
 msgstr ""
 
-#: ../../../guide/performance.md:149
+#: ../../../guide/performance.md:199
 msgid ""
 "Tile shape too large: register pressure lowers occupancy or causes spills."
 msgstr ""
 
-#: ../../../guide/performance.md:150
+#: ../../../guide/performance.md:200
 msgid ""
 "Wrong dtype: using `f32` when `f16`, `bf16`, FP8, or block-scaled formats "
 "are acceptable can leave Tensor Core throughput unused."
 msgstr ""
 
-#: ../../../guide/performance.md:151
+#: ../../../guide/performance.md:201
 msgid ""
 "Excessive synchronization: `.sync()` after every operation creates CPU/GPU "
 "gaps."
 msgstr ""
 
-#: ../../../guide/performance.md:152
+#: ../../../guide/performance.md:202
 msgid "Unfused pipeline: intermediate tensors add global memory traffic."
 msgstr ""
 
-#: ../../../guide/performance.md:153
+#: ../../../guide/performance.md:203
 msgid ""
 "Strided access pattern: tile loads coalesce well, but algorithmic strides "
 "can still reduce effective bandwidth."
 msgstr ""
 
-#: ../../../guide/performance.md:155
+#: ../../../guide/performance.md:205
 msgid ""
 "Profile before and after each change. [Debugging and Profiling](debugging-"
 "and-profiling.md) describes Nsight Compute and Nsight Systems."
 msgstr ""
 
-#: ../../../guide/performance.md:157
+#: ../../../guide/performance.md:207
 msgid "Measuring Kernels"
 msgstr ""
 
-#: ../../../guide/performance.md:159
+#: ../../../guide/performance.md:209
 msgid ""
 "`cutile::bench` provides device-event timing for kernel measurement and A/B "
 "comparison:"
 msgstr ""
 
-#: ../../../guide/performance.md:161
+#: ../../../guide/performance.md:211
 msgid ""
 "use cutile::bench::{do_bench, do_bench_paired, BenchOptions};\n"
 "\n"
@@ -410,20 +501,31 @@ msgid ""
 "println!(\"median {:.3} ms over {} reps\", r.median_ms(), r.reps());\n"
 msgstr ""
 
-#: ../../../guide/performance.md:170
+#: ../../../guide/performance.md:220
 msgid ""
 "Timing uses CUDA events (device timeline, not host clocks), warmup absorbs "
 "first-launch JIT, the L2 cache is cleared between reps, and results report "
 "medians and quantiles. When comparing two configurations, use "
-"`do_bench_paired`. It alternates the arms rep by rep, so clock and thermal "
-"drift cannot masquerade as a difference between them."
+"`do_bench_paired`. It alternates the arms rep by rep to reduce confounding "
+"from clock and thermal drift. Repeat comparisons and report variation when "
+"the difference is small."
 msgstr ""
 
-#: ../../../guide/performance.md:172
+#: ../../../guide/performance.md:222
+msgid ""
+"Device-event latency and end-to-end application latency answer different "
+"questions. Measure host submission separately when it matters, and include "
+"every required stage when reporting a fused or multi-launch operation. Match "
+"the toolchain, compile options, streams, cache policy and input layouts "
+"across comparisons. Only numerically valid results are performance "
+"candidates."
+msgstr ""
+
+#: ../../../guide/performance.md:228
 msgid "Autotuning (experimental)"
 msgstr ""
 
-#: ../../../guide/performance.md:174
+#: ../../../guide/performance.md:230
 msgid ""
 "`cutile::tune` measures candidate configurations and saves the trials and "
 "winning configuration. It requires the `experimental-tune` Cargo feature; "
@@ -431,12 +533,12 @@ msgid ""
 "sizes for an RMS normalization kernel:"
 msgstr ""
 
-#: ../../../guide/performance.md:179
+#: ../../../guide/performance.md:235
 msgid ""
 "cargo run -p cutile-examples --example autotune --features experimental-"
 "tune\n"
 msgstr ""
 
-#: ../../../guide/performance.md:185
+#: ../../../guide/performance.md:241
 msgid "Continue to [Interoperability](interoperability.md)."
 msgstr ""

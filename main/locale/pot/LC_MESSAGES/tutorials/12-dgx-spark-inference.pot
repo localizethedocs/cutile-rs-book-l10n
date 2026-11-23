@@ -8,10 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cuTile Rust main\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-21 16:36+0000\n"
+"POT-Creation-Date: 2026-11-23 20:48+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -173,59 +174,61 @@ msgid ""
 "compiled kernels from the cache."
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:109
 msgid "Qwen3-4B, 16-bit weights"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:109
 msgid "First run"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:109
 msgid "Warm run"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:109
 msgid "Model load"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:109
 msgid "9.9 s"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:109
 msgid "10.0 s"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:109
 msgid "Kernel compilation"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:109
 msgid "11.7 s (37 kernels)"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:109
 msgid "0 s (cache hits)"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:109
+#: ../../../tutorials/12-dgx-spark-inference.md:149
 msgid "Decode"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:109
 msgid "29.7 tokens/s"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:109
+#: ../../../tutorials/12-dgx-spark-inference.md:169
 msgid "29.5 tokens/s"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:109
 msgid "Peak memory in use"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:109
 msgid "15 GB"
 msgstr ""
 
@@ -275,23 +278,23 @@ msgid ""
 "  --max-new-tokens 64 --max-seq-len 4096 --profile\n"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:149
 msgid "Qwen3-32B, 16-bit weights"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:149
 msgid "Measured"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:149
 msgid "3.7 tokens/s"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:149
 msgid "Weights in memory"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:149
 msgid "66 GB"
 msgstr ""
 
@@ -320,31 +323,31 @@ msgid ""
 "The following runs varied it manually:"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:169
 msgid "`GROUT_ATTN_BN_DECODE`"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:169
 msgid "Qwen3-4B decode"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:169
 msgid "16"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:169
 msgid "29.1 tokens/s"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:169
 msgid "32"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:169
 msgid "64"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:169
 msgid "28.9 tokens/s"
 msgstr ""
 
@@ -440,57 +443,57 @@ msgstr ""
 msgid "Key takeaways"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:234
 msgid "Concept"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:234
 msgid "What it means on DGX Spark"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:234
 msgid "**First launch**"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:236
 msgid ""
 "Kernel compilation takes about 12 s on first use; later runs load from the "
 "disk cache"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:236
 msgid "**Memory capacity**"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:237
 msgid "128 GB of unified memory holds a 32B model in 16-bit precision"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:237
 msgid "**Decode roofline**"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:238
 msgid ""
 "Memory bandwidth limits tokens per second; both models run near 90% of that "
 "limit"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:238
 msgid "**Where tuning helps**"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:239
 msgid ""
 "Prefill and other compute-bound phases; decode tile sizes have little effect "
 "in 16-bit"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:239
 msgid "**Unified memory**"
 msgstr ""
 
-#: ../../../tutorials/12-dgx-spark-inference.md:0
+#: ../../../tutorials/12-dgx-spark-inference.md:240
 msgid ""
 "Host pointers work on the device; fresh pageable readback is the slow path"
 msgstr ""

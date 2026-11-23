@@ -8,10 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cuTile Rust main\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-21 16:36+0000\n"
+"POT-Creation-Date: 2026-11-23 20:48+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -23,9 +24,9 @@ msgstr ""
 #: ../../../reference/host-api.md:3
 msgid ""
 "The host API covers tensors, CUDA contexts and streams, kernel launches, and "
-"`DeviceOp` execution. For an introduction, see [Host vs. Device Code](../"
-"guide/host-vs-device.md), [Tensors and Tiles](../guide/tensors-and-tiles."
-"md), and [Device Operations](../guide/device-operations.md)."
+"`DeviceOp` execution. For an introduction, see [Host vs. Context Code](../"
+"guide/host-vs-device.md), [Tensors and Tiles](../guide/tensors-and-"
+"tiles.md), and [Context Operations](../guide/device-operations.md)."
 msgstr ""
 
 #: ../../../reference/host-api.md:11
@@ -42,131 +43,139 @@ msgid ""
 "happen when the operation runs, not when it is constructed."
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:17
 msgid "Function"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:17
 msgid "Output"
 msgstr ""
 
-#: ../../../reference/host-api.md:0 ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:17 ../../../reference/host-api.md:50
+#: ../../../reference/host-api.md:79 ../../../reference/host-api.md:133
+#: ../../../reference/host-api.md:164 ../../../reference/host-api.md:222
+#: ../../../reference/host-api.md:275 ../../../reference/host-api.md:837
 msgid "Description"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:17
 msgid "`api::zeros::<T>(shape: &[usize])`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:19 ../../../reference/host-api.md:20
+#: ../../../reference/host-api.md:21 ../../../reference/host-api.md:22
+#: ../../../reference/host-api.md:23 ../../../reference/host-api.md:28
+#: ../../../reference/host-api.md:29 ../../../reference/host-api.md:166
+#: ../../../reference/host-api.md:170
 msgid "`DeviceOp<Output = Tensor<T>>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:19
 msgid "All zeros"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:19
 msgid "`api::ones::<T>(shape: &[usize])`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:20
 msgid "All ones"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:20
 msgid "`api::full::<T>(val, shape: &[usize])`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:21
 msgid "Fill with scalar value"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:21
 msgid "`api::fill::<T>(tensor, val)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:22
 msgid "Fill an existing tensor and return it"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:22
 msgid "`api::arange::<T>(len: usize)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:23
 msgid "`[0, 1, 2, ..., len-1]` (1D)"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:23
 msgid "`api::linspace(start: f32, stop: f32, n: usize)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:24 ../../../reference/host-api.md:25
+#: ../../../reference/host-api.md:26
 msgid "`DeviceOp<Output = Tensor<f32>>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:24
 msgid "`n` values evenly spaced from `start` to `stop`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:24
 msgid "`api::eye(n: usize)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:25
 msgid "`n × n` identity matrix"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:25
 msgid "`api::eye_rect(rows: usize, cols: usize)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:26
 msgid "`rows × cols`, ones on main diagonal"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:26
 msgid "`api::convert::<From, To>(src: Arc<Tensor<From>>)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:27
 msgid "`DeviceOp<Output = Tensor<To>>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:27
 msgid "Convert tensor element type"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:27
 msgid "`api::rand::<T, RANK>(shape: [usize; RANK], seed: Option<u64>)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:28
 msgid "Uniform `[0, 1)` from cuRAND (`T: RandUniform`)"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:28
 msgid ""
 "`api::randn::<T, RANK>(mean: T, std: T, shape: [usize; RANK], seed: "
 "Option<u64>)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:29
 msgid "Normal `N(mean, std²)` from cuRAND (`T: RandNormal`)"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:29
 msgid ""
 "`api::randn_f16(mean: f16, std: f16, shape: [usize; RANK], seed: "
 "Option<u64>)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:30
 msgid "`DeviceOp<Output = Tensor<f16>>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:30
 msgid ""
 "Normal for `f16` (generates `f32` and converts; cuRAND has no native `f16`)"
 msgstr ""
@@ -204,64 +213,65 @@ msgid ""
 "contiguous."
 msgstr ""
 
-#: ../../../reference/host-api.md:0 ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:50 ../../../reference/host-api.md:79
+#: ../../../reference/host-api.md:164 ../../../reference/host-api.md:837
 msgid "API"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:50
 msgid "`tensor.reshape(&shape)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:52
 msgid ""
 "Consume and return `Result<Tensor<T>, Error>` with a new shape (`Reshape` "
 "trait)."
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:52
 msgid "`(&arc_tensor).reshape(&shape)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:53
 msgid ""
 "Return `Result<Arc<Tensor<T>>, Error>`: a new `Arc<Tensor<T>>` sharing the "
 "same allocation with new shape metadata."
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:53
 msgid "`device_op.reshape(&shape)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:54
 msgid "Reshape the `Tensor<T>` or `Arc<Tensor<T>>` produced by a `DeviceOp`."
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:54
 msgid "`tensor.partition(shape)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:55
 msgid ""
 "Consume a tensor and create a mutable output partition for kernel launch. "
 "Panics if the tensor's storage is shared with another tensor or view (for "
 "example a `(&arc_tensor).reshape(..)` alias)."
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:55
 msgid "`arc_tensor.try_partition(shape)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:56
 msgid ""
 "Consume an `Arc<Tensor<T>>` only if it has a single owner (returns `Err` "
 "otherwise), then `partition` it, with the same shared-storage panic."
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:56
 msgid "`partition.unpartition()`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:57
 msgid "Recover the owned tensor from a partition returned by a kernel."
 msgstr ""
 
@@ -275,8 +285,8 @@ msgid ""
 "let x = api::arange::<f32>(32).reshape(&[4, 8]).sync_on(&stream)?;\n"
 "let z = api::zeros::<f32>(&[32]).partition([4]);\n"
 "\n"
-"let weights: Arc<Tensor<f32>> = api::ones::<f32>(&[4, 8]).sync_on(&stream)?."
-"into();\n"
+"let weights: Arc<Tensor<f32>> = api::ones::<f32>(&[4, "
+"8]).sync_on(&stream)?.into();\n"
 "let weights_2d = (&weights).reshape(&[8, 4])?;\n"
 "drop(weights); // weights_2d is now the storage's only owner; keeping "
 "`weights` alive would make `partition` panic\n"
@@ -293,77 +303,82 @@ msgid ""
 "allocation. These accessors do not synchronize with the GPU:"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:79
 msgid "`tensor.shape()`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:81
 msgid "Runtime dimensions as `&[i32]`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:81
 msgid "`tensor.strides()`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:82
 msgid "Runtime strides as `&[i32]`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:82
 msgid "`tensor.size()`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:83
 msgid "Number of elements"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:83
 msgid "`tensor.num_bytes()`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:84
 msgid "Number of bytes in the tensor view"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:84
 msgid "`tensor.is_contiguous()`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:85
 msgid "Whether the view is contiguous"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:85
 msgid "`tensor.device_id()`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:86
 msgid "CUDA device ordinal for the allocation"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:86
 msgid "`tensor.device_pointer()`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:87
 msgid "Typed non-owning `DevicePointer<T>` for interop"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:87
 msgid "`arc_tensor.reinterpret::<U>(&shape)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:88
 msgid "Zero-copy reinterpretation as `Arc<Tensor<U>>`"
 msgstr ""
 
 #: ../../../reference/host-api.md:90
 msgid ""
 "`reinterpret` requires an `Arc<Tensor<T>>`, contiguous storage, matching "
-"total byte size, and compatible pointer alignment:"
+"total byte size, and compatible pointer alignment. The target type must also "
+"implement `bytemuck::AnyBitPattern` (re-exported as "
+"`cutile::cuda_core::bytemuck`): every bit pattern must be a valid value, so "
+"no byte written as `T` can become an invalid `U`. Every numeric element type "
+"qualifies. `bool` does not, because only `0` and `1` are `bool` values, so a "
+"byte tensor cannot be reinterpreted as `Tensor<bool>`."
 msgstr ""
 
-#: ../../../reference/host-api.md:93
+#: ../../../reference/host-api.md:98
 msgid ""
 "use cutile::tensor::Tensor;\n"
 "use std::sync::Arc;\n"
@@ -373,14 +388,14 @@ msgid ""
 "assert_eq!(floats.shape(), &[4]);\n"
 msgstr ""
 
-#: ../../../reference/host-api.md:102
+#: ../../../reference/host-api.md:107
 msgid ""
 "Packed FP4 model bytes can use the same zero-copy metadata path. If an "
 "interoperability layer gives you byte storage, reinterpret it as "
 "`f4e2m1fnx2` before launching kernels that expect typed packed FP4 tensors:"
 msgstr ""
 
-#: ../../../reference/host-api.md:106
+#: ../../../reference/host-api.md:111
 msgid ""
 "use cutile::api::{self, DeviceOpReshape};\n"
 "use cutile::cuda_core::f4e2m1fnx2;\n"
@@ -396,18 +411,18 @@ msgid ""
 "2])?;\n"
 msgstr ""
 
-#: ../../../reference/host-api.md:120
+#: ../../../reference/host-api.md:125
 msgid ""
 "`reinterpret` does not repack or validate the FP4 payload. It preserves the "
 "bytes and changes the tensor element type metadata, so the producer of "
 "`model_bytes` is responsible for the low-nibble, high-nibble packing order."
 msgstr ""
 
-#: ../../../reference/host-api.md:124
+#: ../../../reference/host-api.md:129
 msgid "`TensorView`: zero-copy views and slices"
 msgstr ""
 
-#: ../../../reference/host-api.md:126
+#: ../../../reference/host-api.md:131
 msgid ""
 "`TensorView` provides zero-copy borrowed views of a tensor with a different "
 "shape or offset. Views borrow the underlying tensor — the tensor cannot be "
@@ -416,36 +431,38 @@ msgid ""
 "without any data movement."
 msgstr ""
 
-#: ../../../reference/host-api.md:0 ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:133 ../../../reference/host-api.md:222
+#: ../../../reference/host-api.md:275 ../../../reference/host-api.md:459
+#: ../../../reference/host-api.md:810
 msgid "Method"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:133
 msgid "`tensor.view(&shape)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:135
 msgid ""
 "Reshape to the given shape without copying. Total element count must match."
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:135
 msgid "`tensor.slice(&ranges)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:136
 msgid "Borrow a rectangular sub-region (one numpy-style range per dimension)."
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:136
 msgid "`view.slice(&ranges)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:137
 msgid "Chain-slice further; offsets accumulate."
 msgstr ""
 
-#: ../../../reference/host-api.md:134
+#: ../../../reference/host-api.md:139
 msgid ""
 "let tensor = api::arange::<f32>(1024).sync_on(&stream)?;\n"
 "\n"
@@ -462,100 +479,101 @@ msgid ""
 "tensor[110..120]\n"
 msgstr ""
 
-#: ../../../reference/host-api.md:149
+#: ../../../reference/host-api.md:154
 msgid ""
 "Pass views and slices to kernels as `&Tensor` parameters to process part of "
 "an existing tensor without allocation or copying."
 msgstr ""
 
-#: ../../../reference/host-api.md:154
-msgid "Host-Device and Device-Device Transfers"
+#: ../../../reference/host-api.md:159
+msgid "Host-Context and Context-Context Transfers"
 msgstr ""
 
-#: ../../../reference/host-api.md:156
+#: ../../../reference/host-api.md:161
 msgid ""
 "Moving data between CPU and GPU, or between two device tensors, uses APIs "
 "that return `DeviceOp`s — the copy is scheduled when the op runs, not "
 "constructed:"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:164 ../../../reference/host-api.md:222
 msgid "Returns"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:164
 msgid "`api::copy_host_vec_to_device::<T>(vec: &Arc<Vec<T>>)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:166
 msgid "Copy host `Vec<T>` to a new device `Tensor<T>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:166
 msgid "`api::copy_device_to_host_vec::<T>(tensor: &Arc<Tensor<T>>)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:167 ../../../reference/host-api.md:168
+#: ../../../reference/host-api.md:169
 msgid "`DeviceOp<Output = Vec<T>>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:167
 msgid "Copy a device `Tensor<T>` to a host `Vec<T>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:167
 msgid "`tensor.to_host_vec()`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:168
 msgid "Method form of `copy_device_to_host_vec` (preferred)"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:168
 msgid "`device_op.to_host_vec()`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:169
 msgid "Copy the `Tensor<T>` produced by a `DeviceOp` to host"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:169
 msgid "`api::dup(&tensor)` / `tensor.dup()`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:170
 msgid "Allocate a new tensor and copy device-to-device"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:170
 msgid "`api::memcpy(&mut dst, &src)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:171
 msgid "`DeviceOp<Output = ()>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:171
 msgid ""
 "Copy device-to-device into an existing tensor, used especially for CUDA "
 "graph updates"
 msgstr ""
 
-#: ../../../reference/host-api.md:168
+#: ../../../reference/host-api.md:173
 msgid ""
 "// Host -> device\n"
 "let data: Arc<Vec<f32>> = Arc::new(vec![1.0; 1024]);\n"
-"let tensor: Tensor<f32> = api::copy_host_vec_to_device(&data)."
-"sync_on(&stream)?;\n"
+"let tensor: Tensor<f32> = "
+"api::copy_host_vec_to_device(&data).sync_on(&stream)?;\n"
 "\n"
-"// Device -> host\n"
+"// Context -> host\n"
 "let result: Vec<f32> = tensor.to_host_vec().sync_on(&stream)?;\n"
 "\n"
-"// Device -> device\n"
+"// Context -> device\n"
 "let copy = tensor.dup().sync_on(&stream)?;\n"
 msgstr ""
 
-#: ../../../reference/host-api.md:180
+#: ../../../reference/host-api.md:185
 msgid ""
 "The host-side `Vec` must remain alive until the op completes — the async "
 "copy reads from it until the stream synchronizes. `Arc<Vec<T>>` makes this "
@@ -565,7 +583,7 @@ msgid ""
 "Tensor<T>>`, which is the common form after a kernel chain:"
 msgstr ""
 
-#: ../../../reference/host-api.md:187
+#: ../../../reference/host-api.md:192
 msgid ""
 "let host: Vec<f32> = kernel(out.partition([128]), &input)\n"
 "    .first()\n"
@@ -574,169 +592,169 @@ msgid ""
 "    .sync_on(&stream)?;\n"
 msgstr ""
 
-#: ../../../reference/host-api.md:195
+#: ../../../reference/host-api.md:200
 msgid ""
 "`api::memcpy` copies between already allocated tensors and panics if the "
 "source and destination element counts differ. It is the usual way to update "
 "graph input buffers before replay:"
 msgstr ""
 
-#: ../../../reference/host-api.md:199
+#: ../../../reference/host-api.md:204
 msgid ""
 "graph.update(api::memcpy(&mut input_buffer, &new_input))?;\n"
 "graph.launch().sync_on(&stream)?;\n"
 msgstr ""
 
-#: ../../../reference/host-api.md:206
+#: ../../../reference/host-api.md:211
 msgid "Devices and Streams"
 msgstr ""
 
-#: ../../../reference/host-api.md:208
+#: ../../../reference/host-api.md:213
 msgid ""
-"Every host program starts with a `Device`, plus one or more `Stream`s for "
+"Every host program starts with a `Context`, plus one or more `Stream`s for "
 "scheduling GPU work:"
 msgstr ""
 
-#: ../../../reference/host-api.md:210
+#: ../../../reference/host-api.md:215
 msgid ""
-"use cuda_core::Device;\n"
+"use cuda_core::Context;\n"
 "\n"
-"let device = Device::new(0)?;              // Device ordinal 0\n"
+"let device = Context::new(0)?;              // Primary context for GPU 0\n"
 "let stream = device.new_stream()?;         // A new stream owned by this "
 "device\n"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
-msgid "`Device::new(ordinal: usize)`"
+#: ../../../reference/host-api.md:222
+msgid "`Context::new(ordinal: usize)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
-msgid "`Result<Arc<Device>, DriverError>`"
+#: ../../../reference/host-api.md:224
+msgid "`Result<Arc<Context>, DriverError>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:224
 msgid "Create a device handle bound to a GPU ordinal"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
-msgid "`Device::device_count()`"
+#: ../../../reference/host-api.md:224
+msgid "`Context::device_count()`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:225
 msgid "`Result<i32, DriverError>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:225
 msgid "Number of CUDA-capable devices"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:225
 msgid "`device.ordinal()`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:226
 msgid "`usize`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:226
 msgid "GPU ordinal this handle represents"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:226
 msgid "`device.name()`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:227
 msgid "`Result<String, DriverError>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
-msgid "Device name"
+#: ../../../reference/host-api.md:227
+msgid "Context name"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:227
 msgid "`device.new_stream()`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:228
 msgid "`Result<Arc<Stream>, DriverError>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:228
 msgid "Create a new stream on this device"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
-msgid "`unsafe Device::borrow_raw(cu_ctx, cu_device, ordinal)`"
+#: ../../../reference/host-api.md:228
+msgid "`unsafe Context::borrow_raw(cu_ctx, cu_device, ordinal)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
-msgid "`Arc<Device>`"
+#: ../../../reference/host-api.md:229 ../../../reference/host-api.md:230
+msgid "`Arc<Context>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:229
 msgid "Borrow an externally owned CUDA context/device for interop"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
-msgid "`unsafe Device::borrow_with_owner(cu_ctx, cu_device, ordinal, owner)`"
+#: ../../../reference/host-api.md:229
+msgid "`unsafe Context::borrow_with_owner(cu_ctx, cu_device, ordinal, owner)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:230
 msgid ""
 "Same, holding an `Arc<dyn ForeignOwner>` so the foreign owner outlives the "
 "handle"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:230
 msgid "`unsafe Stream::borrow_raw(cu_stream, &device)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:231 ../../../reference/host-api.md:232
 msgid "`Arc<Stream>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:231
 msgid "Borrow an externally owned CUDA stream for interop"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:231
 msgid "`unsafe Stream::borrow_with_owner(cu_stream, &device, owner)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:232
 msgid "Same, holding an `Arc<dyn ForeignOwner>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:232
 msgid "`unsafe Module::borrow_raw(...)` / `unsafe Function::borrow_raw(...)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:233
 msgid "CUDA module/function wrappers"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:233
 msgid "Borrow externally owned CUDA handles"
 msgstr ""
 
-#: ../../../reference/host-api.md:230
+#: ../../../reference/host-api.md:235
 msgid ""
 "Devices are `Arc`-wrapped for sharing across threads; streams are also `Arc`-"
 "wrapped and can be passed to `.sync_on(&stream)` for explicit stream "
 "scheduling."
 msgstr ""
 
-#: ../../../reference/host-api.md:232
+#: ../../../reference/host-api.md:237
 msgid ""
 "The default round-robin scheduling policy handles stream assignment "
 "automatically for most workloads — these APIs are for when you need explicit "
 "stream control (debugging, deterministic ordering, paired with "
-"`AsyncKernelLaunch`, or overlapping compute with transfers on dedicated "
-"streams)."
+"`AsyncKernelLaunchBuilder`, or overlapping compute with transfers on "
+"dedicated streams)."
 msgstr ""
 
-#: ../../../reference/host-api.md:234
+#: ../../../reference/host-api.md:239
 msgid ""
 "The `borrow_raw` constructors do not take ownership of the underlying CUDA "
 "handles and therefore do not destroy them on drop. They are `unsafe fn`s: "
@@ -747,21 +765,21 @@ msgid ""
 "function."
 msgstr ""
 
-#: ../../../reference/host-api.md:243
+#: ../../../reference/host-api.md:248
 msgid "Kernel Launch Configuration"
 msgstr ""
 
-#: ../../../reference/host-api.md:245
+#: ../../../reference/host-api.md:250
 msgid "Several types configure how kernels compile and launch."
 msgstr ""
 
-#: ../../../reference/host-api.md:247
+#: ../../../reference/host-api.md:252
 msgid ""
 "**`CompileOptions`** — runtime overrides for entry-level "
 "`optimization_hints`, typically used for autotuning:"
 msgstr ""
 
-#: ../../../reference/host-api.md:249
+#: ../../../reference/host-api.md:254
 msgid ""
 "use cutile::tile_kernel::CompileOptions;\n"
 "\n"
@@ -769,100 +787,101 @@ msgid ""
 "    .occupancy(4)\n"
 "    .num_cta_in_cga(2)\n"
 "    .max_divisibility(16)\n"
-"    .num_worker_warps_per_cta(4); // Bytecode 13.3+; use 4 or 8.\n"
+"    .num_worker_warps_per_cta(4); // Bytecode 13.3+; 4 or 8 at 13.4.\n"
 "\n"
 "let result = my_kernel(args).compile_options(opts).grid(grid).await?;\n"
 msgstr ""
 
-#: ../../../reference/host-api.md:261
+#: ../../../reference/host-api.md:266
 msgid ""
 "Tile IR 13.4 restricts `num_worker_warps_per_cta` to 4 or 8. Tile IR 13.3 "
-"accepts powers of two in `[1, 32]` (the assembler clamps to its supported "
-"worker counts). The JIT checks the selected version's range."
+"and 13.5 accept powers of two in `[1, 32]` (the assembler clamps to its "
+"supported worker counts). The JIT checks the selected version's range."
 msgstr ""
 
-#: ../../../reference/host-api.md:265
+#: ../../../reference/host-api.md:270
 msgid ""
 "Different `CompileOptions` values trigger separate JIT compilations and are "
 "part of the kernel cache key."
 msgstr ""
 
-#: ../../../reference/host-api.md:267
+#: ../../../reference/host-api.md:272
 msgid ""
 "Generated `#[cutile::entry]` launchers also expose launch-time configuration "
 "methods:"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:275
 msgid "`.grid((x, y, z))`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:277
 msgid ""
 "Set an explicit runtime launch grid instead of inferring it from partitioned "
 "tensor inputs."
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:277
 msgid "`.const_grid((x, y, z))`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:278
 msgid ""
 "Set a compile-time constant grid, enabling grid-dependent optimizations."
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:278
 msgid "`.compile_options(opts)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:279
 msgid ""
 "Override occupancy, cluster/CTA, worker-warp, and divisibility hints for "
 "this compilation."
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:279
 msgid "`.generics(values)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:280
 msgid ""
 "Bind type and const generic arguments manually when they cannot be inferred."
 msgstr ""
 
-#: ../../../reference/host-api.md:277
+#: ../../../reference/host-api.md:282
 msgid ""
 "The JIT compiler resolves `tileiras` in this order: `CUTILE_TILEIRAS_PATH` "
-"when set, then `$CUDA_TOOLKIT_PATH/bin/tileiras`, then the default CUDA "
-"13.2+ install directories (`/usr/local/cuda-13.4`, `/usr/local/cuda-13.3`, `/"
-"usr/local/cuda-13.2`, `/usr/local/cuda-13`, `/usr/local/cuda`), and finally "
-"`tileiras` through normal `PATH` lookup. Set `CUTILE_TILEIRAS_PATH` to force "
-"a specific binary:"
+"when set, then the toolkit selected by `CUDA_TOOLKIT_PATH` (or `CUDA_HOME`), "
+"then the default CUDA 13.2+ install directories (`/usr/local/cuda-13.5`, `/"
+"usr/local/cuda-13.4`, `/usr/local/cuda-13.3`, `/usr/local/cuda-13.2`, `/usr/"
+"local/cuda-13`, `/usr/local/cuda`, `/opt/cuda`), and finally `tileiras` "
+"through normal `PATH` lookup. Set `CUTILE_TILEIRAS_PATH` to force a specific "
+"binary:"
 msgstr ""
 
-#: ../../../reference/host-api.md:283
+#: ../../../reference/host-api.md:289
 msgid "CUTILE_TILEIRAS_PATH=/opt/cuda-tile/bin/tileiras cargo test -p cutile\n"
 msgstr ""
 
-#: ../../../reference/host-api.md:287
+#: ../../../reference/host-api.md:293
 msgid ""
 "The selected binary's supported bytecode versions determine emission, not "
 "the CUDA headers used to build the Rust crates. The default is the highest "
-"mutually supported version (13.2, 13.3, or 13.4). `CUTILE_BYTECODE_VERSION` "
+"mutually supported version (13.2 through 13.5). `CUTILE_BYTECODE_VERSION` "
 "can pin one of those versions, but cannot force a version that the selected "
 "assembler does not support. Configure these variables before launching; "
 "already-resolved launch sites retain their toolchain snapshot."
 msgstr ""
 
-#: ../../../reference/host-api.md:294
+#: ../../../reference/host-api.md:300
 msgid ""
 "**`LaunchConfig`** — grid/block/shared-memory specification for "
-"`AsyncKernelLaunch` (raw CUDA kernels launched outside the `#[cutile::"
-"entry]` path):"
+"`AsyncKernelLaunchBuilder` (raw CUDA kernels launched outside the "
+"`#[cutile::entry]` path):"
 msgstr ""
 
-#: ../../../reference/host-api.md:296
+#: ../../../reference/host-api.md:302
 msgid ""
 "use cuda_core::LaunchConfig;\n"
 "\n"
@@ -874,19 +893,19 @@ msgid ""
 "}\n"
 msgstr ""
 
-#: ../../../reference/host-api.md:306
+#: ../../../reference/host-api.md:312
 msgid ""
-"**`AsyncKernelLaunch`** — wraps a CUDA driver kernel launch as a `DeviceOp`. "
-"Build the argument list with `push_arg` (safe, for `DType` scalars) or "
-"`push_device_ptr` (`unsafe`, for raw device pointers), set the launch "
-"config, then `.await` or `.sync_on()`:"
+"**`AsyncKernelLaunchBuilder`** — wraps a CUDA driver kernel launch as a "
+"`DeviceOp`. Build the argument list with `push_arg` (safe, for `DType` "
+"scalars) or `push_device_ptr` (`unsafe`, for raw device pointers), set the "
+"launch config, then `.await` or `.sync_on()`:"
 msgstr ""
 
-#: ../../../reference/host-api.md:308
+#: ../../../reference/host-api.md:314
 msgid ""
-"use cuda_async::launch::AsyncKernelLaunch;\n"
+"use cuda_async::launch::AsyncKernelLaunchBuilder;\n"
 "\n"
-"let mut launcher = AsyncKernelLaunch::new(function.clone());\n"
+"let mut launcher = AsyncKernelLaunchBuilder::new(function.clone());\n"
 "launcher.push_arg(num_elements as u32);\n"
 "launcher.push_arg(scale);\n"
 "let input_ptr = input.device_pointer();\n"
@@ -904,19 +923,19 @@ msgid ""
 "launcher.await?;  // Executes as a DeviceOp\n"
 msgstr ""
 
-#: ../../../reference/host-api.md:329
+#: ../../../reference/host-api.md:335
 msgid ""
 "See [Interoperability](../guide/interoperability.md) for the full "
 "walkthrough and the wrapper pattern that hides `unsafe` at the call site."
 msgstr ""
 
-#: ../../../reference/host-api.md:331
+#: ../../../reference/host-api.md:337
 msgid ""
 "**`.generics(Vec<String>)`** — `#[cutile::entry]`-generated launchers accept "
 "this method to bind const generics and type parameters at runtime:"
 msgstr ""
 
-#: ../../../reference/host-api.md:333
+#: ../../../reference/host-api.md:339
 msgid ""
 "let generics = vec![\n"
 "    \"f32\".to_string(),  // E\n"
@@ -928,42 +947,43 @@ msgid ""
 "gemm(z, x, y).generics(generics).sync_on(&stream)?;\n"
 msgstr ""
 
-#: ../../../reference/host-api.md:344
+#: ../../../reference/host-api.md:350
 msgid ""
 "Generic values are part of the kernel cache key: each unique combination "
 "triggers its own JIT compilation."
 msgstr ""
 
-#: ../../../reference/host-api.md:348
+#: ../../../reference/host-api.md:354
 msgid "Programmatic dependent launch"
 msgstr ""
 
-#: ../../../reference/host-api.md:350
+#: ../../../reference/host-api.md:356
 msgid ""
-"The generated kernel builder has an unsafe, consuming `."
-"programmatic_dependent_launch()` method. It is disabled by default and is "
+"The generated kernel builder has an unsafe, consuming "
+"`.programmatic_dependent_launch()` method. It is disabled by default and is "
 "separate from `CompileOptions`. It requires Tile IR 13.4, sm_90 or newer, "
 "and a driver providing `cuLaunchKernelEx`; unsupported requests fail rather "
-"than silently using ordinary serialization. `cuda_async::AsyncKernelLaunch` "
-"also exposes an unsafe mutable-builder method for lower-level callers."
+"than silently using ordinary serialization. "
+"`cuda_async::AsyncKernelLaunchBuilder` also exposes an unsafe mutable-"
+"builder method for lower-level callers."
 msgstr ""
 
-#: ../../../reference/host-api.md:357
+#: ../../../reference/host-api.md:363
 msgid ""
 "Enqueue both kernels on the same stream, enabling PDL on the **consumer**:"
 msgstr ""
 
-#: ../../../reference/host-api.md:359
+#: ../../../reference/host-api.md:365
 msgid ""
 "unsafe {\n"
 "    kernels::producer(input.device_pointer()).grid((1, 1, 1))\n"
-"        .then(|_| kernels::consumer(input.device_pointer(), output."
-"device_pointer())\n"
+"        .then(|_| kernels::consumer(input.device_pointer(), "
+"output.device_pointer())\n"
 "            .programmatic_dependent_launch().grid((1, 1, 1)))\n"
 "}.sync_on(&stream)?;\n"
 msgstr ""
 
-#: ../../../reference/host-api.md:367
+#: ../../../reference/host-api.md:373
 msgid ""
 "In the producer, chain its stores into "
 "`gdc_launch_dependents_tko(Some(stored))` when dependent kernels may begin; "
@@ -977,7 +997,7 @@ msgid ""
 "establishes dependency completion before consuming data."
 msgstr ""
 
-#: ../../../reference/host-api.md:378
+#: ../../../reference/host-api.md:384
 msgid ""
 "Install the token on a function-level binding, outside conditionals and "
 "loops. An `unsafe { input.set_token(ready) }` block is fine when `input` is "
@@ -989,7 +1009,7 @@ msgid ""
 "token can otherwise discard the ordering required by safe view loads."
 msgstr ""
 
-#: ../../../reference/host-api.md:387
+#: ../../../reference/host-api.md:393
 msgid ""
 "Work before the wait must not race unfinished producer work. Neither kernel "
 "may rely on actual overlap for progress, and all resources must remain alive "
@@ -998,604 +1018,613 @@ msgid ""
 "ordinary stream-ordering guarantees of the safe tensor API."
 msgstr ""
 
-#: ../../../reference/host-api.md:393
+#: ../../../reference/host-api.md:399
 msgid ""
 "For a complete executable producer/consumer pair, see `cutile-examples/"
 "examples/pdl.rs` (with a stream-order vs PDL timing comparison) or the test "
 "`cutile/tests/gpu/tile_ir_13_4.rs::dependent_launch_waits_for_producer_data`."
 msgstr ""
 
-#: ../../../reference/host-api.md:398
+#: ../../../reference/host-api.md:404
 msgid "The Futures Analogy"
 msgstr ""
 
-#: ../../../reference/host-api.md:400
+#: ../../../reference/host-api.md:406
 msgid ""
 "`DeviceOp` is to GPU work what `Future` is to async I/O. Both are lazy "
 "descriptions of work that don't execute until driven:"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:409
 msgid "Concept"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:409
 msgid "`std::future::Future`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:409
 msgid "`DeviceOp`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:409
 msgid "What it represents"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:409
 msgid "Async computation"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:409
 msgid "GPU computation"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:409
 msgid "When it runs"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:409
 msgid "On `.await` or `poll()`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:412
 msgid "On `.sync()`, `.sync_on()`, or `.await`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:412
 msgid "Chaining"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:412
 msgid "`.then()`, `.map()` via `FutureExt`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:413
 msgid "`.then()`, `.map()` on `DeviceOp`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:413
 msgid "Fan-in"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:413
 msgid "`join!`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:414
 msgid "`zip!`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:414
 msgid "Fan-out"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:414
 msgid "N/A (single consumer)"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:414 ../../../reference/host-api.md:436
 msgid "`.unzip()`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:415
 msgid "Shared access"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:415
 msgid "`FutureExt::shared()`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:416 ../../../reference/host-api.md:451
 msgid "`.shared()`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:416
 msgid "Type erasure"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:416
 msgid "`BoxFuture`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:417
 msgid "`.boxed()` → `BoxedDeviceOp`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:417
 msgid "Output wrapper"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:417
 msgid "`Poll<T>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:418
 msgid "`Result<T, DeviceError>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:414
+#: ../../../reference/host-api.md:420
 msgid ""
 "An async runtime drives a `Future` through `poll()`. A `DeviceOp` submits "
-"GPU work through `execute()`. Converting it to a future with `.await` or `."
-"into_future()` produces a `DeviceFuture`, which the runtime polls for GPU "
+"GPU work through `execute()`. Converting it to a future with `.await` or "
+"`.into_future()` produces a `DeviceFuture`, which the runtime polls for GPU "
 "completion."
 msgstr ""
 
-#: ../../../reference/host-api.md:421
+#: ../../../reference/host-api.md:427
 msgid "Combinator Reference"
 msgstr ""
 
-#: ../../../reference/host-api.md:423
+#: ../../../reference/host-api.md:429
 msgid ""
 "All combinators follow established Rust conventions. The \"Precedent\" "
 "column shows which standard library or `futures` crate method inspired the "
 "design."
 msgstr ""
 
-#: ../../../reference/host-api.md:426
+#: ../../../reference/host-api.md:432
 msgid "Composition"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:434 ../../../reference/host-api.md:444
+#: ../../../reference/host-api.md:451
 msgid "Combinator"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:434 ../../../reference/host-api.md:444
+#: ../../../reference/host-api.md:451
 msgid "Signature"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:434 ../../../reference/host-api.md:444
+#: ../../../reference/host-api.md:451
 msgid "Precedent"
 msgstr ""
 
-#: ../../../reference/host-api.md:0 ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:434 ../../../reference/host-api.md:444
+#: ../../../reference/host-api.md:451 ../../../reference/host-api.md:810
 msgid "What it does"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:434
 msgid "`zip!(a, b, …)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:436
 msgid "`(impl DeviceOp, …) → impl DeviceOp<Output=(A, B, …)>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:436
 msgid "`Iterator::zip`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:436
 msgid "Combine N operations into a single tuple-producing operation"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:437
 msgid "`impl DeviceOp<Output=(A, B, …)> → (impl DeviceOp<Output=A>, …)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:437
 msgid "`Iterator::unzip`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:437
 msgid "Split a tuple operation into independent per-element operations"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:437
 msgid "`.then(f)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:438
 msgid "`self → f(Self::Output) → impl DeviceOp<Output=O>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:438
 msgid "`FutureExt::then`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:438
 msgid "Chain follow-up GPU work **on the same stream**"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:438
 msgid "`.map(f)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:439
 msgid "`self → f(Self::Output) → O` (no GPU work)"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:439
 msgid "`FutureExt::map`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:439
 msgid "Transform output without issuing GPU work"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:439
 msgid "`.inspect(f)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:440
 msgid "`self → f(&Self::Output)` (passthrough)"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:440
 msgid "`FutureExt::inspect`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:440
 msgid "Peek at output for debugging; returns it unchanged"
 msgstr ""
 
-#: ../../../reference/host-api.md:436
+#: ../../../reference/host-api.md:442
 msgid "Selection"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:444
 msgid "`.first()`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:446
 msgid "`impl DeviceOp<Output=(A, B, …)> → impl DeviceOp<Output=A>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:446
 msgid "`slice::first`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:446
 msgid "Extract the first element of a tuple output"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:446
 msgid "`.last()`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:447
 msgid "`impl DeviceOp<Output=(A, B, …)> → impl DeviceOp<Output=Z>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:447
 msgid "`slice::last`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:447
 msgid "Extract the last element of a tuple output"
 msgstr ""
 
-#: ../../../reference/host-api.md:443
+#: ../../../reference/host-api.md:449
 msgid "Sharing and Erasure"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:453
 msgid ""
 "`self → SharedDeviceOp<Self::Output>` (requires `Self: 'static`, `Output: "
 "Sync`)"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:453
 msgid "`FutureExt::shared`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:453
 msgid "Cloneable, execute-once; output is `Arc<T>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:453
 msgid "`shared(arc)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:454
 msgid "`Arc<T> → SharedDeviceOp<T>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:454
 msgid "—"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:454
 msgid "Wrap an existing `Arc` as a pre-computed `SharedDeviceOp`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:454
 msgid "`.boxed()`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:455
 msgid "`self → BoxedDeviceOp<Self::Output>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:455
 msgid "`FutureExt::boxed`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:455
 msgid "Type-erase for heterogeneous collections"
 msgstr ""
 
-#: ../../../reference/host-api.md:451
+#: ../../../reference/host-api.md:457
 msgid "Execution"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:459
 msgid "Stream chosen by"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:459
 msgid "Blocks?"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:459
 msgid "Use case"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:459
 msgid "`.sync()`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:461 ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:466
 msgid "Default policy (round-robin)"
 msgstr ""
 
-#: ../../../reference/host-api.md:0 ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:461 ../../../reference/host-api.md:462
+#: ../../../reference/host-api.md:509 ../../../reference/host-api.md:510
+#: ../../../reference/host-api.md:517
 msgid "Yes"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:461
 msgid "Quick scripts"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:461
 msgid "`.sync_on(&stream)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:462 ../../../reference/host-api.md:467
 msgid "The explicit stream"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:462
 msgid "Deterministic ordering, debugging"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:462
 msgid "`.await`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:463
 msgid "No (suspends task)"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:463
 msgid "Async production code"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:463
 msgid "`.into_future()`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:464
 msgid "Default policy"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:464
 msgid "No (returns `DeviceFuture`)"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:464
 msgid "Manual future handling"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:464
 msgid "`.schedule(&policy)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:465
 msgid "The `Arc<dyn SchedulingPolicy>` you provide"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:465
 msgid "No (returns `Result<DeviceFuture, DeviceError>`)"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:465
 msgid "Multi-device dispatch"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:465
 msgid "`.graph()`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:466 ../../../reference/host-api.md:467
 msgid "Yes (captures + syncs)"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:466
 msgid "CUDA graph capture"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:466
 msgid "`.graph_on(stream)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:0
+#: ../../../reference/host-api.md:467
 msgid "CUDA graph capture on specific stream"
 msgstr ""
 
-#: ../../../reference/host-api.md:464
+#: ../../../reference/host-api.md:470
 msgid ""
 "If any kernel input is `&Tensor<T>` (borrowed), the operation is not "
-"`'static` and cannot be used with `tokio::spawn`. Use `.sync_on()` or `."
-"await` in the same scope, or switch to `Arc<Tensor<T>>` for spawned tasks."
+"`'static` and cannot be used with `tokio::spawn`. Use `.sync_on()` or "
+"`.await` in the same scope, or switch to `Arc<Tensor<T>>` for spawned tasks."
 msgstr ""
 
-#: ../../../reference/host-api.md:471
+#: ../../../reference/host-api.md:477
 msgid "Supported Kernel Parameter Types"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:479
 msgid "Kernel param"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:479
 msgid "Host type"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:479
 msgid "Return type"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:479
 msgid "`&Tensor<T, S>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:481
 msgid "`Tensor<T>`, `Arc<Tensor<T>>`, `&Tensor<T>`, or `&TensorView<T>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:481 ../../../reference/host-api.md:482
 msgid "Same as input"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:481
 msgid "`&mut Tensor<T, S>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:482
 msgid ""
 "`Partition<Tensor<T>>`, `Partition<&mut Tensor<T>>`, or their "
 "`MappedLaunchPartition<…>` forms from `.map(..)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:482
 msgid "Scalar (`f32`, `i32`, etc.)"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:483
 msgid "Same scalar"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:483
 msgid "`*mut T`, `*const T` (unsafe only)"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:484 ../../../reference/host-api.md:631
 msgid "`DevicePointer<T>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:480
+#: ../../../reference/host-api.md:486
 msgid ""
 "The borrowed partition form (`Partition<&mut Tensor<T>>`) writes in place — "
 "no `unpartition()` needed. Create it with `(&mut tensor).partition(shape)`."
 msgstr ""
 
-#: ../../../reference/host-api.md:483
+#: ../../../reference/host-api.md:489
 msgid ""
 "Raw pointer entry points are `unsafe fn`s. Obtain a typed device pointer "
 "from a tensor with `tensor.device_pointer()`, and make sure the pointer "
 "remains valid for the duration of the kernel launch:"
 msgstr ""
 
-#: ../../../reference/host-api.md:487
+#: ../../../reference/host-api.md:493
 msgid ""
 "let backing = api::zeros::<f32>(&[1024]).sync_on(&stream)?;\n"
 "let ptr = backing.device_pointer();\n"
 "unsafe { raw_ptr_kernel(ptr, 1024) }.sync_on(&stream)?;\n"
 msgstr ""
 
-#: ../../../reference/host-api.md:495
+#: ../../../reference/host-api.md:501
 msgid "Ownership Model"
 msgstr ""
 
-#: ../../../reference/host-api.md:497
+#: ../../../reference/host-api.md:503
 msgid "Launchers return arguments in the same ownership form they received."
 msgstr ""
 
-#: ../../../reference/host-api.md:499
+#: ../../../reference/host-api.md:505
 msgid "Read-only inputs (`&Tensor` params)"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:507 ../../../reference/host-api.md:515
 msgid "Input"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:507 ../../../reference/host-api.md:515
 msgid "Returned"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:507
 msgid "`tokio::spawn`?"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:507 ../../../reference/host-api.md:509
+#: ../../../reference/host-api.md:623
 msgid "`Tensor<T>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:509 ../../../reference/host-api.md:510
 msgid "`Arc<Tensor<T>>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:510 ../../../reference/host-api.md:511
+#: ../../../reference/host-api.md:625
 msgid "`&'a Tensor<T>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:511
 msgid "No (not `'static`)"
 msgstr ""
 
-#: ../../../reference/host-api.md:507
+#: ../../../reference/host-api.md:513
 msgid "Mutable outputs (`&mut Tensor` params)"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:515
 msgid "`unpartition()` needed?"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:515
 msgid "`Partition<Tensor<T>>` (owned)"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:517
 msgid "`Partition<Tensor<T>>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:517
 msgid "`Partition<&'a mut Tensor<T>>` (borrowed)"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:518
 msgid "`Partition<&'a mut Tensor<T>>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:518
 msgid "No — tensor is written in place"
 msgstr ""
 
-#: ../../../reference/host-api.md:514
+#: ../../../reference/host-api.md:520
 msgid "The borrowed form is created with `(&mut tensor).partition(shape)`:"
 msgstr ""
 
-#: ../../../reference/host-api.md:516
+#: ../../../reference/host-api.md:522
 msgid "Owned: `Tensor<T>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:518
+#: ../../../reference/host-api.md:524
 msgid ""
 "Pass a tensor directly — the launcher wraps it in `Arc` internally for the "
 "kernel, then unwraps it back afterward (safe because refcount is 1):"
 msgstr ""
 
-#: ../../../reference/host-api.md:521
+#: ../../../reference/host-api.md:527
 msgid ""
 "let output = my_kernel(\n"
 "    api::zeros(&[1024]).partition([128]),\n"
@@ -1606,19 +1635,19 @@ msgid ""
 ".sync_on(&stream)?;\n"
 msgstr ""
 
-#: ../../../reference/host-api.md:531
+#: ../../../reference/host-api.md:537
 msgid "Use this for single-use tensors where you don't need shared access."
 msgstr ""
 
-#: ../../../reference/host-api.md:533
+#: ../../../reference/host-api.md:539
 msgid "Shared: `Arc<Tensor<T>>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:535
+#: ../../../reference/host-api.md:541
 msgid "Wrap in `Arc` when the same tensor is passed to multiple kernels:"
 msgstr ""
 
-#: ../../../reference/host-api.md:537
+#: ../../../reference/host-api.md:543
 msgid ""
 "let x: Arc<Tensor<f32>> = api::ones(&[1024]).sync_on(&stream)?.into();\n"
 "\n"
@@ -1626,21 +1655,21 @@ msgid ""
 "let b = kernel_b(out_b, x.clone()).sync_on(&stream)?;\n"
 msgstr ""
 
-#: ../../../reference/host-api.md:544
+#: ../../../reference/host-api.md:550
 msgid "This is the most common pattern in existing code."
 msgstr ""
 
-#: ../../../reference/host-api.md:546
+#: ../../../reference/host-api.md:552
 msgid "Borrowed: `&Tensor<T>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:548
+#: ../../../reference/host-api.md:554
 msgid ""
 "Pass a reference when you want to retain ownership and avoid `Arc` overhead. "
 "The borrow checker ensures the tensor outlives the kernel:"
 msgstr ""
 
-#: ../../../reference/host-api.md:551
+#: ../../../reference/host-api.md:557
 msgid ""
 "let weights: Tensor<f32> = api::ones(&[1024]).sync_on(&stream)?;\n"
 "\n"
@@ -1650,23 +1679,23 @@ msgid ""
 "// weights is still available here.\n"
 msgstr ""
 
-#: ../../../reference/host-api.md:560
+#: ../../../reference/host-api.md:566
 msgid ""
 "Because `&Tensor<T>` is not `'static`, `tokio::spawn` rejects operations "
 "that borrow tensors:"
 msgstr ""
 
-#: ../../../reference/host-api.md:563
+#: ../../../reference/host-api.md:569
 msgid ""
 "let op = my_kernel(out, &weights);  // borrows weights\n"
 "tokio::spawn(op.into_future());      // ← compile error: not 'static\n"
 msgstr ""
 
-#: ../../../reference/host-api.md:568
+#: ../../../reference/host-api.md:574
 msgid "`.shared()`: Clone + Execute-Once"
 msgstr ""
 
-#: ../../../reference/host-api.md:570
+#: ../../../reference/host-api.md:576
 msgid ""
 "`.shared()` converts a `DeviceOp` into a `SharedDeviceOp<T>` that is "
 "`Clone`. It requires the operation to be `'static` and its output to be "
@@ -1674,7 +1703,7 @@ msgid ""
 "`Arc::clone()` of the cached result:"
 msgstr ""
 
-#: ../../../reference/host-api.md:575
+#: ../../../reference/host-api.md:581
 msgid ""
 "let x = api::ones::<f32>(&[32, 32]).shared();\n"
 "\n"
@@ -1683,19 +1712,19 @@ msgid ""
 "let b = kernel_b(x.clone()).sync()?;  // uses cached Arc<Tensor<f32>>\n"
 msgstr ""
 
-#: ../../../reference/host-api.md:582
+#: ../../../reference/host-api.md:588
 msgid ""
 "Output type changes: `DeviceOp<Output=T>` becomes `SharedDeviceOp` with "
 "`Output=Arc<T>`."
 msgstr ""
 
-#: ../../../reference/host-api.md:585
+#: ../../../reference/host-api.md:591
 msgid ""
 "For pre-computed values (e.g., weight tensors), use the `shared()` free "
 "function to wrap an `Arc<T>` directly:"
 msgstr ""
 
-#: ../../../reference/host-api.md:588
+#: ../../../reference/host-api.md:594
 msgid ""
 "use cuda_async::device_operation::shared;\n"
 "\n"
@@ -1703,18 +1732,18 @@ msgid ""
 "let w_op: SharedDeviceOp<Tensor<f32>> = shared(w);\n"
 msgstr ""
 
-#: ../../../reference/host-api.md:595
+#: ../../../reference/host-api.md:601
 msgid "`.unwrap_arc()`"
 msgstr ""
 
-#: ../../../reference/host-api.md:597
+#: ../../../reference/host-api.md:603
 msgid ""
 "`.shared()` produces `Arc<T>` outputs (`unzip` keeps the tuple's element "
-"types). When you need owned `T` back (e.g., to partition a tensor), use `."
-"unwrap_arc()`:"
+"types). When you need owned `T` back (e.g., to partition a tensor), use "
+"`.unwrap_arc()`:"
 msgstr ""
 
-#: ../../../reference/host-api.md:601
+#: ../../../reference/host-api.md:607
 msgid ""
 "let x: Arc<Tensor<f32>> = api::ones(&[1024]).shared().sync()?;\n"
 "\n"
@@ -1722,99 +1751,99 @@ msgid ""
 "let partitioned = owned.partition([128]);\n"
 msgstr ""
 
-#: ../../../reference/host-api.md:608
+#: ../../../reference/host-api.md:614
 msgid "Panics if the Arc has multiple owners."
 msgstr ""
 
-#: ../../../reference/host-api.md:610
+#: ../../../reference/host-api.md:616
 msgid "IntoDeviceOp: Automatic Wrapping"
 msgstr ""
 
-#: ../../../reference/host-api.md:612
+#: ../../../reference/host-api.md:618
 msgid ""
 "The `IntoDeviceOp` trait lets kernel launchers accept both `DeviceOp`s and "
 "plain values:"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:621
 msgid "Type"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:621
 msgid "Wraps as"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:621
 msgid "Any `impl DeviceOp<Output=T>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:623
 msgid "Pass-through"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:624
 msgid "`Value<Tensor<T>>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:624
 msgid "`Arc<T>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:625
 msgid "`Value<Arc<T>>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:626
 msgid "`Value<&'a Tensor<T>>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:626
 msgid "`&Arc<T>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:627
 msgid "`Value<Arc<T>>` (clones the Arc)"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:627
 msgid "`&'a TensorView<'a, T>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:628
 msgid "`Value<&'a TensorView<'a, T>>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:628
 msgid ""
 "`f32`, `f64`, `i8`, `i16`, `i32`, `i64`, `u8`, `u16`, `u32`, `u64`, `usize`, "
 "`bool`, `f16`, `bf16`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:629
 msgid "`Value<T>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:629
 msgid "`Partition<Tensor<T>>`, `Partition<&'a mut Tensor<T>>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:630
 msgid "`Value<Partition<…>>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:630
 msgid "`MappedLaunchPartition<Partition<…>>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:631
 msgid "`Value<MappedLaunchPartition<…>>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:632
 msgid "`Value<DevicePointer<T>>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:628
+#: ../../../reference/host-api.md:634
 msgid ""
 "// All of these work as inputs to a &Tensor kernel param:\n"
 "my_kernel(out, tensor);              // Tensor<T>\n"
@@ -1823,22 +1852,22 @@ msgid ""
 "my_kernel(out, api::ones(&[1024]));  // DeviceOp<Output=Tensor<T>>\n"
 msgstr ""
 
-#: ../../../reference/host-api.md:638
+#: ../../../reference/host-api.md:644
 msgid "Scheduling Model"
 msgstr ""
 
-#: ../../../reference/host-api.md:640
+#: ../../../reference/host-api.md:646
 msgid "Stream assignment"
 msgstr ""
 
-#: ../../../reference/host-api.md:642
+#: ../../../reference/host-api.md:648
 msgid ""
 "When you call `.sync()` or `.await`, the operation asks the **default "
 "device's scheduling policy** for a stream. The default policy is "
 "`StreamPoolRoundRobin` with 4 streams:"
 msgstr ""
 
-#: ../../../reference/host-api.md:646
+#: ../../../reference/host-api.md:652
 msgid ""
 "op_a.sync()  →  Stream 0\n"
 "op_b.sync()  →  Stream 1\n"
@@ -1847,78 +1876,78 @@ msgid ""
 "op_e.sync()  →  Stream 0  (wraps around)\n"
 msgstr ""
 
-#: ../../../reference/host-api.md:654
+#: ../../../reference/host-api.md:660
 msgid ""
 "Consecutive independent operations land on different streams, enabling GPU "
 "overlap. Operations chained with `.then()` share the parent's stream, "
 "preserving data-dependency ordering."
 msgstr ""
 
-#: ../../../reference/host-api.md:658
+#: ../../../reference/host-api.md:664
 msgid "Explicit Stream: `.sync_on()`"
 msgstr ""
 
-#: ../../../reference/host-api.md:660
+#: ../../../reference/host-api.md:666
 msgid ""
 "Bypasses the policy entirely. All operations given the same stream execute "
 "in call order:"
 msgstr ""
 
-#: ../../../reference/host-api.md:663
+#: ../../../reference/host-api.md:669
 msgid ""
 "let stream = device.new_stream()?;\n"
 "let a = op_a.sync_on(&stream)?;  // Stream X\n"
 "let b = op_b.sync_on(&stream)?;  // Stream X — guaranteed after op_a\n"
 msgstr ""
 
-#: ../../../reference/host-api.md:669
+#: ../../../reference/host-api.md:675
 msgid "Available Policies"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:677
 msgid "Policy"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:677
 msgid "Behavior"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:677
 msgid "`StreamPoolRoundRobin` (default)"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:679
 msgid "Rotates through N streams (default 4)"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:679
 msgid "`SingleStream`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:680
 msgid "All operations on one stream — strict ordering"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:680
 msgid "Custom `impl SchedulingPolicy`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:681
 msgid "Implement `fn next_stream()` for your own strategy"
 msgstr ""
 
-#: ../../../reference/host-api.md:677
+#: ../../../reference/host-api.md:683
 msgid "`.then()` Guarantees"
 msgstr ""
 
-#: ../../../reference/host-api.md:679
+#: ../../../reference/host-api.md:685
 msgid ""
 "`.then()` is the recommended way to express data dependencies. Both "
 "operations share a single stream, so the second is guaranteed to see the "
 "first's output fully written — no manual synchronization needed:"
 msgstr ""
 
-#: ../../../reference/host-api.md:683
+#: ../../../reference/host-api.md:689
 msgid ""
 "let result = allocate_buffer()\n"
 "    .then(|buf| fill_kernel(buf))      // same stream\n"
@@ -1926,7 +1955,7 @@ msgid ""
 "    .sync()?;\n"
 msgstr ""
 
-#: ../../../reference/host-api.md:690
+#: ../../../reference/host-api.md:696
 msgid ""
 "**Non-reentrancy:** On any given thread, only one DeviceOp may be executing "
 "at a time. Calling `sync_on`, `sync`, or `.await` inside a `then` closure "
@@ -1935,96 +1964,96 @@ msgid ""
 "there are no cross-stream data races, use `unsafe then_unchecked`."
 msgstr ""
 
-#: ../../../reference/host-api.md:699
+#: ../../../reference/host-api.md:705
 msgid "Error Propagation"
 msgstr ""
 
-#: ../../../reference/host-api.md:701
+#: ../../../reference/host-api.md:707
 msgid ""
 "All execution methods return `Result<T, DeviceError>`. Errors propagate "
 "through combinators: if any operation in a `.then()` chain fails, the error "
 "short-circuits to the caller."
 msgstr ""
 
-#: ../../../reference/host-api.md:705
+#: ../../../reference/host-api.md:711
 msgid "DeviceError Variants"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:713
 msgid "Variant"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:713
 msgid "When it occurs"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:713
 msgid "`Driver(DriverError)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:715
 msgid "CUDA driver call failed (OOM, invalid argument, etc.)"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:715
 msgid "`Context { device_id, message }`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
-msgid "Device context assertion failed"
+#: ../../../reference/host-api.md:716
+msgid "Context context assertion failed"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:716
 msgid "`KernelCache(String)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:717
 msgid "Declared, but no current code path constructs it"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:717
 msgid "`Scheduling(String)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:718
 msgid "No stream available or policy misconfigured"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:718
 msgid "`Launch(String)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:719
 msgid ""
 "A launcher-generated precondition failed (`kernel_launch_assert`: argument "
 "shapes, declared `preconditions`)"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:719
 msgid "`Internal(String)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:720
 msgid ""
 "Bug in cuda-async internals, or a nested execution attempt rejected by the "
 "non-reentrancy guard"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:720
 msgid "`Anyhow(String)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:721
 msgid ""
 "Converted from `anyhow::Error` or `cutile::error::Error`; JIT compilation, "
 "grid inference, and tensor errors arrive here"
 msgstr ""
 
-#: ../../../reference/host-api.md:717
+#: ../../../reference/host-api.md:723
 msgid "Error Handling Patterns"
 msgstr ""
 
-#: ../../../reference/host-api.md:719
+#: ../../../reference/host-api.md:725
 msgid ""
 "// Pattern 1: Propagate with ?\n"
 "let x = api::zeros(&[1024]).sync_on(&stream)?;\n"
@@ -2042,11 +2071,11 @@ msgid ""
 "}\n"
 msgstr ""
 
-#: ../../../reference/host-api.md:736
+#: ../../../reference/host-api.md:742
 msgid "cutile::error::Error vs DeviceError"
 msgstr ""
 
-#: ../../../reference/host-api.md:738
+#: ../../../reference/host-api.md:744
 msgid ""
 "`cutile::error::Error` is the top-level error type that wraps `DeviceError` "
 "alongside other error categories (I/O, shape mismatches, etc.). Functions "
@@ -2054,19 +2083,19 @@ msgid ""
 "device work (like the examples) return `cutile::error::Error`."
 msgstr ""
 
-#: ../../../reference/host-api.md:746
+#: ../../../reference/host-api.md:752
 msgid "CUDA Graph Integration"
 msgstr ""
 
-#: ../../../reference/host-api.md:748
+#: ../../../reference/host-api.md:754
 msgid "Combinator approach: `.graph_on(stream)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:750
+#: ../../../reference/host-api.md:756
 msgid "Any `DeviceOp` can be captured into a replayable CUDA graph:"
 msgstr ""
 
-#: ../../../reference/host-api.md:752
+#: ../../../reference/host-api.md:758
 msgid ""
 "let forward_op = build_forward(&cfg, &weights, input, buffers);\n"
 "let mut graph = forward_op.graph_on(stream.clone())?;\n"
@@ -2079,15 +2108,15 @@ msgid ""
 "}\n"
 msgstr ""
 
-#: ../../../reference/host-api.md:764
+#: ../../../reference/host-api.md:770
 msgid "This requires `Arc<Tensor<T>>` + `try_partition` for shared buffers."
 msgstr ""
 
-#: ../../../reference/host-api.md:766
+#: ../../../reference/host-api.md:772
 msgid "Scope approach: `CudaGraph::scope`"
 msgstr ""
 
-#: ../../../reference/host-api.md:768
+#: ../../../reference/host-api.md:774
 msgid ""
 "`CudaGraph::scope` provides an imperative alternative using `&mut` borrows "
 "instead of `Arc`. Each `s.record(op)` records a graph node and releases "
@@ -2095,7 +2124,7 @@ msgid ""
 "the next:"
 msgstr ""
 
-#: ../../../reference/host-api.md:773
+#: ../../../reference/host-api.md:779
 msgid ""
 "let mut output = api::zeros::<f32>(&[d]).sync_on(&stream)?;\n"
 "let weights = api::ones::<f32>(&[d]).sync_on(&stream)?;\n"
@@ -2109,108 +2138,108 @@ msgid ""
 "graph.launch().sync_on(&stream)?;\n"
 msgstr ""
 
-#: ../../../reference/host-api.md:786
+#: ../../../reference/host-api.md:792
 msgid ""
 "`record` only accepts operations that implement `GraphNode` — kernel "
 "launches and `memcpy`. Allocation ops (`zeros`, `ones`, `dup`) are rejected "
 "at compile time because their addresses may change on replay."
 msgstr ""
 
-#: ../../../reference/host-api.md:790
+#: ../../../reference/host-api.md:796
 msgid "`GraphNode` trait"
 msgstr ""
 
-#: ../../../reference/host-api.md:792
+#: ../../../reference/host-api.md:798
 msgid ""
 "`GraphNode` is a marker trait for operations safe to record in a CUDA graph. "
 "Only operations that do not allocate or free device memory implement it:"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:802
 msgid "Implements `GraphNode`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:802
 msgid "Why safe"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:802
 msgid "Macro-generated kernel launchers"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:802
 msgid "Kernel launch only — no alloc/free"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:802
 msgid "`Memcpy` (`api::memcpy`)"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:805
 msgid "Copy between pre-allocated buffers"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:805
 msgid "`Value<T>` (`value(x)`)"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:806
 msgid "No GPU work"
 msgstr ""
 
-#: ../../../reference/host-api.md:802
+#: ../../../reference/host-api.md:808
 msgid "CudaGraph methods"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:810
 msgid "`.graph()` / `.graph_on(stream)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:812
 msgid "Capture a `DeviceOp` into a `CudaGraph<T>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:812
 msgid "`CudaGraph::scope(&stream, |s| { … })`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:813
 msgid "Scoped capture with `&mut` borrows"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:813
 msgid "`s.record(op: impl GraphNode)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:814
 msgid "Record a graph node inside a scope"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:814
 msgid "`graph.take_output()`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:815
 msgid "Retrieve the output from the capture execution"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:815
 msgid "`graph.update(op)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:816
 msgid "Run a `DeviceOp` on the graph's stream (e.g., copy new input)"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:816
 msgid "`graph.launch()`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:817
 msgid "Returns a `DeviceOp` that replays the captured graph"
 msgstr ""
 
-#: ../../../reference/host-api.md:813
+#: ../../../reference/host-api.md:819
 msgid ""
 "All device pointers are baked in at capture time. To vary inputs, pre-"
 "allocate a buffer, pass it into the operation, and `memcpy` new data before "
@@ -2218,138 +2247,149 @@ msgid ""
 "complete walkthrough."
 msgstr ""
 
-#: ../../../reference/host-api.md:820
+#: ../../../reference/host-api.md:824
+msgid ""
+"Replay safety is enforced at runtime. The graph keeps the storage of every "
+"buffer it recorded alive for as long as it can replay, each launch re-leases "
+"those accesses on its own submission, and a replay that conflicts with an in-"
+"flight access on another stream is rejected before it is enqueued, as is any "
+"other conflicting operation. Dropping a buffer's handle after capture makes "
+"its data unreachable but frees nothing the graph still uses."
+msgstr ""
+
+#: ../../../reference/host-api.md:833
 msgid "Additional Public API"
 msgstr ""
 
-#: ../../../reference/host-api.md:822
+#: ../../../reference/host-api.md:835
 msgid "Public host-side API not covered in the sections above:"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:837
 msgid ""
 "`unsafe Tensor::from_foreign(owner: Arc<dyn DeviceAllocation>, shape, "
 "strides)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:839
 msgid ""
 "Borrow device memory owned by an external framework (cudarc, torch, VMM "
 "ranges); the owner is held alive by refcount and the addressable extent is "
 "verified at construction"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:839
 msgid "`unsafe Tensor::borrow_raw_parts(dptr, device_id, shape, strides)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:840
 msgid "Borrow a bare device pointer as a `Tensor<T>`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:840
 msgid "`tensor.partition_prefix(shape)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:841
 msgid ""
 "Output partition whose launch grid may cover a per-axis prefix of the block "
 "grid (`partition` keeps strict equality)"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:841
 msgid "`partition.map(map_shape, num_tile_blocks)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:842
 msgid ""
 "`MappedLaunchPartition` for persistent kernels that iterate "
 "`MappedPartitionMut` indices; the launch grid is `(num_tile_blocks, 1, 1)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:842
 msgid ""
 "`cutile::jit_cache::{enable, enable_default, disable, is_enabled, stats}`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:843
 msgid "Opt-in persistent on-disk cubin cache; off by default"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:843
 msgid "launcher `.compile()` / `.compile_on(&stream)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:844
 msgid "JIT-compile and cache the specialization without launching"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:844
 msgid "launcher `.specialize()`, `.l1_cache_key()`, `.l2_cache_key()`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:845
 msgid ""
 "Resolve the specialization identity and the in-memory / on-disk cache keys "
 "without compiling or launching"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:845
 msgid "`api::meta::<T>(&shape)`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:846
 msgid ""
-"Placeholder tensor carrying shape and dtype without allocating, for `."
-"compile()` warmups"
+"Placeholder tensor carrying shape and dtype without allocating, for "
+"`.compile()` warmups"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:846
 msgid ""
 "`CompileOptions::{opt_level, device_debug, lineinfo, sanitize_memcheck}`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:847
 msgid ""
-"Device compiler flags; each is part of the cache keys (see [Debugging and "
+"Context compiler flags; each is part of the cache keys (see [Debugging and "
 "Profiling](../guide/debugging-and-profiling.md))"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:847
 msgid "`cutile::bench::{do_bench, do_bench_paired, BenchOptions, Measurement}`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
-msgid "Device-event kernel timing (see [Performance](../guide/performance.md))"
+#: ../../../reference/host-api.md:848
+msgid ""
+"Context-event kernel timing (see [Performance](../guide/performance.md))"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:848
 msgid ""
 "`cuda_async::device_context::{set_default_device, global_policy, "
 "with_device_policy}`"
 msgstr ""
 
-#: ../../../reference/host-api.md:463
+#: ../../../reference/host-api.md:849
 msgid ""
 "Set the thread's default device; read or borrow a device's scheduling policy"
 msgstr ""
 
-#: ../../../reference/host-api.md:840
+#: ../../../reference/host-api.md:853
 msgid "See Also"
 msgstr ""
 
-#: ../../../reference/host-api.md:842
+#: ../../../reference/host-api.md:855
 msgid ""
-"[Device Operations](../guide/device-operations.md) — tutorial-style guide to "
-"streams, scheduling, and composition patterns"
+"[Context Operations](../guide/device-operations.md) — tutorial-style guide "
+"to streams, scheduling, and composition patterns"
 msgstr ""
 
-#: ../../../reference/host-api.md:843
+#: ../../../reference/host-api.md:856
 msgid ""
 "[Tutorial 10](../tutorials/10-cuda-graphs.md) — end-to-end CUDA graph example"
 msgstr ""
 
-#: ../../../reference/host-api.md:844
+#: ../../../reference/host-api.md:857
 msgid ""
 "[Interoperability](../guide/interoperability.md) — integrating custom CUDA C+"
 "+ kernels into the DeviceOp model"

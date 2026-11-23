@@ -8,10 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cuTile Rust main\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-21 16:36+0000\n"
+"POT-Creation-Date: 2026-11-23 20:48+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -65,7 +66,7 @@ msgstr ""
 #: ../../../tutorials/03-saxpy.md:24
 msgid ""
 "use cuda_async::device_operation::DeviceOp;\n"
-"use cuda_core::Device;\n"
+"use cuda_core::Context;\n"
 "use std::sync::Arc;\n"
 "use cutile;\n"
 "use cutile::api::arange;\n"
@@ -94,7 +95,7 @@ msgid ""
 "use my_module::saxpy;\n"
 "\n"
 "fn main() -> Result<(), Error> {\n"
-"    let device = Device::new(0)?;\n"
+"    let device = Context::new(0)?;\n"
 "    let stream = device.new_stream()?;\n"
 "    \n"
 "    let a = 2.0f32;  // Our scalar multiplier\n"
@@ -212,43 +213,43 @@ msgstr ""
 msgid "Key Takeaways"
 msgstr ""
 
-#: ../../../tutorials/03-saxpy.md:0
+#: ../../../tutorials/03-saxpy.md:128
 msgid "Concept"
 msgstr ""
 
-#: ../../../tutorials/03-saxpy.md:0
+#: ../../../tutorials/03-saxpy.md:128
 msgid "What It Means"
 msgstr ""
 
-#: ../../../tutorials/03-saxpy.md:0
+#: ../../../tutorials/03-saxpy.md:128
 msgid "**Broadcasting**"
 msgstr ""
 
-#: ../../../tutorials/03-saxpy.md:0
+#: ../../../tutorials/03-saxpy.md:130
 msgid "Replicate a scalar/small value to match a larger shape"
 msgstr ""
 
-#: ../../../tutorials/03-saxpy.md:0
+#: ../../../tutorials/03-saxpy.md:130
 msgid "**In-place ops**"
 msgstr ""
 
-#: ../../../tutorials/03-saxpy.md:0
+#: ../../../tutorials/03-saxpy.md:131
 msgid "Update a tensor in place instead of creating a new one"
 msgstr ""
 
-#: ../../../tutorials/03-saxpy.md:0
+#: ../../../tutorials/03-saxpy.md:131
 msgid "**Memory hierarchy**"
 msgstr ""
 
-#: ../../../tutorials/03-saxpy.md:0
+#: ../../../tutorials/03-saxpy.md:132
 msgid "Global (slow) → Registers (fast) → Global"
 msgstr ""
 
-#: ../../../tutorials/03-saxpy.md:0
+#: ../../../tutorials/03-saxpy.md:132
 msgid "**y.shape()**"
 msgstr ""
 
-#: ../../../tutorials/03-saxpy.md:0
+#: ../../../tutorials/03-saxpy.md:133
 msgid "Returns the static shape used to partition the tensor"
 msgstr ""
 
