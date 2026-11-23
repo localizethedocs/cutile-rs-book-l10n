@@ -8,10 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cuTile Rust main\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-21 16:36+0000\n"
+"POT-Creation-Date: 2026-11-23 20:48+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -26,87 +27,88 @@ msgid ""
 "computing on those tiles, and storing the result back to tensors."
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:5
 msgid "Property"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:5
 msgid "Tensor"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:5
 msgid "Tile"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:5
 msgid "Location"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:5
 msgid "Global memory (HBM)"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:5
 msgid "Registers"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:5
 msgid "Mutability"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:5
 msgid "Mutable or read-only"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:5
 msgid "Immutable"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:5
 msgid "Shape"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:5
 msgid "Static, dynamic, or mixed"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:5
 msgid "Static"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:5
 msgid "Operations"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:5
+#: ../../../guide/tensors-and-tiles.md:124
 msgid "Load and store"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:5
 msgid "Arithmetic, reductions, matrix multiply, shape ops"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:5
 msgid "Lifetime"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:5
 msgid "Persists across kernels"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:5
 msgid "Exists only inside a kernel"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:5
 msgid "Addressable"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:5
 msgid "Yes"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:5
 msgid "No"
 msgstr ""
 
@@ -316,73 +318,73 @@ msgstr ""
 msgid "Kernel operations"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:124
 msgid "Category"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:124
 msgid "Examples"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:124
 msgid ""
-"`load_like` (method form of `load_tile_like`), `load_tile_mut`, `Partition::"
-"load`, `Tensor::store`"
+"`load_like` (method form of `load_tile_like`), `load_tile_mut`, "
+"`Partition::load`, `Tensor::store`"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:126
 msgid "Arithmetic"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:126
 msgid "`+`, `-`, `*`, `/`, `fma`, `true_div`"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:127
 msgid "Math"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:127
 msgid "`exp`, `log`, `sqrt`, `rsqrt`, `sin`, `cos`, `tanh`"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:128
 msgid "Reduction and scan"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:128
 msgid "`reduce_max`, `reduce_sum`, `reduce_min`, `scan`"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:129
 msgid "Matrix multiply"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:129
 msgid "`mma`, `mmaf_scaled`"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:130
 msgid "Shape manipulation"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:130
 msgid "`reshape`, `broadcast`, `transpose`, `shape!`"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:131
 msgid "Comparison"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:131
 msgid "`gt_tile`, `ge_tile`, `lt_tile`, `le_tile`, `eq_tile`, `select`"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:132
 msgid "Creation and conversion"
 msgstr ""
 
-#: ../../../guide/tensors-and-tiles.md:0
+#: ../../../guide/tensors-and-tiles.md:132
 msgid "`constant`, `iota`, `convert_tile`, `pack`, `unpack`"
 msgstr ""
 

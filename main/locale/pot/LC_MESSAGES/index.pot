@@ -8,10 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cuTile Rust main\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-21 16:36+0000\n"
+"POT-Creation-Date: 2026-11-23 20:48+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -24,7 +25,7 @@ msgstr ""
 msgid "User Guide"
 msgstr ""
 
-#: ../../../index.md:110
+#: ../../../index.md:111
 msgid "Reference"
 msgstr ""
 
@@ -99,33 +100,33 @@ msgstr ""
 msgid "What it gives you"
 msgstr ""
 
-#: ../../../index.md:60
+#: ../../../index.md:59
 msgid "Ownership at the launch boundary"
 msgstr ""
 
-#: ../../../index.md:61
+#: ../../../index.md:60
 msgid ""
 "Mutable tensors are partitioned into disjoint pieces before launch; "
 "immutable tensors are shared by `Arc`. The borrow checker covers GPU kernel "
 "arguments, not just host-side code."
 msgstr ""
 
-#: ../../../index.md:64
+#: ../../../index.md:63
 msgid "Tile programs"
 msgstr ""
 
-#: ../../../index.md:65
+#: ../../../index.md:64
 msgid ""
 "Tile kernels are written as single-threaded programs over tiles of data. The "
 "compiler maps tiles onto warps, blocks, and Tensor Cores; you don't manage "
 "shared memory or thread indices directly."
 msgstr ""
 
-#: ../../../index.md:68
+#: ../../../index.md:67
 msgid "CUDA Tile IR compilation"
 msgstr ""
 
-#: ../../../index.md:69
+#: ../../../index.md:68
 msgid ""
 "Tile kernels lower through CUDA Tile IR, NVIDIA's tile-level compiler IR, to "
 "GPU cubins. On B200, the safe API reaches 2.07 PFlop/s on persistent GEMM "

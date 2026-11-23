@@ -8,10 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cuTile Rust main\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-21 16:36+0000\n"
+"POT-Creation-Date: 2026-11-23 20:48+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -35,43 +36,43 @@ msgstr ""
 msgid "Matrix multiplication (GEMM, or General Matrix Multiply) is used in:"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:10
 msgid "Application"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:10
 msgid "Where GEMM is Used"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:10
 msgid "**Transformers**"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:12
 msgid "Attention and Fully Connected layers — 90%+ of compute"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:12
 msgid "**CNNs**"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:13
 msgid "Convolutions expressed as matrix multiplications"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:13
 msgid "**Scientific Computing**"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:14
 msgid "Simulations and solvers"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:14
 msgid "**Graphics**"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:15
 msgid "Transformations, lighting calculations"
 msgstr ""
 
@@ -165,7 +166,7 @@ msgstr ""
 #: ../../../tutorials/04-matrix-multiplication.md:61
 msgid ""
 "use cuda_async::device_operation::DeviceOp;\n"
-"use cuda_core::Device;\n"
+"use cuda_core::Context;\n"
 "use std::sync::Arc;\n"
 "use cutile;\n"
 "use cutile::api;\n"
@@ -204,7 +205,7 @@ msgid ""
 "use my_module::gemm;\n"
 "\n"
 "fn main() -> Result<(), Error> {\n"
-"    let device = Device::new(0)?;\n"
+"    let device = Context::new(0)?;\n"
 "    let stream = device.new_stream()?;\n"
 "\n"
 "    let (bm, bn, bk) = (16usize, 16usize, 8usize);\n"
@@ -216,10 +217,10 @@ msgid ""
 "    ];\n"
 "\n"
 "    let z = api::zeros(&[m, n]).partition([bm, bn]).sync_on(&stream)?;\n"
-"    let x: Arc<Tensor<f32>> = api::ones(&[m, k]).map(Into::into)."
-"sync_on(&stream)?;\n"
-"    let y: Arc<Tensor<f32>> = api::ones(&[k, n]).map(Into::into)."
-"sync_on(&stream)?;\n"
+"    let x: Arc<Tensor<f32>> = api::ones(&[m, "
+"k]).map(Into::into).sync_on(&stream)?;\n"
+"    let y: Arc<Tensor<f32>> = api::ones(&[k, "
+"n]).map(Into::into).sync_on(&stream)?;\n"
 "\n"
 "    let (z, _x, _y) = gemm(z, x, y).generics(generics).sync_on(&stream)?;\n"
 "\n"
@@ -329,8 +330,8 @@ msgstr ""
 
 #: ../../../tutorials/04-matrix-multiplication.md:179
 msgid ""
-"let generics = vec![\"f32\".to_string(), \"16\".to_string(), \"16\"."
-"to_string(), \"8\".to_string(), \"64\".to_string()];\n"
+"let generics = vec![\"f32\".to_string(), \"16\".to_string(), "
+"\"16\".to_string(), \"8\".to_string(), \"64\".to_string()];\n"
 "gemm(z, x, y).generics(generics)\n"
 msgstr ""
 
@@ -420,8 +421,8 @@ msgstr ""
 
 #: ../../../tutorials/04-matrix-multiplication.md:219
 msgid ""
-"On the host side, `y` is a `Partition<Tensor<f32>>` created by calling `."
-"partition([2, 2])`. The `partition_shape` of that `Partition` — `[2, 2]` — "
+"On the host side, `y` is a `Partition<Tensor<f32>>` created by calling "
+"`.partition([2, 2])`. The `partition_shape` of that `Partition` — `[2, 2]` — "
 "is used to infer `S`. Since `S` is the only const generic and it appears "
 "directly in the `&mut Tensor<f32, S>` parameter, cutile can infer everything "
 "it needs from the host-side types alone. No `.generics()` call required."
@@ -452,79 +453,83 @@ msgid ""
 ")\n"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:233
 msgid "Generic"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:233
 msgid "Appears in"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:233
 msgid "Inferred from"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:233
 msgid "Inferable?"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:233
 msgid "`E`"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:235
 msgid "`z`, `x`, `y`"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:235
 msgid "`z.dtype()`"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:235
+#: ../../../tutorials/04-matrix-multiplication.md:236
+#: ../../../tutorials/04-matrix-multiplication.md:237
+#: ../../../tutorials/04-matrix-multiplication.md:238
 msgid "Yes"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:235
 msgid "`BM`"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:236
+#: ../../../tutorials/04-matrix-multiplication.md:237
 msgid "`z` (`&mut`)"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:236
 msgid "`z.partition_shape[0]`"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:236
 msgid "`BN`"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:237
 msgid "`z.partition_shape[1]`"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:237
 msgid "`K`"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:238
 msgid "`x`, `y`"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:238
 msgid "`x.shape()[1]`"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:238
 msgid "`BK`"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:239
 msgid "—"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:239
 msgid "No"
 msgstr ""
 
@@ -552,9 +557,9 @@ msgstr ""
 #: ../../../tutorials/04-matrix-multiplication.md:251
 msgid ""
 "As a general rule: if every const generic appears somewhere in the kernel's "
-"`&Tensor` or `&mut Tensor` parameter types, inference will work and `."
-"generics()` is optional. If any const generic is used only inside the kernel "
-"body (like `BK`), you must pass all generics explicitly."
+"`&Tensor` or `&mut Tensor` parameter types, inference will work and "
+"`.generics()` is optional. If any const generic is used only inside the "
+"kernel body (like `BK`), you must pass all generics explicitly."
 msgstr ""
 
 #: ../../../tutorials/04-matrix-multiplication.md:256
@@ -844,91 +849,91 @@ msgstr ""
 msgid "Choosing Between the Approaches"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:439
 msgid "Mapped Persistent"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:439
 msgid "Unsafe + Hints"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:439
 msgid "Fully Static"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:439
 msgid "**Safety**"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:441
 msgid "Safe bounded/disjoint output iteration"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:441
 msgid "`unsafe` - programmer must ensure correct dimensions"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:441
 msgid "Safe - compiler verifies direct static accesses"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:441
 msgid "**Compilation behavior**"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:442
 msgid "Tile sizes and map shape create new compiled variants"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:442
 msgid "Tile sizes create new compiled variants"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:442
 msgid "Every full tensor shape creates a new compiled variant"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:442
 msgid "**Flexibility**"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:443
 msgid "Problem sizes can change at runtime"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:443
 msgid "Each new problem size is a new compilation"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:443
 msgid "**Compile-time checks**"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:444
 msgid "Tile shapes, types, and mapped index proofs"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:444
 msgid "Tile shapes and types still checked"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:444
 msgid "All shapes and types checked"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:444
 msgid "**Best for**"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:445
 msgid "Default high-performance safe GEMM"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:445
 msgid "Escape hatch for manually proven kernels"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:445
 msgid "Legacy fixed-size kernels"
 msgstr ""
 
@@ -944,96 +949,96 @@ msgstr ""
 msgid "Key Takeaways"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:456
 msgid "Concept"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:456
 msgid "What It Means"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:456
 msgid "**Tiling**"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:458
 msgid "Process data in blocks to maximize data reuse"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:458
 msgid "**K-loop**"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:459
 msgid "Iterate over tile pairs, accumulating partial results"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:459
 msgid "**mma()**"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:460
 msgid "Matrix multiply-accumulate, maps to Tensor Cores"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:460
 msgid "**Const generics**"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:461
 msgid ""
 "Tile sizes known at compile time for optimization; changing them creates a "
 "new compiled variant"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:461
 msgid "**Const generic inference**"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:462
 msgid ""
 "Generics appearing in `&mut Tensor` / `&Tensor` parameter types are inferred "
 "from host-side `Partition` shapes and tensor shapes; generics used only "
 "inside the kernel body (like `BK`) must be passed explicitly"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:462
 msgid "**Dynamic dimensions (`-1`)**"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:463
 msgid "Can vary across launches without creating a new compiled variant"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:463
 msgid "**Arithmetic intensity**"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:464
 msgid "Ratio of compute to memory ops — higher is better"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:464
 msgid "**Mapped output iteration**"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:465
 msgid "Recommended safe performance path for persistent GEMM"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:465
 msgid "**`unchecked_accesses`**"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:466
 msgid "Disables runtime bounds checks for peak performance; requires `unsafe`"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:466
 msgid "**Fully static shapes**"
 msgstr ""
 
-#: ../../../tutorials/04-matrix-multiplication.md:0
+#: ../../../tutorials/04-matrix-multiplication.md:467
 msgid ""
 "Legacy safe path that lets the compiler eliminate direct block-id bounds "
 "checks"
